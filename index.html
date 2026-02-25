@@ -136,6 +136,7 @@ nav{padding:0 32px;height:56px;display:flex;align-items:center;justify-content:s
 .res-browser-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:3px;}
 .res-browser-title{font-size:17px;font-weight:800;letter-spacing:-0.3px;}
 .res-see-all{font-size:13px;font-weight:700;color:var(--teal);text-decoration:none;white-space:nowrap;flex-shrink:0;}
+.res-see-all:hover{text-decoration:underline;}
 .res-pills{display:flex;gap:6px;overflow-x:auto;padding:12px 20px 0;scrollbar-width:none;}
 .res-pills::-webkit-scrollbar{display:none;}
 .res-pill{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--gray);white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s;flex-shrink:0;}
@@ -339,6 +340,7 @@ footer{padding:28px 32px;border-top:1px solid var(--border);background:white;dis
           <div class="res-browser-label">📚 Resources for you</div>
           <div class="res-browser-title">Find your next opportunity</div>
         </div>
+        <!-- IMPORTANT: goes to resources.html -->
         <a href="resources.html" class="res-see-all">See all →</a>
       </div>
       <div class="res-pills" id="resPills">
@@ -351,6 +353,7 @@ footer{padding:28px 32px;border-top:1px solid var(--border);background:white;dis
         <button class="res-pill" onclick="filterRes('graduate',this)">🏅 Graduation</button>
       </div>
       <div class="res-grid" id="resGrid"></div>
+      <!-- IMPORTANT: goes to resources.html -->
       <a href="resources.html" class="res-full-btn">Browse all 26+ resources on ZenEd →</a>
     </div>
 
@@ -366,6 +369,7 @@ footer{padding:28px 32px;border-top:1px solid var(--border);background:white;dis
         <div class="save-benefit"><span class="save-benefit-icon">🎓</span>Teacher can see your readiness — not your grades</div>
       </div>
       <a href="app.html?from=quickcheck" class="btn-signup">Create free account →</a>
+      <!-- IMPORTANT: goes to resources.html -->
       <a href="resources.html" class="btn-skip">Just browse resources →</a>
     </div>
 
@@ -385,10 +389,10 @@ footer{padding:28px 32px;border-top:1px solid var(--border);background:white;dis
     <a href="privacy.html">Privacy</a>
   </div>
   <div style="font-size:12px;color:#bbb">© 2026 ZenEd · Always free</div>
-<div style="text-align:center;margin:16px 0 4px;width:100%;">
-  <a href="https://buymeacoffee.com/zened" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#FFDD00;color:#000;font-size:13px;font-weight:800;padding:9px 20px;border-radius:20px;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,0.1);transition:all 0.2s;">☕ Support ZenEd — keep it free for students</a>
-  <div style="font-size:11px;color:#aaa;margin-top:6px;">Every dollar keeps ZenEd free for students who can't afford tutors.</div>
-</div>
+  <div style="text-align:center;margin:16px 0 4px;width:100%;">
+    <a href="https://buymeacoffee.com/zened" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#FFDD00;color:#000;font-size:13px;font-weight:800;padding:9px 20px;border-radius:20px;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,0.1);transition:all 0.2s;">☕ Support ZenEd — keep it free for students</a>
+    <div style="font-size:11px;color:#aaa;margin-top:6px;">Every dollar keeps ZenEd free for students who can't afford tutors.</div>
+  </div>
 </footer>
 
 <script>
@@ -399,11 +403,9 @@ function track(event, data) {
   try {
     const log = JSON.parse(localStorage.getItem('zened_events') || '[]');
     log.push({ event, data, ts: new Date().toISOString() });
-    localStorage.setItem('zened_events', JSON.stringify(log.slice(-200))); // keep last 200
+    localStorage.setItem('zened_events', JSON.stringify(log.slice(-200)));
   } catch(e) {}
 }
-// You can view analytics any time in the browser console:
-// JSON.parse(localStorage.getItem('zened_events'))
 
 // ══════════════════════════════════════
 // FLOW STATE
@@ -636,3 +638,4 @@ renderResGrid();
 </script>
 </body>
 </html>
+
