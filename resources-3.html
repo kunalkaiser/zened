@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Resources | ZenEd</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --teal:#0ea87a;--teal-dark:#0b8f68;--teal-light:#e6f7f2;
+  --black:#0d0d0d;--white:#fff;--bg:#f6f8fa;
+  --gray:#64748b;--gray-light:#f1f5f9;--border:#e2e8f0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--bg);color:var(--black);-webkit-font-smoothing:antialiased;}
+
+/* ── NAV ── */
+nav{padding:0 40px;height:60px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:white;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--black);}
+.logo-ico{width:32px;height:32px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:9px;display:flex;align-items:center;justify-content:center;}
+.logo-word{font-weight:800;font-size:19px;letter-spacing:-0.4px;}
+.logo-word em{color:var(--teal);font-style:normal;}
+.nav-right{display:flex;gap:8px;}
+.nav-btn{padding:7px 16px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;transition:all 0.2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.nav-btn.ghost{border:1.5px solid var(--border);color:var(--gray);background:none;}
+.nav-btn.ghost:hover{border-color:var(--black);color:var(--black);}
+.nav-btn.solid{background:var(--teal);color:white;border:none;cursor:pointer;}
+.nav-btn.solid:hover{background:var(--teal-dark);}
+
+/* ── HERO ── */
+.hero{background:white;border-bottom:1px solid var(--border);padding:40px 40px 0;}
+.hero-inner{max-width:1100px;margin:0 auto;}
+.hero-eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--teal);margin-bottom:8px;}
+.hero h1{font-family:'Fraunces',serif;font-size:clamp(30px,4vw,48px);font-weight:900;letter-spacing:-1.5px;line-height:1.05;margin-bottom:10px;}
+.hero h1 em{font-style:italic;color:var(--teal);}
+.hero-sub{font-size:15px;color:var(--gray);line-height:1.65;max-width:560px;margin-bottom:28px;}
+
+/* ── SEARCH BAR ── */
+.search-wrap{display:flex;align-items:center;gap:10px;background:var(--bg);border:1.5px solid var(--border);border-radius:14px;padding:12px 18px;max-width:560px;margin-bottom:0;transition:border-color 0.2s;}
+.search-wrap:focus-within{border-color:var(--teal);background:white;}
+.search-wrap input{flex:1;border:none;outline:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;color:var(--black);background:transparent;}
+.search-wrap input::placeholder{color:#aaa;}
+.search-icon{color:#aaa;font-size:16px;flex-shrink:0;}
+
+/* ── CATEGORY TABS ── */
+.cat-tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-top:24px;overflow-x:auto;scrollbar-width:none;}
+.cat-tabs::-webkit-scrollbar{display:none;}
+.cat-tab{padding:12px 20px;font-size:14px;font-weight:600;cursor:pointer;border:none;background:none;font-family:'Plus Jakarta Sans',sans-serif;color:var(--gray);white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s;}
+.cat-tab:hover{color:var(--black);}
+.cat-tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:700;}
+
+/* ── MAIN LAYOUT ── */
+.main{max-width:1100px;margin:0 auto;padding:32px 40px 100px;}
+
+/* ── RESULTS BAR ── */
+.results-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;}
+.results-count{font-size:13px;color:var(--gray);font-weight:500;}
+.results-count strong{color:var(--black);}
+
+/* ── CARD GRID ── */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;}
+
+/* ── RESOURCE CARD (Talem style) ── */
+.rcard{background:white;border:1.5px solid var(--border);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:0;transition:all 0.18s;text-decoration:none;color:var(--black);cursor:pointer;}
+.rcard:hover{border-color:var(--teal);box-shadow:0 4px 24px rgba(14,168,122,0.1);transform:translateY(-2px);}
+.rcard-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+.rcard-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.rcard-meta{flex:1;min-width:0;}
+.rcard-name{font-size:15px;font-weight:800;letter-spacing:-0.3px;line-height:1.25;margin-bottom:2px;}
+.rcard-org{font-size:12px;color:var(--gray);font-weight:500;}
+.rcard-desc{font-size:13px;color:#374151;line-height:1.6;margin-bottom:14px;flex:1;}
+.rcard-footer{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;}
+.rcard-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.tag{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap;}
+.tag.free{background:#e6f7f2;color:#0b8f68;}
+.tag.paid{background:#fef3c7;color:#b45309;}
+.tag.stem{background:#eff6ff;color:#2563eb;}
+.tag.hot{background:#fff1f2;color:#dc2626;}
+.tag.sat{background:#f5f3ff;color:#7c3aed;}
+.tag.act{background:#fff7ed;color:#c2410c;}
+.tag.grad{background:#fef3c7;color:#d97706;}
+.tag.new{background:#f0fdf4;color:#15803d;}
+.rcard-btn{flex-shrink:0;padding:7px 14px;background:var(--black);color:white;border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;transition:all 0.15s;white-space:nowrap;}
+.rcard-btn:hover{background:#1e1e1e;}
+
+/* ── FAQ ── */
+.faq-section{margin-top:40px;}
+.faq-section-title{font-family:'Fraunces',serif;font-size:26px;font-weight:900;letter-spacing:-0.5px;margin-bottom:6px;}
+.faq-section-sub{font-size:14px;color:var(--gray);margin-bottom:24px;}
+.faq-list{display:flex;flex-direction:column;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;background:white;}
+.faq-item{border-bottom:1px solid var(--border);}
+.faq-item:last-child{border-bottom:none;}
+.faq-btn{width:100%;display:flex;align-items:center;justify-content:space-between;padding:18px 22px;background:none;border:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;text-align:left;color:var(--black);gap:16px;transition:background 0.15s;}
+.faq-btn:hover{background:var(--gray-light);}
+.faq-icon{width:26px;height:26px;border-radius:50%;background:var(--gray-light);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all 0.2s;font-weight:700;}
+.faq-item.open .faq-icon{background:var(--teal);color:white;transform:rotate(45deg);}
+.faq-body{max-height:0;overflow:hidden;transition:max-height 0.3s ease;}
+.faq-item.open .faq-body{max-height:400px;}
+.faq-body-inner{padding:0 22px 20px;font-size:14px;color:#374151;line-height:1.75;}
+.faq-body-inner a{color:var(--teal);font-weight:600;text-decoration:none;}
+.faq-body-inner a:hover{text-decoration:underline;}
+
+/* ── SECTION DIVIDER ── */
+.section-divider{display:flex;align-items:center;gap:12px;margin:32px 0 20px;}
+.section-divider-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);white-space:nowrap;}
+.section-divider-line{flex:1;height:1px;background:var(--border);}
+
+/* ── RESUME BANNER ── */
+.resume-banner{background:linear-gradient(135deg,#0f1f3d,#0a1628);border-radius:16px;padding:28px 32px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-top:32px;}
+.resume-banner-text{}
+.resume-banner-eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:6px;}
+.resume-banner-title{font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:white;margin-bottom:4px;letter-spacing:-0.5px;}
+.resume-banner-sub{font-size:13px;color:#94a3b8;line-height:1.6;}
+.resume-banner-btn{padding:12px 22px;background:var(--teal);color:white;border-radius:10px;font-size:14px;font-weight:700;text-decoration:none;flex-shrink:0;transition:all 0.2s;}
+.resume-banner-btn:hover{background:var(--teal-dark);}
+
+/* ── NO RESULTS ── */
+.no-results{text-align:center;padding:64px 20px;color:var(--gray);display:none;}
+.no-results h3{font-size:18px;font-weight:700;color:var(--black);margin-bottom:6px;}
+
+/* ── CHAT FAB ── */
+.chat-fab{position:fixed;bottom:28px;right:28px;z-index:999;width:56px;height:56px;border-radius:50%;background:var(--teal);color:white;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px rgba(14,168,122,0.5);transition:all 0.3s;font-size:24px;}
+.chat-fab:hover{transform:scale(1.08);background:var(--teal-dark);}
+.chat-fab-badge{position:absolute;top:-2px;right:-2px;width:18px;height:18px;border-radius:50%;background:#ef4444;border:2px solid white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;color:white;}
+.chat-panel{position:fixed;bottom:96px;right:28px;z-index:999;width:360px;max-height:540px;background:white;border-radius:20px;box-shadow:0 8px 48px rgba(0,0,0,0.18);display:flex;flex-direction:column;overflow:hidden;transform:scale(0.88) translateY(24px);opacity:0;pointer-events:none;transition:all 0.28s cubic-bezier(0.34,1.56,0.64,1);transform-origin:bottom right;}
+.chat-panel.open{transform:scale(1) translateY(0);opacity:1;pointer-events:all;}
+.chat-head{background:var(--black);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.chat-head-left{display:flex;align-items:center;gap:10px;}
+.chat-avatar{width:34px;height:34px;border-radius:50%;background:var(--teal);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.chat-head-name{font-size:13px;font-weight:700;color:white;}
+.chat-head-status{font-size:11px;color:#0ea87a;font-weight:600;}
+.chat-x{background:none;border:none;color:#666;cursor:pointer;font-size:16px;padding:4px;border-radius:6px;transition:color 0.2s;}
+.chat-x:hover{color:white;}
+.chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;background:#f8fafc;}
+.chat-msgs::-webkit-scrollbar{width:3px;}
+.chat-msgs::-webkit-scrollbar-thumb{background:#ddd;border-radius:2px;}
+.msg{display:flex;}
+.msg.bot{justify-content:flex-start;}
+.msg.user{justify-content:flex-end;}
+.msg-bubble{padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.6;}
+.msg.bot .msg-bubble{background:white;color:var(--black);border:1px solid var(--border);border-radius:14px 14px 14px 3px;box-shadow:0 1px 3px rgba(0,0,0,0.05);}
+.msg.user .msg-bubble{background:var(--teal);color:white;border-radius:14px 14px 3px 14px;}
+.msg-bubble a{color:var(--teal);font-weight:600;}
+.msg.user .msg-bubble a{color:rgba(255,255,255,0.85);}
+.quick-wrap{padding:10px 12px;display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border);background:white;flex-shrink:0;}
+.qbtn{padding:5px 11px;border:1.5px solid var(--border);border-radius:20px;font-size:11px;font-weight:600;cursor:pointer;background:white;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s;color:var(--gray);}
+.qbtn:hover{border-color:var(--teal);color:var(--teal);}
+.chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--border);background:white;flex-shrink:0;}
+.chat-input{flex:1;padding:9px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:'Plus Jakarta Sans',sans-serif;outline:none;transition:border-color 0.2s;}
+.chat-input:focus{border-color:var(--teal);}
+.chat-send{padding:9px 14px;background:var(--teal);color:white;border:none;border-radius:10px;cursor:pointer;font-size:14px;transition:all 0.2s;}
+.chat-send:hover{background:var(--teal-dark);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  nav,.hero,.main{padding-left:20px;padding-right:20px;}
+  .hero{padding-top:28px;}
+  .card-grid{grid-template-columns:1fr;}
+  .cat-tabs{margin-left:-20px;margin-right:-20px;padding:0 20px;}
+  .chat-panel{width:calc(100vw - 32px);right:16px;}
+  .chat-fab{right:16px;bottom:16px;}
+  .resume-banner{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-ico"><svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <span class="logo-word">Zen<em>Ed</em></span>
+  </a>
+  <div class="nav-right">
+    <a href="app.html" class="nav-btn ghost">Sign In</a>
+    <a href="app.html" class="nav-btn solid">Dashboard →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">Student Resource Hub</div>
+    <h1>Find your <em>opportunity.</em></h1>
+    <p class="hero-sub">Scholarships, internships, SAT/ACT prep, college guidance, self-study tools, and the new graduation framework — all free, all in one place.</p>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="searchInput" placeholder="Search resources, scholarships, programs..." oninput="filterAll()">
+    </div>
+    <!-- CATEGORY TABS -->
+    <div class="cat-tabs">
+      <button class="cat-tab active" onclick="setTab('all',this)">All</button>
+      <button class="cat-tab" onclick="setTab('internship',this)">☀️ Internships</button>
+      <button class="cat-tab" onclick="setTab('scholarship',this)">🏆 Scholarships</button>
+      <button class="cat-tab" onclick="setTab('sat',this)">📝 SAT / ACT</button>
+      <button class="cat-tab" onclick="setTab('college',this)">🎓 College Prep</button>
+      <button class="cat-tab" onclick="setTab('study',this)">📚 Self-Study</button>
+      <button class="cat-tab" onclick="setTab('graduate',this)">🏅 Portrait of a Graduate</button>
+      <button class="cat-tab" onclick="setTab('cte',this)">⚙️ CTE</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="results-bar">
+    <div class="results-count"><strong id="resultCount">0</strong> resources</div>
+  </div>
+
+  <div class="card-grid" id="cardGrid"></div>
+  <div class="no-results" id="noResults">
+    <h3>No results found</h3>
+    <p>Try a different search — or tap the 💬 chat bubble to ask ZenEd AI directly.</p>
+  </div>
+
+  <!-- RESUME BANNER -->
+  <div class="resume-banner" id="resumeBanner">
+    <div class="resume-banner-text">
+      <div class="resume-banner-eyebrow">Free Template</div>
+      <div class="resume-banner-title">📄 High School Resume — No Experience Needed</div>
+      <div class="resume-banner-sub">A clean Google Doc template with step-by-step instructions. Includes activities, skills, coursework, projects — everything a student can use even without a job yet.</div>
+    </div>
+    <a href="resume.html" target="_blank" class="resume-banner-btn">Build my resume free →</a>
+  </div>
+
+  <!-- FAQ -->
+  <div class="faq-section">
+    <div class="faq-section-title">Common questions</div>
+    <div class="faq-section-sub">Everything students ask — answered honestly.</div>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">Is ZenEd really free? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">Yes — completely free for students, always. No credit card, no premium tier, no catch. We believe every student deserves to know where they stand regardless of their family's income.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">What is SYEP and how do I apply? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">SYEP (Summer Youth Employment Program) is NYC's paid summer jobs program for ages 14–24. Work at real companies — hospitals, tech firms, nonprofits — and earn up to $18.84/hr. Applications open each January at <a href="https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page" target="_blank">nyc.gov/dycd</a>. Apply day one — spots fill extremely fast.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">How do I get CUNY for free? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">If your family earns under $125,000/year, you may qualify for the Excelsior Scholarship — covering tuition at any of 25 CUNY campuses. Step 1: File FAFSA at <a href="https://studentaid.gov" target="_blank">studentaid.gov</a> (opens December 1). Step 2: Apply for Excelsior at <a href="https://www.hesc.ny.gov" target="_blank">hesc.ny.gov</a> by June 30. Must enroll full-time (12+ credits/semester).</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">What is FAFSA and should I file it? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">FAFSA (Free Application for Federal Student Aid) unlocks federal grants, work-study jobs, and loans. The Pell Grant gives up to $7,395/year — free money you never repay. File even if you think you won't qualify. Opens December 1 at <a href="https://studentaid.gov" target="_blank">studentaid.gov</a>. Free help at any <a href="https://www.schools.nyc.gov/enrollment/high-school/college-access-centers" target="_blank">NYC College Access Center</a>.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">How do I prep for SAT or ACT for free? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">Best free SAT prep: <a href="https://www.khanacademy.org/sat" target="_blank">Khan Academy</a> (official, made with College Board — personalized to your PSAT). For full practice tests in the real digital format: <a href="https://bluebook.collegeboard.org" target="_blank">Bluebook app</a>. For ACT: <a href="https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html" target="_blank">ACT.org free practice</a>. NYC students may qualify for free test fee waivers — ask your counselor.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">What scholarships can I apply for right now? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">Start with <a href="https://www.fastweb.com" target="_blank">Fastweb.com</a> — 1.5M+ scholarships matched to your profile. <a href="https://bold.org" target="_blank">Bold.org</a> has no-essay options you can apply to in minutes. In 9th or 10th grade? Start <a href="https://www.raise.me" target="_blank">Raise.me</a> now and earn micro-scholarships as you go. Apply to many small ones — less competition means better odds.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">What is the Portrait of a Graduate? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">NY State is replacing required Regents exams with a "Portrait of a Graduate" framework by 2029–30. New pathways launch 2027–28: portfolios, projects, internships, CTE credentials, presentations. Regents become optional by 2029–30. Six competencies: Biliteracy, Civic Readiness, Computational Thinking, Creativity, Critical Analysis, Integrated Wellness. Internships and CTE you do NOW count. <a href="https://www.nysed.gov/sites/default/files/programs/curriculum-instruction/portrait-of-a-graduate.pdf" target="_blank">Official PDF →</a></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">What free science resources are there? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner"><a href="https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12" target="_blank">LabXchange</a> (Harvard) — best free science platform for grades 9–12, virtual labs for Living Environment Regents. It also hosts Annenberg science content (learner.org is closing — use LabXchange). <a href="https://www.newvisions.org/curriculum/science/biology" target="_blank">New Visions Biology</a> — free, all 6 units aligned to the Regents. Teachers: use the <a href="https://www.labxchange.org/teach" target="_blank">LabXchange teacher portal</a> to assign labs.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">How do I write a resume with no experience? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">You have more than you think. Include: GPA (if 3.0+), honors classes, clubs, sports, volunteering, babysitting, odd jobs, class projects, languages, and skills. Keep to 1 page. Use action verbs: "organized," "led," "created." Copy our free Google Doc template above — built specifically for students without formal work experience.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">How do I improve my Regents score? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">Passing is 65 — aim for 75+ for a safety margin. (1) Download real past exams free at <a href="https://www.nysedregents.org" target="_blank">nysedregents.org</a>. (2) Practice NY-specific questions at <a href="https://www.regentsprep.org" target="_blank">RegentsPrep.org</a>. (3) Use <a href="https://www.khanacademy.org" target="_blank">Khan Academy</a> for underlying concepts. Log your grades in <a href="app.html">ZenEd</a> to see exactly which topics are weakest. Regents become optional by 2029–30 but count fully until then.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">What are CTE programs and should I join one? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">CTE (Career and Technical Education) programs are free pathways at NYC high schools — graduate with industry certifications in Tech, Health, Architecture, Business, Culinary, Law, Engineering, and more. CTE credits count toward the new 2027+ graduation pathways. <a href="https://www.schools.nyc.gov/learning/programs/career-and-technical-education" target="_blank">Find a program →</a> P-TECH goes further: a free CUNY associate degree in 6 years with IBM mentorship. <a href="https://www.ptech.org" target="_blank">ptech.org →</a></div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-btn" onclick="toggleFaq(this)">Can my teacher see my grades in ZenEd? <span class="faq-icon">+</span></button>
+        <div class="faq-body"><div class="faq-body-inner">Only if you join their classroom with a class code they share with you. Your teacher sees readiness scores and subject averages — not individual assignment details. You control what you join.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer style="padding:28px 40px;border-top:1px solid var(--border);background:white;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+  <a href="index.html" class="logo">
+    <div class="logo-ico" style="width:28px;height:28px;border-radius:7px"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <span class="logo-word" style="font-size:16px">Zen<em>Ed</em></span>
+  </a>
+  <div style="display:flex;gap:20px">
+    <a href="terms.html" style="font-size:13px;color:var(--gray);text-decoration:none">Terms</a>
+    <a href="privacy.html" style="font-size:13px;color:var(--gray);text-decoration:none">Privacy</a>
+    <a href="mailto:hello@zened.app" style="font-size:13px;color:var(--teal);text-decoration:none;font-weight:600">hello@zened.app</a>
+  </div>
+  <div style="font-size:12px;color:#bbb">© 2026 ZenEd · Verify program details directly with each organization.</div>
+</footer>
+
+<!-- CHAT FAB -->
+<button class="chat-fab" onclick="toggleChat()" id="chatFab">
+  <span id="fabIcon">💬</span>
+  <div class="chat-fab-badge" id="chatBadge">1</div>
+</button>
+
+<div class="chat-panel" id="chatPanel">
+  <div class="chat-head">
+    <div class="chat-head-left">
+      <div class="chat-avatar">🤖</div>
+      <div>
+        <div class="chat-head-name">ZenEd Assistant</div>
+        <div class="chat-head-status">● Online · No login needed</div>
+      </div>
+    </div>
+    <button class="chat-x" onclick="toggleChat()">✕</button>
+  </div>
+  <div class="chat-msgs" id="chatMsgs">
+    <div class="msg bot">
+      <div class="msg-bubble">👋 Hi! I'm the ZenEd assistant — <strong>no account needed.</strong><br><br>Ask me about internships, SAT/ACT prep, CUNY, FAFSA, scholarships, Regents prep, free science labs, resume help, or NY's new graduation (Portrait of a Graduate).</div>
+    </div>
+  </div>
+  <div class="quick-wrap" id="quickWrap">
+    <button class="qbtn" onclick="quickAsk('Am I eligible for SYEP?')">💼 SYEP?</button>
+    <button class="qbtn" onclick="quickAsk('How do I get CUNY for free?')">🎓 CUNY free?</button>
+    <button class="qbtn" onclick="quickAsk('What scholarships can I apply for?')">🏆 Scholarships?</button>
+    <button class="qbtn" onclick="quickAsk('How do I prep for the SAT for free?')">📝 SAT prep?</button>
+    <button class="qbtn" onclick="quickAsk('What is the Portrait of a Graduate?')">🏅 New graduation?</button>
+    <button class="qbtn" onclick="quickAsk('How do I write a resume with no experience?')">📄 Resume?</button>
+    <button class="qbtn" onclick="quickAsk('How do I improve my Regents score?')">📚 Regents?</button>
+    <button class="qbtn" onclick="quickAsk('What free science labs can I use online?')">🔬 Science labs?</button>
+  </div>
+  <div class="chat-input-row">
+    <input class="chat-input" id="chatInput" type="text" placeholder="Ask anything..." onkeypress="if(event.key==='Enter')sendMsg()">
+    <button class="chat-send" id="sendBtn" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+// RESOURCE DATA
+// ══════════════════════════════════════
+const RESOURCES = [
+  // ── INTERNSHIPS ──
+  {
+    cat:'internship', featured:true,
+    icon:'💼', iconBg:'#fef3c7',
+    name:'SYEP — Summer Youth Employment Program',
+    org:'NYC Dept. of Youth & Community Development',
+    desc:"NYC's flagship paid summer jobs program. Work at hospitals, tech firms, nonprofits, city agencies — up to $18.84/hr. The largest youth employment program in the US. Ages 14–24.",
+    tags:['paid','hot'],
+    btn:'Apply at nyc.gov →',
+    url:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page',
+    kw:'syep summer jobs paid work nyc age 14'
+  },
+  {
+    cat:'internship',
+    icon:'❄️', iconBg:'#eff6ff',
+    name:'Snow.day — Search 500+ Free Programs',
+    org:'Independent student tool',
+    desc:'The best search engine for free summer programs. Filter by age, subject (STEM, arts, law, business), stipend, and location. Built for low-income and underrepresented students.',
+    tags:['free'],
+    btn:'snow.day →',
+    url:'https://snow.day',
+    kw:'snow day free programs search summer 500'
+  },
+  {
+    cat:'internship',
+    icon:'🔧', iconBg:'#e6f7f2',
+    name:'Hk Maker Lab — Columbia University',
+    org:'Columbia School of Engineering',
+    desc:'Free 5-week engineering design program at Columbia. Students prototype real solutions with Columbia mentors. Priority for low-income students. Grades 10–11.',
+    tags:['free','stem'],
+    btn:'hkmakerlab.columbia.edu →',
+    url:'https://hkmakerlab.columbia.edu',
+    kw:'hk maker lab columbia engineering free stem grade 10 11'
+  },
+  {
+    cat:'internship',
+    icon:'🔬', iconBg:'#f5f3ff',
+    name:'NYAS Junior Academy',
+    org:'New York Academy of Sciences',
+    desc:'Virtual mentorship pairing students with real scientists and engineers. Work on science challenges, build research skills, and strengthen your college application — all online, free.',
+    tags:['free','stem'],
+    btn:'Apply at nyas.org →',
+    url:'https://www.nyas.org/programs/global-stem-alliance/junior-academy/',
+    kw:'nyas junior academy science mentorship virtual stem'
+  },
+  {
+    cat:'internship',
+    icon:'🧬', iconBg:'#f0fdf4',
+    name:'NYC Science Research Mentoring Consortium',
+    org:'AMNH · Cold Spring Harbor · NY Botanical Garden',
+    desc:'100+ hours of mentored research at world-class institutions. Competitive — GPA 85+ recommended. One of the strongest college application boosters available to NYC students.',
+    tags:['free','stem'],
+    btn:'scienceresearchmentoring.org →',
+    url:'https://scienceresearchmentoring.org',
+    kw:'science research mentoring amnh cold spring harbor competitive gpa 85'
+  },
+
+  // ── SCHOLARSHIPS ──
+  {
+    cat:'scholarship', featured:true,
+    icon:'🎓', iconBg:'#e6f7f2',
+    name:'CUNY Excelsior — Free College Tuition',
+    org:'City University of New York',
+    desc:'Families earning under $125,000/year may attend any of 25 CUNY campuses tuition-free. File FAFSA first, then apply at hesc.ny.gov. Covers Baruch, Hunter, Brooklyn College, and more.',
+    tags:['free'],
+    btn:'Apply at hesc.ny.gov →',
+    url:'https://www.hesc.ny.gov',
+    kw:'cuny excelsior free college tuition 125k family income'
+  },
+  {
+    cat:'scholarship',
+    icon:'📋', iconBg:'#eff6ff',
+    name:'FAFSA — Free Federal Student Aid',
+    org:'U.S. Department of Education',
+    desc:'Every student should file — even if you think you won\'t qualify. Unlocks Pell Grants (up to $7,395/yr free money), work-study, and loans. Required for Excelsior. Opens December 1.',
+    tags:['free'],
+    btn:'Apply at studentaid.gov →',
+    url:'https://studentaid.gov',
+    kw:'fafsa federal financial aid pell grant free money student'
+  },
+  {
+    cat:'scholarship',
+    icon:'🏆', iconBg:'#fef3c7',
+    name:'Fastweb — 1.5M+ Scholarships',
+    org:'Fastweb.com',
+    desc:'The largest free scholarship database. Build a profile and get matched to awards based on your grades, interests, background, and location. Many NYC-specific scholarships included.',
+    tags:['free'],
+    btn:'fastweb.com →',
+    url:'https://www.fastweb.com',
+    kw:'fastweb scholarship search free money personalized 1.5 million'
+  },
+  {
+    cat:'scholarship',
+    icon:'✨', iconBg:'#f5f3ff',
+    name:'Bold.org — Including No-Essay Scholarships',
+    org:'Bold.org',
+    desc:'Apply to scholarships that require no essay — just your profile. Great for maximizing applications with less time. Also has larger essay-based awards. Rolling deadlines.',
+    tags:['free'],
+    btn:'bold.org →',
+    url:'https://bold.org',
+    kw:'bold no essay scholarship easy apply free money award'
+  },
+  {
+    cat:'scholarship',
+    icon:'📈', iconBg:'#f0fdf4',
+    name:'Raise.me — Earn Micro-Scholarships Now',
+    org:'Raise.me',
+    desc:'Earn micro-scholarships starting in 9th grade — for your GPA, activities, volunteer work, and AP courses. Stack them up before applying. 300+ colleges participate including CUNY.',
+    tags:['free'],
+    btn:'raise.me →',
+    url:'https://www.raise.me',
+    kw:'raise.me micro scholarship gpa activities 9th grade earn early'
+  },
+
+  // ── SAT / ACT ──
+  {
+    cat:'sat', featured:true,
+    icon:'📝', iconBg:'#f5f3ff',
+    name:'Official SAT Prep — Free on Khan Academy',
+    org:'College Board + Khan Academy',
+    desc:'The College Board\'s official SAT prep — completely free. Personalized to your PSAT results, 8 full-length practice tests. Students who practice 20hrs improve by ~115 points on average.',
+    tags:['free','sat'],
+    btn:'Start free SAT prep →',
+    url:'https://www.khanacademy.org/sat',
+    kw:'sat prep khan academy official college board free personalized psat'
+  },
+  {
+    cat:'sat',
+    icon:'💻', iconBg:'#eff6ff',
+    name:'Bluebook — Full Digital SAT Practice Tests',
+    org:'College Board',
+    desc:'The official app for the digital SAT. Full-length practice tests in the exact format of the real exam — same tools, same timing, same adaptive difficulty. Best way to simulate test day.',
+    tags:['free','sat'],
+    btn:'Download Bluebook →',
+    url:'https://bluebook.collegeboard.org',
+    kw:'bluebook digital sat practice test official full length'
+  },
+  {
+    cat:'sat',
+    icon:'📊', iconBg:'#fff7ed',
+    name:'Free ACT Practice Tests — Official',
+    org:'ACT.org',
+    desc:'Free official ACT prep: full practice tests, sample questions, score reports. Tests English, Math, Reading, and Science Reasoning. Many students score better on ACT than SAT — try both.',
+    tags:['free','act'],
+    btn:'Free ACT prep →',
+    url:'https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html',
+    kw:'act prep free practice test official science reasoning english math'
+  },
+  {
+    cat:'sat',
+    icon:'🏫', iconBg:'#f0fdf4',
+    name:'NYC DOE Free SAT & ACT Prep + Fee Waivers',
+    org:'NYC Department of Education',
+    desc:'Free SAT/ACT prep through NYC public schools. Income-eligible students can take the SAT for free with a fee waiver. Ask your school counselor in September.',
+    tags:['free','sat','act'],
+    btn:'NYC DOE info →',
+    url:'https://www.schools.nyc.gov/learning/student-support/academic-support/standardized-test-prep',
+    kw:'nyc doe sat act prep free class fee waiver income eligible counselor'
+  },
+
+  // ── COLLEGE PREP ──
+  {
+    cat:'college',
+    icon:'🏛️', iconBg:'#f0fdf4',
+    name:'NYC College Access Centers — Free 1-on-1 Help',
+    org:'NYC Department of Education',
+    desc:'Free college counseling across all 5 boroughs. FAFSA help, essay review, financial aid appeals, scholarship searches. No appointment needed at most locations. Open year-round.',
+    tags:['free'],
+    btn:'Find center near you →',
+    url:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers',
+    kw:'nyc college access counselor help fafsa essay application free boroughs'
+  },
+  {
+    cat:'college',
+    icon:'📝', iconBg:'#eff6ff',
+    name:'Common App — Apply to 1,000+ Colleges',
+    org:'Common Application Inc.',
+    desc:'Apply to 1,000+ colleges with one application and one set of essays. Used by most 4-year colleges outside CUNY. Start in junior year — deadlines run November 1 to January 1.',
+    tags:['free'],
+    btn:'commonapp.org →',
+    url:'https://www.commonapp.org',
+    kw:'common app college application 1000 schools university apply essay'
+  },
+  {
+    cat:'college',
+    icon:'🎓', iconBg:'#fef3c7',
+    name:'CUNY College Now — Free College Credits',
+    org:'City University of New York',
+    desc:'Take real CUNY college courses while still in high school — completely free. Credits count toward your degree when you enroll. English, Math, Science, Business. Grades 10–12.',
+    tags:['free'],
+    btn:'Explore College Now →',
+    url:'https://www.cuny.edu/about/administration/offices/k16/college-now/',
+    kw:'cuny college now dual enrollment free credit high school grade 10 11 12'
+  },
+  {
+    cat:'college',
+    icon:'💻', iconBg:'#f0fdf4',
+    name:'P-TECH — Free Associate Degree in 6 Years',
+    org:'NYC DOE + IBM + CUNY',
+    desc:'6-year program combining high school with a free CUNY associate\'s degree in tech, health, or business. Graduate with a diploma AND a 2-year college degree. IBM mentorship built in.',
+    tags:['free','stem'],
+    btn:'ptech.org →',
+    url:'https://www.ptech.org',
+    kw:'ptech pathways technology early college degree associate stem ibm grade 9'
+  },
+
+  // ── SELF-STUDY ──
+  {
+    cat:'study',
+    icon:'🟢', iconBg:'#f0fdf4',
+    name:'Khan Academy — Free Lessons for Every Subject',
+    org:'Khan Academy',
+    desc:'World-class free education for every subject. Personalized learning paths for Algebra, ELA, Biology, US History, and SHSAT. ZenEd\'s study plan links directly to your weakest topics.',
+    tags:['free'],
+    btn:'khanacademy.org →',
+    url:'https://www.khanacademy.org',
+    kw:'khan academy math science history ela free videos practice all subjects'
+  },
+  {
+    cat:'study', featured:true,
+    icon:'🔬', iconBg:'#e6f7f2',
+    name:'LabXchange — Harvard Free Science Labs',
+    org:'Harvard University · LabXchange.org',
+    desc:'Harvard\'s free interactive science platform. Life sciences collection for grades 9-12 covers genetics, evolution, ecosystems, and cell biology with real virtual labs and simulations. Perfect for Living Environment Regents.',
+    tags:['free','stem'],
+    btn:'Life Sciences →',
+    url:'https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12',
+    kw:'labxchange harvard science lab simulation ngss life sciences grades 9 12 biology'
+  },
+  {
+    cat:'study',
+    icon:'🎥', iconBg:'#fff7ed',
+    name:'LabXchange — Annenberg Science Videos',
+    org:'LabXchange / Annenberg Foundation',
+    desc:'High-quality science video lessons from the Annenberg Foundation, now on LabXchange. Biology, chemistry, physics, earth science. Note: Annenberg Learner (learner.org) is closing — use this link.',
+    tags:['free','stem'],
+    btn:'Access on LabXchange →',
+    url:'https://www.labxchange.org/org/annenberglearner',
+    kw:'labxchange annenberg learner science biology chemistry physics video lessons'
+  },
+  {
+    cat:'study',
+    icon:'📖', iconBg:'#fdf4ff',
+    name:'Regents Prep + Official Past Exams',
+    org:'RegentsPrep.org · NYSED',
+    desc:'Free NY-specific practice for every Regents exam. Download real past exams from NYSED. Covers Algebra 1, ELA, Living Environment, US History, and more. Pairs with ZenEd\'s study plan.',
+    tags:['free'],
+    btn:'regentsprep.org →',
+    url:'https://www.regentsprep.org',
+    kw:'regents prep past exams algebra ela us history biology nysed free'
+  },
+  {
+    cat:'study',
+    icon:'🧪', iconBg:'#f0fdf4',
+    name:'New Visions Biology — Free Full Curriculum',
+    org:'New Visions for Public Schools',
+    desc:'Complete free Biology curriculum — all 6 units from Marathon Runner to Woolly Mammoth. Student and teacher materials included. Aligned with Living Environment Regents and ZenEd\'s grade tracking.',
+    tags:['free','stem'],
+    btn:'Access curriculum →',
+    url:'https://www.newvisions.org/curriculum/science/biology',
+    kw:'new visions biology curriculum units living environment regents marathon runner bacteria evolution'
+  },
+
+  // ── PORTRAIT OF A GRADUATE ──
+  {
+    cat:'graduate', featured:true,
+    icon:'🏅', iconBg:'#fef3c7',
+    name:'Portrait of a Graduate — NY\'s New Graduation',
+    org:'New York State Education Department',
+    desc:'NY State is replacing required Regents with real-world skills by 2029-30. New pathways launch 2027-28: portfolios, projects, internships, CTE credentials, presentations. Regents become optional.',
+    tags:['grad','new'],
+    btn:'NYSED.gov →',
+    url:'https://www.nysed.gov/next-generation-learning-standards',
+    kw:'portrait graduate nys regents optional 2029 2030 project portfolio graduation framework'
+  },
+  {
+    cat:'graduate',
+    icon:'🌱', iconBg:'#e6f7f2',
+    name:'Portrait — 6 Competencies Explained',
+    org:'NYC Schools + NYSED',
+    desc:'The new framework values: Biliteracy, Civic Readiness, Computational Thinking, Creativity, Critical Analysis, and Integrated Wellness. Schools are building portfolios and projects that will count now.',
+    tags:['grad'],
+    btn:'Official PDF →',
+    url:'https://www.nysed.gov/sites/default/files/programs/curriculum-instruction/portrait-of-a-graduate.pdf',
+    kw:'portrait competencies biliteracy civic computational creativity critical wellness portfolio project'
+  },
+  {
+    cat:'graduate',
+    icon:'⚙️', iconBg:'#fff7ed',
+    name:'NYC CTE Programs — 400+ Career Pathways',
+    org:'NYC Department of Education',
+    desc:'Free career and technical programs at NYC high schools. Industry certifications and real work experience in Tech, Health, Architecture, Business, Culinary, Law, Engineering. Counts toward new graduation.',
+    tags:['free'],
+    btn:'Explore CTE →',
+    url:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education',
+    kw:'cte career technical education vocational pathway health tech business arts culinary law'
+  },
+  {
+    cat:'cte',
+    icon:'⚙️', iconBg:'#fff7ed',
+    name:'NYC CTE Programs — 400+ Career Pathways',
+    org:'NYC Department of Education',
+    desc:'Free career and technical programs at NYC high schools. Industry certifications and real work experience in Tech, Health, Architecture, Business, Culinary, Law, Engineering. Counts toward new graduation.',
+    tags:['free'],
+    btn:'Explore CTE →',
+    url:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education',
+    kw:'cte career technical education vocational'
+  },
+  {
+    cat:'cte',
+    icon:'💻', iconBg:'#f0fdf4',
+    name:'P-TECH — Free Associate Degree + IBM Mentorship',
+    org:'NYC DOE + IBM + CUNY',
+    desc:'6-year program: high school diploma + free CUNY associate\'s degree in 6 years. IBM mentors included. No admissions test. Apply in 8th grade. Strongest tech CTE pathway in NYC.',
+    tags:['free','stem'],
+    btn:'ptech.org →',
+    url:'https://www.ptech.org',
+    kw:'ptech ibm associate degree cte stem tech free'
+  },
+];
+
+let activeTab = 'all';
+
+// ── RENDER CARDS ──
+function buildCard(r) {
+  const tagHTML = r.tags.map(t => {
+    const labels = {free:'Free',paid:'💰 Paid',stem:'STEM',hot:'⚡ Apply now',sat:'SAT',act:'ACT',grad:'2029-30',new:'New'};
+    return `<span class="tag ${t}">${labels[t]||t}</span>`;
+  }).join('');
+
+  return `<a href="${r.url}" target="_blank" class="rcard" data-cat="${r.cat}" data-kw="${r.kw}">
+    <div class="rcard-top">
+      <div class="rcard-icon" style="background:${r.iconBg}">${r.icon}</div>
+      <div class="rcard-meta">
+        <div class="rcard-name">${r.name}</div>
+        <div class="rcard-org">${r.org}</div>
+      </div>
+    </div>
+    <div class="rcard-desc">${r.desc}</div>
+    <div class="rcard-footer">
+      <div class="rcard-tags">${tagHTML}</div>
+      <span class="rcard-btn">${r.btn}</span>
+    </div>
+  </a>`;
+}
+
+function filterAll() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  let pool = activeTab === 'all' ? RESOURCES : RESOURCES.filter(r => r.cat === activeTab);
+  // Dedupe by url when showing all
+  if (activeTab === 'all') {
+    const seen = new Set();
+    pool = pool.filter(r => { if(seen.has(r.url)) return false; seen.add(r.url); return true; });
+  }
+  if (q) pool = pool.filter(r => (r.name+r.desc+r.org+r.kw).toLowerCase().includes(q));
+  
+  document.getElementById('resultCount').textContent = pool.length;
+  document.getElementById('cardGrid').innerHTML = pool.map(buildCard).join('');
+  document.getElementById('noResults').style.display = pool.length === 0 ? 'block' : 'none';
+  // Hide resume banner when filtering
+  document.getElementById('resumeBanner').style.display = (q || activeTab !== 'all') ? 'none' : 'flex';
+}
+
+function setTab(tab, el) {
+  activeTab = tab;
+  document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('searchInput').value = '';
+  filterAll();
+}
+
+// Init
+filterAll();
+
+// ══════════════════════════════════════
+// CHAT KB + UI
+// ══════════════════════════════════════
+const KB = [
+  {keys:['syep','summer youth','summer job','paid internship'],ans:`💼 <strong>SYEP — Summer Youth Employment</strong><br>• Age 14–24, NYC resident<br>• Pay: Up to $18.84/hr<br>• Apply in January at <a href="https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page" target="_blank">nyc.gov/dycd</a><br>• Work permit needed if under 18<br>💡 Apply day 1 — spots fill fast!`},
+  {keys:['cuny','excelsior','free college','tuition free'],ans:`🎓 <strong>CUNY Excelsior — Free Tuition</strong><br>• Family under $125K → may be free<br>• File FAFSA first, then <a href="https://www.hesc.ny.gov" target="_blank">hesc.ny.gov</a><br>• Must enroll full-time (12+ credits)<br>• Covers all 25 CUNY campuses<br>• Deadline: June 30`},
+  {keys:['fafsa','financial aid','pell grant','student aid'],ans:`💰 <strong>FAFSA — Free Federal Aid</strong><br>• Opens December 1 at <a href="https://studentaid.gov" target="_blank">studentaid.gov</a><br>• Pell Grant up to $7,395/yr — free money!<br>• Required for Excelsior + most college aid<br>• Free help: <a href="https://www.schools.nyc.gov/enrollment/high-school/college-access-centers" target="_blank">NYC College Access Centers</a>`},
+  {keys:['sat','act','standardized test','test prep','bluebook'],ans:`📝 <strong>SAT & ACT — Free Prep</strong><br>• <a href="https://www.khanacademy.org/sat" target="_blank">Khan Academy SAT</a> — Official, free, personalized<br>• <a href="https://bluebook.collegeboard.org" target="_blank">Bluebook App</a> — Full digital SAT tests, real format<br>• <a href="https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html" target="_blank">ACT.org</a> — Free official ACT practice<br>• NYC students: ask about free test fee waivers!<br>💡 Take both — many score better on ACT!`},
+  {keys:['labxchange','harvard science','annenberg','virtual lab','ngss','life science online'],ans:`🔬 <strong>LabXchange — Free Science Labs (Harvard)</strong><br>• <a href="https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12" target="_blank">Life Sciences 9-12</a> — virtual labs for Biology Regents<br>• <a href="https://www.labxchange.org/org/annenberglearner" target="_blank">Annenberg content</a> — video science lessons (learner.org is closing!)<br>• <a href="https://www.labxchange.org/teach" target="_blank">Teacher portal</a> — assign labs to students<br>💡 Free forever, Harvard-backed`},
+  {keys:['scholarship','free money','award','fastweb','bold'],ans:`🏆 <strong>Scholarships — Start Here</strong><br>• <a href="https://www.fastweb.com" target="_blank">Fastweb.com</a> — 1.5M+ personalized scholarships<br>• <a href="https://bold.org" target="_blank">Bold.org</a> — no-essay options<br>• <a href="https://www.raise.me" target="_blank">Raise.me</a> — earn micro-scholarships in 9th grade NOW<br>• Local: NYC College Access Centers<br>💡 Apply to many small ones — less competition!`},
+  {keys:['portrait of a graduate','portrait graduate','regents optional','2029','2030','new graduation','project based'],ans:`🏅 <strong>Portrait of a Graduate — New Graduation</strong><br>• 2027-28: New pathways alongside Regents<br>• 2029-30: Regents become optional<br>• New options: Portfolios · Projects · Internships · CTE<br>• 6 competencies: Biliteracy, Civic Readiness, Computational Thinking, Creativity, Critical Analysis, Wellness<br>✅ Internships + CTE you do NOW will count!<br>📄 <a href="https://www.nysed.gov/sites/default/files/programs/curriculum-instruction/portrait-of-a-graduate.pdf" target="_blank">Official PDF →</a>`},
+  {keys:['resume','cv','no experience','first job'],ans:`📄 <strong>Resume with No Experience</strong><br>• GPA (if 3.0+), honors, relevant courses<br>• Clubs, sports, volunteering — all counts<br>• Skills: languages, software, coding<br>• Projects: class or personal<br>• Babysitting/odd jobs: yes, include them<br>• 1 page max · <a href="resume.html" target="_blank">Copy our free template →</a>`},
+  {keys:['regents','regent','passing','improve my regents'],ans:`📚 <strong>Improve Your Regents Score</strong><br>• Passing: 65 — aim for 75+ to be safe<br>• Real past exams: <a href="https://www.nysedregents.org" target="_blank">nysedregents.org</a><br>• Practice: <a href="https://www.regentsprep.org" target="_blank">Regents Prep</a> + <a href="https://www.khanacademy.org" target="_blank">Khan Academy</a><br>• Track grades in <a href="app.html">ZenEd</a> → see exact weak topics<br>• Regents become optional by 2029-30`},
+  {keys:['cte','career technical','vocational','p-tech','ptech'],ans:`⚙️ <strong>CTE Programs</strong><br>• 400+ free programs: Tech, Health, Architecture, Business, Culinary, Law<br>• <a href="https://www.schools.nyc.gov/learning/programs/career-and-technical-education" target="_blank">Find CTE programs →</a><br>• P-TECH = free associate degree + IBM: <a href="https://www.ptech.org" target="_blank">ptech.org</a><br>• CTE credits count toward new 2027+ graduation pathways`},
+  {keys:['college','common app','apply college','counselor'],ans:`🎓 <strong>College Application Help</strong><br>• Free counseling: <a href="https://www.schools.nyc.gov/enrollment/high-school/college-access-centers" target="_blank">NYC College Access Centers</a><br>• 1,000+ colleges: <a href="https://www.commonapp.org" target="_blank">commonapp.org</a><br>• All CUNY: <a href="https://www.cuny.edu/apply" target="_blank">cuny.edu/apply</a><br>• Free credits NOW: CUNY College Now<br>• Apply 1 safety + 2 match + 1 reach!`},
+  {keys:['biology','living environment','new visions','dna','genetics','photosynthesis'],ans:`🧬 <strong>Biology / Living Environment</strong><br>ZenEd uses New Visions — 6 units:<br>• U1: Marathon Runner — Homeostasis<br>• U2: Humans vs. Bacteria — Natural Selection<br>• U3: Evolution of Sick Humans — DNA, Protein Synthesis<br>• U4: Saving the Mountain Lion — Meiosis<br>• U5: Food for All — Photosynthesis<br>• U6: Woolly Mammoth — Biodiversity<br>📖 <a href="https://www.newvisions.org/curriculum/science/biology" target="_blank">newvisions.org/biology</a>`},
+  {keys:['hello','hi','hey','help','what can you do'],ans:`👋 <strong>Hey! I'm ZenEd — ask me anything!</strong><br>• 💼 Internships (SYEP, snow.day, Hk Maker Lab)<br>• 📝 SAT/ACT free prep<br>• 🎓 CUNY free tuition + FAFSA<br>• 🏆 Scholarships<br>• 📚 Regents prep by subject<br>• 🔬 LabXchange science labs<br>• 📄 Resume writing<br>• 🏅 Portrait of a Graduate (2029)<br>• ⚙️ CTE programs<br>Just ask! 😊`},
+];
+
+function getBotResponse(msg){
+  const low=msg.toLowerCase();
+  for(const e of KB) if(e.keys.some(k=>low.includes(k))) return e.ans;
+  return `🤔 Good question! Try:<br>• <a href="https://snow.day" target="_blank">Snow.day</a> — 500+ free programs<br>• <a href="https://www.labxchange.org" target="_blank">LabXchange</a> — free science labs<br>• <a href="https://www.schools.nyc.gov/enrollment/high-school/college-access-centers" target="_blank">NYC College Access Centers</a><br><br>Or ask: SYEP, SAT, CUNY, scholarships, Regents, LabXchange, Portrait of a Graduate, resume, CTE!`;
+}
+
+let chatOpen=false;
+function toggleChat(){
+  chatOpen=!chatOpen;
+  document.getElementById('chatPanel').classList.toggle('open',chatOpen);
+  document.getElementById('fabIcon').textContent=chatOpen?'✕':'💬';
+  document.getElementById('chatBadge').style.display='none';
+  if(chatOpen) setTimeout(()=>document.getElementById('chatInput').focus(),300);
+}
+function addMsg(html,role){
+  const c=document.getElementById('chatMsgs');
+  const d=document.createElement('div');
+  d.className='msg '+role;
+  d.innerHTML=`<div class="msg-bubble">${html}</div>`;
+  c.appendChild(d);c.scrollTop=c.scrollHeight;
+  if(role==='user') document.getElementById('quickWrap').style.display='none';
+}
+function quickAsk(q){
+  if(!chatOpen) toggleChat();
+  setTimeout(()=>{document.getElementById('chatInput').value=q;sendMsg();},100);
+}
+function sendMsg(){
+  const inp=document.getElementById('chatInput');
+  const msg=inp.value.trim();if(!msg)return;
+  inp.value='';addMsg(msg,'user');
+  document.getElementById('sendBtn').disabled=true;
+  const c=document.getElementById('chatMsgs');
+  const t=document.createElement('div');
+  t.className='msg bot';t.id='typing';
+  t.innerHTML='<div class="msg-bubble" style="color:#aaa;font-style:italic">Typing...</div>';
+  c.appendChild(t);c.scrollTop=c.scrollHeight;
+  setTimeout(()=>{
+    document.getElementById('typing')?.remove();
+    addMsg(getBotResponse(msg),'bot');
+    document.getElementById('sendBtn').disabled=false;
+  },550);
+}
+function toggleFaq(btn){
+  const item = btn.closest('.faq-item');
+  const isOpen = item.classList.contains('open');
+  document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+  if(!isOpen) item.classList.add('open');
+}
+</script>
+</body>
+</html>
