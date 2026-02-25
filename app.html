@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--teal:#0ea87a;--teal-dark:#0b8f68;--teal-light:#e6f7f2;--black:#0d0d0d;--white:#fff;--cream:#f8fafc;--gray:#64748b;--gray-light:#f1f5f9;--border:#e2e8f0;--red:#ef4444;--yellow:#f59e0b;--green:#10b981;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:var(--black);min-height:100vh;-webkit-font-smoothing:antialiased;}
+#loader{position:fixed;inset:0;background:var(--black);display:flex;align-items:center;justify-content:center;z-index:9999;transition:opacity 0.4s;}
+#loader.hide{opacity:0;pointer-events:none;}
+.loader-inner{display:flex;align-items:center;gap:12px;color:white;font-size:24px;font-weight:800;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.loader-dot{width:8px;height:8px;background:var(--teal);border-radius:50%;animation:pulse 1s infinite;}
+#toast{position:fixed;bottom:80px;right:20px;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;transform:translateY(20px);opacity:0;transition:all 0.3s;pointer-events:none;max-width:300px;}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.success{background:#15803d;color:white;}
+#toast.error{background:var(--red);color:white;}
+#toast.info{background:var(--black);color:white;}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+/* AUTH */
+#authScreen{min-height:100vh;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0a0a,#0f1f3d);}
+.auth-card{background:white;border-radius:24px;padding:44px 40px;width:420px;max-width:95vw;box-shadow:0 24px 64px rgba(0,0,0,0.35);animation:slideUp 0.4s ease;}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.auth-logo-ico{width:42px;height:42px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(14,168,122,0.4);}
+.auth-logo-word{font-size:28px;font-weight:800;letter-spacing:-1px;}
+.auth-logo-word em{color:var(--teal);font-style:normal;}
+.auth-sub{font-size:13px;color:var(--gray);margin-bottom:28px;}
+.tab-row{display:flex;background:var(--gray-light);border-radius:10px;padding:3px;margin-bottom:24px;}
+.tab-btn{flex:1;padding:9px;border:none;background:none;border-radius:8px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);transition:all 0.2s;}
+.tab-btn.on{background:white;color:var(--black);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+.fgroup{margin-bottom:14px;}
+.flbl{display:block;font-size:13px;font-weight:600;margin-bottom:5px;}
+.finp{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--black);outline:none;transition:border-color 0.2s;background:white;}
+.finp:focus{border-color:var(--teal);}
+select.finp{cursor:pointer;}
+.role-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.role-btn{padding:12px 6px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:var(--gray);background:white;transition:all 0.2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.role-btn:hover,.role-btn.on{border-color:var(--teal);background:var(--teal-light);color:var(--teal);}
+.role-emoji{font-size:22px;display:block;margin-bottom:4px;}
+.btn-main{width:100%;padding:13px;border:none;border-radius:10px;background:var(--black);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.btn-main:hover{background:#1e1e1e;}
+.btn-main:disabled{opacity:0.5;cursor:not-allowed;}
+.auth-msg{padding:10px 13px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;}
+.auth-msg.err{background:#fff1f2;color:var(--red);border:1px solid #fecdd3;}
+.auth-msg.ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
+/* APP */
+#app{display:none;min-height:100vh;}
+.topbar{height:58px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;}
+.top-logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--black);}
+.top-logo-ico{width:30px;height:30px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.top-logo-word{font-weight:800;font-size:18px;letter-spacing:-0.4px;}
+.top-logo-word em{color:var(--teal);font-style:normal;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.rbadge{font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;text-transform:capitalize;}
+.rbadge.student{background:#eff6ff;color:#2563eb;}
+.rbadge.teacher{background:#f0fdf4;color:#15803d;}
+.rbadge.parent{background:#fdf4ff;color:#9333ea;}
+.top-name{font-size:13px;color:var(--gray);}
+.top-name b{color:var(--black);}
+.btn-out{padding:7px 14px;background:none;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;}
+.btn-out:hover{background:var(--gray-light);}
+.app-body{display:flex;min-height:calc(100vh - 58px);}
+.sidebar{width:220px;background:white;border-right:1px solid var(--border);padding:16px 10px;flex-shrink:0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;}
+.nav-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);padding:0 8px;margin-bottom:8px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray);transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;}
+.nav-item:hover{background:var(--gray-light);color:var(--black);}
+.nav-item.on{background:var(--teal-light);color:var(--teal);font-weight:700;}
+.nav-sep{border:none;border-top:1px solid var(--border);margin:12px 0;}
+.content{flex:1;padding:28px 32px;max-width:960px;}
+/* PAGE COMPONENTS */
+.page{animation:slideUp 0.2s ease;}
+.page-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--gray);margin-bottom:24px;line-height:1.6;}
+.card{background:white;border-radius:16px;padding:22px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-bottom:16px;}
+.card-head{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+.section{background:white;border-radius:16px;padding:22px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-bottom:16px;}
+.sec-head{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;}
+.r-circle{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px;font-weight:800;}
+.r-circle.green{background:rgba(16,185,129,.1);color:#059669;}
+.r-circle.yellow{background:rgba(245,158,11,.1);color:#d97706;}
+.r-circle.red{background:rgba(239,68,68,.1);color:#dc2626;}
+.r-circle.empty{background:var(--gray-light);color:var(--gray);font-size:28px;}
+.r-label{font-size:13px;font-weight:700;text-align:center;margin-bottom:2px;}
+.r-label.green{color:#059669}.r-label.yellow{color:#d97706}.r-label.red{color:#dc2626}
+.r-sub{font-size:11px;color:var(--gray);text-align:center;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-black{padding:11px 22px;background:var(--black);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-black:hover{background:#1e1e1e;}
+.btn-black:disabled{opacity:0.45;cursor:not-allowed;}
+.btn-teal{padding:11px 22px;background:var(--teal);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-teal:hover{background:var(--teal-dark);}
+.save-ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:8px;padding:9px 13px;font-size:13px;margin-top:10px;display:none;}
+.irow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.irow .finp{flex:1;min-width:140px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:9px 12px;background:var(--gray-light);font-weight:700;font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:11px 12px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-weight:700;font-size:11px;}
+.badge.g{background:rgba(16,185,129,.1);color:#059669;}
+.badge.y{background:rgba(245,158,11,.1);color:#d97706;}
+.badge.r{background:rgba(239,68,68,.1);color:#dc2626;}
+.rec{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.rec:last-child{border-bottom:none;}
+.rec-dot{width:9px;height:9px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.rec-dot.high{background:var(--red)}.rec-dot.mid{background:var(--yellow)}.rec-dot.low{background:var(--green)}
+.rec-topic{font-size:14px;font-weight:700;margin-bottom:2px;}
+.rec-detail{font-size:12px;color:var(--gray);margin-bottom:4px;}
+.rec-link{font-size:12px;color:var(--teal);text-decoration:none;font-weight:600;}
+.rec-link:hover{text-decoration:underline;}
+.class-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.class-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.class-meta{font-size:12px;color:var(--gray);}
+.code-pill{background:var(--black);color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1.5px;}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.titem{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;text-decoration:none;color:var(--black);transition:all 0.2s;}
+.titem:hover{border-color:var(--teal);background:var(--teal-light);transform:translateY(-1px);}
+.titem-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.titem-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.titem-desc{font-size:11px;color:var(--gray);}
+.ftag{margin-left:auto;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;flex-shrink:0;}
+.ftag.free{background:#e6f7f2;color:#0b8f68;}
+.ftag.paid{background:#fef3c7;color:#d97706;}
+.empty-box{text-align:center;padding:48px 20px;color:var(--gray);}
+.empty-box h3{font-size:17px;font-weight:700;color:var(--black);margin-bottom:8px;}
+.empty-box p{font-size:13px;line-height:1.6;}
+/* MOBILE BOTTOM NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);z-index:200;padding:6px 0 env(safe-area-inset-bottom,6px);}
+.mob-inner{display:flex;justify-content:space-around;}
+.mb-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border:none;background:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:600;color:var(--gray);border-radius:8px;transition:color 0.15s;min-width:52px;}
+.mb-btn.on{color:var(--teal);}
+.mb-ico{font-size:20px;line-height:1;}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .mob-nav{display:block;}
+  .content{padding:16px 16px 80px;}
+  .g3,.g2{grid-template-columns:1fr;}
+  .frow{grid-template-columns:1fr;}
+  .tgrid{grid-template-columns:1fr;}
+  .top-name{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-inner">
+    <div style="width:36px;height:36px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:10px;display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </div>
+    ZenEd <div class="loader-dot"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- AUTH -->
+<div id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-ico"><svg viewBox="0 0 24 24" fill="none" width="22" height="22"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <span class="auth-logo-word">Zen<em>Ed</em></span>
+    </div>
+    <p class="auth-sub">Know where you stand. Know what to study.</p>
+    <div class="tab-row">
+      <button class="tab-btn on" id="tabLogin" onclick="authTab('login')">Sign In</button>
+      <button class="tab-btn" id="tabSignup" onclick="authTab('signup')">Create Account</button>
+    </div>
+    <div id="authMsg" class="auth-msg"></div>
+    <div id="loginForm">
+      <div class="fgroup"><label class="flbl">Email</label><input class="finp" type="email" id="liEmail" placeholder="your@email.com" onkeypress="if(event.key==='Enter')doLogin()"></div>
+      <div class="fgroup"><label class="flbl">Password</label><input class="finp" type="password" id="liPass" placeholder="••••••••" onkeypress="if(event.key==='Enter')doLogin()"></div>
+      <button class="btn-main" id="liBtn" onclick="doLogin()">Sign In →</button>
+    </div>
+    <div id="signupForm" style="display:none">
+      <div class="fgroup"><label class="flbl">Full Name</label><input class="finp" type="text" id="suName" placeholder="Jane Smith"></div>
+      <div class="fgroup"><label class="flbl">Email</label><input class="finp" type="email" id="suEmail" placeholder="your@email.com"></div>
+      <div class="fgroup"><label class="flbl">Password</label><input class="finp" type="password" id="suPass" placeholder="Min 6 characters"></div>
+      <div class="fgroup"><label class="flbl">I am a...</label>
+        <div class="role-row">
+          <button class="role-btn" id="r-student" onclick="pickRole('student')"><span class="role-emoji">🎒</span>Student</button>
+          <button class="role-btn" id="r-teacher" onclick="pickRole('teacher')"><span class="role-emoji">📚</span>Teacher</button>
+          <button class="role-btn" id="r-parent" onclick="pickRole('parent')"><span class="role-emoji">👨‍👩‍👧</span>Parent</button>
+        </div>
+      </div>
+      <div class="fgroup" id="gradeRow" style="display:none"><label class="flbl">Grade Level</label>
+        <select class="finp" id="suGrade">
+          <option value="">Select grade...</option>
+          <option value="8">8th Grade</option><option value="9">9th Grade</option>
+          <option value="10">10th Grade</option><option value="11">11th Grade</option><option value="12">12th Grade</option>
+        </select>
+      </div>
+      <button class="btn-main" id="suBtn" onclick="doSignup()">Create Account →</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="top-logo">
+      <div class="top-logo-ico"><svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <span class="top-logo-word">Zen<em>Ed</em></span>
+    </a>
+    <div class="topbar-right">
+      <span class="rbadge student" id="topRole">student</span>
+      <span class="top-name">Welcome, <b id="topName">User</b></span>
+      <button class="btn-out" onclick="doLogout()">Log out</button>
+    </div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content"></div>
+  </div>
+  <div class="mob-nav" id="mobNav" style="display:none">
+    <div class="mob-inner" id="mobNavInner"></div>
+  </div>
+</div>
+
+<script>
+const db = supabase.createClient(
+  'https://spkqmhrogykcbrvujgub.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3FtaHJvZ3lrY2JydnVqZ3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTU0OTEsImV4cCI6MjA4NzM3MTQ5MX0.00fS4NTvcC4f-mD8gRSqD1huWIdHo8Xe6UMZn8UJeb0'
+);
+let USER=null, PROFILE=null, ROLE='';
+
+const SUBJ={
+  algebra:   {name:'Algebra 1',       topics:['Linear Equations','Inequalities','Systems of Equations','Quadratic Equations','Polynomials','Functions','Statistics','Exponential Functions','Geometry Basics','Word Problems']},
+  ela:       {name:'English ELA',     topics:['Reading Comprehension','Literary Analysis','Argument Essay','Evidence & Reasoning','Grammar & Usage','Vocabulary in Context','Informational Text','Narrative Writing','Revising & Editing','Research Skills']},
+  biology:   {name:'Biology / Living Environment', units:[
+    {name:'Unit 1: Marathon Runner',         topics:['Cell Organization','Homeostasis','Cellular Respiration','Energy Transfer','Organ Systems']},
+    {name:'Unit 2: Humans vs. Bacteria',     topics:['Natural Selection','Evolution','Antibiotic Resistance','Microbiome','Disease Transmission']},
+    {name:'Unit 3: Evolution of Sick Humans',topics:['DNA Structure','Protein Synthesis','Genetic Traits','Mutations','Common Ancestry']},
+    {name:'Unit 4: Saving the Mountain Lion',topics:['Genetic Variation','Meiosis','Mitosis','Human Reproduction','Population Genetics']},
+    {name:'Unit 5: Food for All',            topics:['Photosynthesis','Ecosystem Carrying Capacity','Carbon Cycle','Macromolecules','Food Webs']},
+    {name:'Unit 6: Woolly Mammoth',          topics:['Biodiversity','Human Impact','Ecosystem Stability','Population Dynamics','Conservation']}
+  ]},
+  us_history:{name:'US History',      topics:['Colonial Era','Constitution & Founding','Civil War','Progressive Era','WWI','Great Depression','WWII','Cold War','Civil Rights Movement','Vietnam Era','Modern America','DBQ Skills']},
+  shsat:     {name:'SHSAT Prep',      topics:['Scrambled Paragraphs','Logical Reasoning','Reading Comprehension','Revising & Editing','Algebra','Geometry','Word Problems','Number Theory','Statistics','Probability']}
+};
+const LINKS={algebra:'https://www.khanacademy.org/math/algebra',ela:'https://www.regentsprep.org/ela/',biology:'https://www.newvisions.org/curriculum/science/biology',us_history:'https://www.khanacademy.org/humanities/us-history',shsat:'https://www.khanacademy.org/math'};
+
+function toast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>t.className='',3000);}
+function H(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function set(html){document.getElementById('content').innerHTML=html;}
+function showMsg(msg,type='err'){const e=document.getElementById('authMsg');e.textContent=msg;e.className='auth-msg '+type;e.style.display='block';}
+function clearMsg(){const e=document.getElementById('authMsg');if(e)e.style.display='none';}
+
+function authTab(t){
+  clearMsg();
+  document.getElementById('loginForm').style.display=t==='login'?'block':'none';
+  document.getElementById('signupForm').style.display=t==='signup'?'block':'none';
+  document.getElementById('tabLogin').classList.toggle('on',t==='login');
+  document.getElementById('tabSignup').classList.toggle('on',t==='signup');
+}
+function pickRole(r){
+  ROLE=r;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('r-'+r).classList.add('on');
+  document.getElementById('gradeRow').style.display=r==='student'?'block':'none';
+}
+
+async function doLogin(){
+  const email=document.getElementById('liEmail').value.trim();
+  const pass=document.getElementById('liPass').value;
+  if(!email||!pass)return showMsg('Please enter your email and password.');
+  const btn=document.getElementById('liBtn');
+  btn.disabled=true;btn.textContent='Signing in...';
+  const{data,error}=await db.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false;btn.textContent='Sign In →';
+  if(error)return showMsg(error.message);
+  await loadAndEnter(data.user);
+}
+
+async function doSignup(){
+  const name=document.getElementById('suName').value.trim();
+  const email=document.getElementById('suEmail').value.trim();
+  const pass=document.getElementById('suPass').value;
+  const grade=document.getElementById('suGrade').value;
+  if(!name||!email||!pass)return showMsg('Please fill in all fields.');
+  if(pass.length<6)return showMsg('Password must be at least 6 characters.');
+  if(!ROLE)return showMsg('Please select your role.');
+  const btn=document.getElementById('suBtn');
+  btn.disabled=true;btn.textContent='Creating account...';
+  const{data,error}=await db.auth.signUp({email,password:pass});
+  if(error){btn.disabled=false;btn.textContent='Create Account →';return showMsg(error.message);}
+  if(data.user){
+    await db.from('profiles').insert({id:data.user.id,email,full_name:name,first_name:name.split(' ')[0],role:ROLE,grade_level:grade||null,parent_code:ROLE==='student'?Math.random().toString(36).substring(2,8).toUpperCase():null});
+    const{data:ld}=await db.auth.signInWithPassword({email,password:pass});
+    btn.disabled=false;btn.textContent='Create Account →';
+    if(ld?.user){
+      USER=ld.user;
+      let{data:p}=await db.from('profiles').select('*').eq('id',ld.user.id).single();
+      PROFILE=p||{id:ld.user.id,email,full_name:name,first_name:name.split(' ')[0],role:ROLE,grade_level:grade||null};
+      enterApp();
+    } else{showMsg('Account created! Please sign in.','ok');authTab('login');}
+  }
+}
+
+async function loadAndEnter(user){
+  USER=user;
+  const{data:p}=await db.from('profiles').select('*').eq('id',user.id).single();
+  PROFILE=p||{id:user.id,email:user.email,full_name:'User',first_name:'User',role:'student'};
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('topName').textContent=PROFILE.first_name||'User';
+  const rb=document.getElementById('topRole');
+  rb.textContent=PROFILE.role||'student';
+  rb.className='rbadge '+(PROFILE.role||'student');
+  buildNav();
+  clearMsg();
+  // If coming from Quick Check, show a welcome message
+  const fromQC = new URLSearchParams(window.location.search).get('from') === 'quickcheck';
+  if(fromQC) toast('Welcome! Start entering grades to track your progress 🎯', 'success');
+}
+
+async function doLogout(){
+  await db.auth.signOut();
+  USER=null;PROFILE=null;ROLE='';
+  document.getElementById('app').style.display='none';
+  document.getElementById('mobNav').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+}
+
+const NAVS={
+  student:[
+    {id:'grades',    icon:'📝',label:'Enter Grades'},
+    {id:'readiness', icon:'📊',label:'My Readiness'},
+    {id:'studyplan', icon:'🎯',label:'Study Plan'},
+    {id:'history',   icon:'📋',label:'Grade History'},
+    {id:'myclass',   icon:'🏫',label:'My Classroom'},
+    {id:'tutors',    icon:'📚',label:'Tutors & Resources'},
+    {id:'resources', icon:'🗂', label:'NYC Resources'},
+  ],
+  teacher:[
+    {id:'overview',  icon:'📊',label:'Overview'},
+    {id:'classrooms',icon:'🏫',label:'My Classrooms'},
+    {id:'students',  icon:'👥',label:'Student Progress'},
+    {id:'resources', icon:'🗂', label:'NYC Resources'},
+  ],
+  parent:[
+    {id:'children',  icon:'👨‍👩‍👧',label:'My Children'},
+    {id:'resources', icon:'🗂', label:'NYC Resources'},
+  ]
+};
+
+function buildNav(){
+  const items=NAVS[PROFILE.role]||NAVS.student;
+  document.getElementById('sidebar').innerHTML=
+    `<div class="nav-lbl">Menu</div>`+
+    items.map(n=>`<button class="nav-item" id="n-${n.id}" onclick="showTab('${n.id}')">${n.icon} ${n.label}</button>`).join('')+
+    `<hr class="nav-sep"><a href="resources.html" target="_blank" style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--teal);font-weight:600;text-decoration:none;padding:8px 11px;border-radius:8px;transition:background 0.15s" onmouseover="this.style.background='var(--teal-light)'" onmouseout="this.style.background=''">↗ Full Resource Hub</a>`;
+  const mob=document.getElementById('mobNavInner');
+  mob.innerHTML=items.slice(0,5).map(n=>`<button class="mb-btn" id="mn-${n.id}" onclick="showTab('${n.id}')"><span class="mb-ico">${n.icon}</span>${n.label.split(' ')[0]}</button>`).join('');
+  document.getElementById('mobNav').style.display='block';
+  showTab(items[0].id);
+}
+
+function showTab(id){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
+  document.querySelectorAll('.mb-btn').forEach(n=>n.classList.remove('on'));
+  const el=document.getElementById('n-'+id);if(el)el.classList.add('on');
+  const mel=document.getElementById('mn-'+id);if(mel)mel.classList.add('on');
+  ({grades:pgGrades,readiness:pgReadiness,studyplan:pgStudyPlan,history:pgHistory,myclass:pgMyClass,tutors:pgTutors,overview:pgOverview,classrooms:pgClassrooms,students:pgStudents,children:pgChildren,resources:pgResources}[id]||pgGrades)();
+}
+
+/* ═══════ STUDENT PAGES ═══════ */
+
+function pgGrades(){
+  set(`<div class="page">
+    <div class="page-title">📝 Enter Grades</div>
+    <div class="page-sub">Log your grades to track your Regents readiness</div>
+    <div class="card" style="max-width:520px">
+      <div class="fgroup"><label class="flbl">Subject</label>
+        <select class="finp" id="sSubj" onchange="fillTopics()">
+          <option value="">Select subject...</option>
+          <option value="algebra">Algebra 1 (Regents)</option>
+          <option value="ela">English ELA (Regents)</option>
+          <option value="biology">Biology / Living Environment (Regents)</option>
+          <option value="us_history">US History (Regents)</option>
+          <option value="shsat">SHSAT Prep</option>
+        </select>
+      </div>
+      <div class="fgroup"><label class="flbl">Topic</label><select class="finp" id="sTopic"><option value="">Select subject first...</option></select></div>
+      <div class="frow">
+        <div class="fgroup"><label class="flbl">Grade (%)</label><input type="number" class="finp" id="sGrade" placeholder="85" min="0" max="100"></div>
+        <div class="fgroup"><label class="flbl">Assignment Type</label>
+          <select class="finp" id="sType"><option value="quiz">Quiz</option><option value="test">Test</option><option value="classwork">Classwork</option><option value="homework">Homework</option></select>
+        </div>
+      </div>
+      <button class="btn-black" id="saveBtn" onclick="saveGrade()">Save Grade ✓</button>
+      <div class="save-ok" id="gradeOk">✓ Saved! Go to My Readiness to see your score update.</div>
+    </div>
+  </div>`);
+}
+
+function fillTopics(){
+  const s=document.getElementById('sSubj').value,sel=document.getElementById('sTopic');
+  sel.innerHTML='<option value="">Select topic...</option>';
+  if(!s||!SUBJ[s])return;
+  const subj=SUBJ[s];
+  if(subj.units){subj.units.forEach(u=>{const g=document.createElement('optgroup');g.label=u.name;u.topics.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;g.appendChild(o);});sel.appendChild(g);});}
+  else{subj.topics.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});}
+}
+
+async function saveGrade(){
+  const subj=document.getElementById('sSubj').value,topic=document.getElementById('sTopic').value,grade=parseInt(document.getElementById('sGrade').value),type=document.getElementById('sType').value;
+  if(!subj)return toast('Please select a subject','error');
+  if(!topic)return toast('Please select a topic','error');
+  if(isNaN(grade)||grade<0||grade>100)return toast('Enter a grade 0–100','error');
+  const btn=document.getElementById('saveBtn');btn.disabled=true;btn.textContent='Saving...';
+  const{error}=await db.from('grade_entries').insert({student_id:USER.id,subject:subj,topic,grade,assignment_type:type,exam_type:subj==='shsat'?'SHSAT':'Regents'});
+  btn.disabled=false;btn.textContent='Save Grade ✓';
+  if(error)return toast('Error: '+error.message,'error');
+  document.getElementById('sSubj').value='';
+  document.getElementById('sTopic').innerHTML='<option value="">Select subject first...</option>';
+  document.getElementById('sGrade').value='';
+  const ok=document.getElementById('gradeOk');ok.style.display='block';setTimeout(()=>ok.style.display='none',5000);
+  await calcReadiness(subj);
+  toast('Grade saved! ✓','success');
+}
+
+async function calcReadiness(subj){
+  const{data}=await db.from('grade_entries').select('grade').eq('student_id',USER.id).eq('subject',subj);
+  if(!data?.length)return;
+  const avg=data.reduce((s,g)=>s+g.grade,0)/data.length;
+  const color=avg>75?'green':avg>=55?'yellow':'red';
+  await db.from('readiness_scores').upsert({student_id:USER.id,subject:subj,readiness_percentage:Math.round(avg),predicted_score:Math.round(avg),color_status:color,last_updated:new Date().toISOString()},{onConflict:'student_id,subject'});
+}
+
+async function pgReadiness(){
+  set(`<div class="page"><div class="page-title">📊 My Readiness Score</div><div class="page-sub">Your predicted Regents score based on grades you've entered</div><div id="rCont"><div class="empty-box"><p>Loading...</p></div></div></div>`);
+  const{data:scores}=await db.from('readiness_scores').select('*').eq('student_id',USER.id);
+  const el=document.getElementById('rCont');if(!el)return;
+  if(!scores?.length){el.innerHTML=`<div class="card"><div class="empty-box"><h3>No scores yet</h3><p>Go to <strong>Enter Grades</strong> to log some grades first!</p></div></div>`;return;}
+  el.innerHTML=`<div class="g3">${scores.map(s=>{
+    const lbl=s.color_status==='green'?'🟢 On Track':s.color_status==='yellow'?'🟡 Needs Work':'🔴 At Risk';
+    return`<div class="card" style="text-align:center"><div style="font-size:13px;font-weight:700;margin-bottom:14px">${SUBJ[s.subject]?.name||s.subject}</div><div class="r-circle ${s.color_status}">${s.readiness_percentage}%</div><div class="r-label ${s.color_status}">${lbl}</div><div class="r-sub" style="margin-top:6px">Predicted: ${s.predicted_score}/100 · Pass = 65</div></div>`;
+  }).join('')}</div><div class="card"><div class="card-head">📖 How this works</div><p style="font-size:13px;color:var(--gray);line-height:1.8">Your score = average of all grades entered per subject. <b style="color:#059669">🟢 On Track</b> = above 75% &nbsp;·&nbsp; <b style="color:#d97706">🟡 Needs Work</b> = 55–75% &nbsp;·&nbsp; <b style="color:#dc2626">🔴 At Risk</b> = below 55%. Enter more grades for a more accurate score.</p></div>`;
+}
+
+async function pgStudyPlan(){
+  set(`<div class="page"><div class="page-title">🎯 My Study Plan</div><div class="page-sub">Your weakest topics — focus here first</div><div id="spCont"><div class="empty-box"><p>Loading...</p></div></div></div>`);
+  const{data:grades}=await db.from('grade_entries').select('*').eq('student_id',USER.id);
+  const el=document.getElementById('spCont');if(!el)return;
+  if(!grades?.length){el.innerHTML=`<div class="section"><div class="empty-box"><h3>No grades yet</h3><p>Enter some grades first, then your personalized study plan will appear here.</p></div></div>`;return;}
+  const byS={};grades.forEach(g=>{if(!byS[g.subject])byS[g.subject]=[];byS[g.subject].push(g);});
+  let html='';
+  Object.entries(byS).forEach(([s,gs])=>{
+    const ta={};gs.forEach(g=>{if(!ta[g.topic])ta[g.topic]={sum:0,n:0};ta[g.topic].sum+=g.grade;ta[g.topic].n++;});
+    const sorted=Object.entries(ta).map(([t,d])=>({t,avg:d.sum/d.n})).sort((a,b)=>a.avg-b.avg).slice(0,6);
+    const link=LINKS[s]||'https://www.khanacademy.org';
+    html+=`<div class="section"><div class="sec-head">${SUBJ[s]?.name||s} <span style="font-size:12px;font-weight:400;color:var(--gray)">${gs.length} grades</span></div>${sorted.map(({t,avg})=>{
+      const p=avg<55?'high':avg<75?'mid':'low';
+      const lbl=avg<55?'🔴 Focus here first':avg<75?'🟡 Needs practice':'🟢 Looking good';
+      return`<div class="rec"><div class="rec-dot ${p}"></div><div style="flex:1"><div class="rec-topic">${H(t)}</div><div class="rec-detail">${lbl} · Avg: ${Math.round(avg)}%</div><a href="${link}" target="_blank" class="rec-link">Study this topic →</a></div></div>`;
+    }).join('')}</div>`;
+  });
+  el.innerHTML=html;
+}
+
+async function pgHistory(){
+  set(`<div class="page"><div class="page-title">📋 Grade History</div><div class="page-sub">All your entered grades</div><div id="hCont"><div class="empty-box"><p>Loading...</p></div></div></div>`);
+  const{data:grades}=await db.from('grade_entries').select('*').eq('student_id',USER.id).order('entry_date',{ascending:false});
+  const el=document.getElementById('hCont');if(!el)return;
+  if(!grades?.length){el.innerHTML=`<div class="section"><div class="empty-box"><h3>No grades yet</h3><p>Go to <strong>Enter Grades</strong> to get started!</p></div></div>`;return;}
+  el.innerHTML=`<div class="section"><div class="sec-head">All Grades <span style="font-size:13px;font-weight:400;color:var(--gray)">${grades.length} entries</span></div>
+    <table><thead><tr><th>Subject</th><th>Topic</th><th>Type</th><th>Grade</th><th>Date</th></tr></thead>
+    <tbody>${grades.map(g=>{const c=g.grade>=75?'g':g.grade>=55?'y':'r';const d=g.entry_date?new Date(g.entry_date).toLocaleDateString():'—';return`<tr><td>${SUBJ[g.subject]?.name||g.subject}</td><td>${H(g.topic)}</td><td style="text-transform:capitalize">${g.assignment_type||'—'}</td><td><span class="badge ${c}">${g.grade}%</span></td><td>${d}</td></tr>`;}).join('')}</tbody>
+    </table></div>`;
+}
+
+async function pgMyClass(){
+  set(`<div class="page"><div class="page-title">🏫 My Classroom</div><div class="page-sub">Join your teacher's class to share your readiness progress</div>
+    <div class="section"><div class="sec-head">Join a Class</div>
+      <div class="irow"><input class="finp" id="jCode" placeholder="Class code e.g. MATH101" style="max-width:220px;text-transform:uppercase"><button class="btn-black" onclick="joinClass()">Join →</button></div>
+      <p style="font-size:12px;color:var(--gray)">Ask your teacher for the class code.</p>
+    </div>
+    <div class="section"><div class="sec-head">My Classes</div><div id="myCList"><div class="empty-box"><p>Loading...</p></div></div></div>
+  </div>`);
+  const{data:cls}=await db.from('classroom_students').select('*, classrooms(*)').eq('student_id',USER.id);
+  const el=document.getElementById('myCList');if(!el)return;
+  if(!cls?.length){el.innerHTML=`<div class="empty-box"><h3>No classes yet</h3><p>Enter a class code above.</p></div>`;return;}
+  el.innerHTML=cls.map(c=>`<div class="class-card"><div><div class="class-name">${H(c.classrooms?.class_name||'Class')}</div><div class="class-meta">${c.classrooms?.subject||''}</div></div><span class="code-pill">${c.classrooms?.class_code||''}</span></div>`).join('');
+}
+
+async function joinClass(){
+  const code=(document.getElementById('jCode').value||'').trim().toUpperCase();
+  if(!code)return toast('Enter a class code','error');
+  const{data:room}=await db.from('classrooms').select('*').eq('class_code',code).single();
+  if(!room)return toast('Class code not found','error');
+  const{error}=await db.from('classroom_students').insert({classroom_id:room.id,student_id:USER.id});
+  if(error)return toast('Already in this class','info');
+  toast('Joined '+room.class_name+'! ✓','success');pgMyClass();
+}
+
+function pgTutors(){
+  set(`<div class="page">
+    <div class="page-title">📚 Tutors & Study Resources</div>
+    <div class="page-sub">Free tools and tutoring for every Regents subject — no login needed</div>
+
+    <div class="section">
+      <div class="sec-head">🆓 Free Study Tools</div>
+      <div class="tgrid">
+        <a href="https://www.khanacademy.org" target="_blank" class="titem"><div class="titem-ico" style="background:#f0fdf4">🟢</div><div><div class="titem-name">Khan Academy</div><div class="titem-desc">Videos + practice for every subject</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.regentsprep.org" target="_blank" class="titem"><div class="titem-ico" style="background:#eff6ff">📝</div><div><div class="titem-name">Regents Prep</div><div class="titem-desc">NY-specific practice and review</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.nysedregents.org" target="_blank" class="titem"><div class="titem-ico" style="background:#fdf4ff">📋</div><div><div class="titem-name">NYSED Past Exams</div><div class="titem-desc">Download real past Regents exams</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.newvisions.org/curriculum/science/biology" target="_blank" class="titem"><div class="titem-ico" style="background:#f0fdf4">🧬</div><div><div class="titem-name">New Visions Biology</div><div class="titem-desc">Full Living Environment curriculum</div></div><span class="ftag free">Free</span></a>
+        <a href="https://albert.io" target="_blank" class="titem"><div class="titem-ico" style="background:#fff7ed">🎯</div><div><div class="titem-name">Albert.io</div><div class="titem-desc">Adaptive Regents practice questions</div></div><span class="ftag free">Free tier</span></a>
+        <a href="https://quizlet.com" target="_blank" class="titem"><div class="titem-ico" style="background:#eff6ff">🃏</div><div><div class="titem-name">Quizlet</div><div class="titem-desc">Flashcards for vocab and definitions</div></div><span class="ftag free">Free</span></a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">🏫 Free In-Person Tutoring in NYC</div>
+      <div class="tgrid">
+        <a href="https://www.nypl.org/node/69211" target="_blank" class="titem"><div class="titem-ico" style="background:#fef3c7">📚</div><div><div class="titem-name">NYC Public Library</div><div class="titem-desc">Free tutoring at branch locations</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.bklynlibrary.org/literacy" target="_blank" class="titem"><div class="titem-ico" style="background:#fef3c7">🏛️</div><div><div class="titem-name">Brooklyn Public Library</div><div class="titem-desc">Free homework help programs</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.schools.nyc.gov/learning/student-support/academic-support/after-school-programs" target="_blank" class="titem"><div class="titem-ico" style="background:#f0fdf4">🏫</div><div><div class="titem-name">NYC After-School Programs</div><div class="titem-desc">Free academic support via NYC DOE</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.wyzant.com" target="_blank" class="titem"><div class="titem-ico" style="background:#f0f9ff">👨‍🏫</div><div><div class="titem-name">Wyzant</div><div class="titem-desc">Find verified private tutors near you</div></div><span class="ftag paid">Paid</span></a>
+      </div>
+    </div>
+
+    <a href="resources.html" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:#0f1f3d;border-radius:16px;padding:24px 28px;color:white;text-decoration:none;transition:all 0.2s;gap:16px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div><div style="font-size:17px;font-weight:800;margin-bottom:5px">🗂 Full NYC Student Resource Hub</div><div style="font-size:13px;color:#94a3b8">Internships, scholarships, CTE, college prep — 18+ programs</div></div>
+      <span style="background:var(--teal);color:white;padding:10px 18px;border-radius:9px;font-weight:700;font-size:14px;white-space:nowrap">Explore →</span>
+    </a>
+  </div>`);
+}
+
+function pgResources(){
+  set(`<div class="page">
+    <div class="page-title">🗂 NYC Student Resources</div>
+    <div class="page-sub">Key opportunities for NYC public high school students</div>
+    <a href="resources.html" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:#0f1f3d;border-radius:16px;padding:24px 28px;color:white;text-decoration:none;margin-bottom:20px;transition:all 0.2s;gap:16px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div><div style="font-size:18px;font-weight:800;margin-bottom:5px">Open Full Resource Hub →</div><div style="font-size:13px;color:#94a3b8">18+ programs · searchable · filterable</div></div>
+      <span style="font-size:32px">🚀</span>
+    </a>
+    <div class="g2">
+      <div class="card"><div class="card-head">💼 Summer Jobs & Internships</div><div style="font-size:13px;line-height:2.3">
+        <a href="https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page" target="_blank" style="color:var(--teal);font-weight:600;display:block">💼 SYEP — Paid jobs, ages 14-24</a>
+        <a href="https://snow.day" target="_blank" style="color:var(--teal);font-weight:600;display:block">❄️ Snow.day — 500+ free programs</a>
+        <a href="https://hkmakerlab.columbia.edu" target="_blank" style="color:var(--teal);font-weight:600;display:block">🔧 Hk Maker Lab — Columbia (free)</a>
+        <a href="https://www.nyas.org/programs/global-stem-alliance/junior-academy/" target="_blank" style="color:var(--teal);font-weight:600;display:block">🔬 NYAS Junior Academy — STEM</a>
+      </div></div>
+      <div class="card"><div class="card-head">🎓 College & Scholarships</div><div style="font-size:13px;line-height:2.3">
+        <a href="https://www.hesc.ny.gov" target="_blank" style="color:var(--teal);font-weight:600;display:block">🎓 CUNY Excelsior — Free under $125K</a>
+        <a href="https://studentaid.gov" target="_blank" style="color:var(--teal);font-weight:600;display:block">📋 FAFSA — Opens December 1</a>
+        <a href="https://www.fastweb.com" target="_blank" style="color:var(--teal);font-weight:600;display:block">🏆 Fastweb — 1.5M+ scholarships</a>
+        <a href="https://www.schools.nyc.gov/enrollment/high-school/college-access-centers" target="_blank" style="color:var(--teal);font-weight:600;display:block">🏫 NYC College Access Centers</a>
+      </div></div>
+    </div>
+    <div class="card" style="background:#fffbeb;border-color:#fde68a">
+      <div class="card-head">🎓 NYC Graduation Is Changing</div>
+      <div style="font-size:13px;color:#374151;line-height:1.9"><strong>2027–28:</strong> New project-based pathways offered &nbsp;·&nbsp; <strong>2029–30:</strong> Regents become optional<br>Internships and CTE you do NOW will count toward the new graduation requirements!</div>
+    </div>
+  </div>`);
+}
+
+/* ═══════ TEACHER PAGES ═══════ */
+
+async function pgOverview(){
+  set(`<div class="page"><div class="page-title">📊 Teacher Overview</div><div class="page-sub">Your classrooms at a glance</div><div id="ovCont"><div class="empty-box"><p>Loading...</p></div></div></div>`);
+  const{data:rooms}=await db.from('classrooms').select('*, classroom_students(student_id)').eq('teacher_id',USER.id);
+  const el=document.getElementById('ovCont');if(!el)return;
+  if(!rooms?.length){el.innerHTML=`<div class="card"><div class="empty-box"><h3>No classrooms yet</h3><p>Go to <strong>My Classrooms</strong> to create your first class.</p></div></div>`;return;}
+  el.innerHTML=`<div class="g3">${rooms.map(r=>`<div class="card" style="text-align:center"><div class="r-circle empty">🏫</div><div style="font-size:15px;font-weight:700;margin-bottom:4px">${H(r.class_name)}</div><div style="font-size:13px;color:var(--gray);margin-bottom:8px">${r.subject||''}</div><div style="font-size:24px;font-weight:800">${r.classroom_students?.length||0}</div><div style="font-size:12px;color:var(--gray)">students</div><div style="margin-top:10px"><span class="code-pill">${r.class_code}</span></div></div>`).join('')}</div>`;
+}
+
+async function pgClassrooms(){
+  set(`<div class="page"><div class="page-title">🏫 My Classrooms</div><div class="page-sub">Create classes and share the code with your students</div>
+    <div class="section"><div class="sec-head">Create New Class</div>
+      <div class="irow">
+        <input class="finp" id="cName" placeholder="Class name e.g. Period 3 Algebra" style="max-width:260px">
+        <select class="finp" id="cSubj" style="max-width:200px">
+          <option value="">Select subject...</option>
+          <option value="algebra">Algebra 1</option><option value="ela">English ELA</option>
+          <option value="biology">Biology / Living Environment</option><option value="us_history">US History</option><option value="shsat">SHSAT Prep</option>
+        </select>
+        <button class="btn-teal" onclick="createRoom()">+ Create Class</button>
+      </div>
+    </div>
+    <div id="roomList"><div class="empty-box"><p>Loading...</p></div></div>
+  </div>`);
+  loadRooms();
+}
+
+async function loadRooms(){
+  const{data:rooms}=await db.from('classrooms').select('*, classroom_students(student_id)').eq('teacher_id',USER.id);
+  const el=document.getElementById('roomList');if(!el)return;
+  if(!rooms?.length){el.innerHTML=`<div class="section"><div class="empty-box"><h3>No classes yet</h3><p>Create a class above and share the code with students.</p></div></div>`;return;}
+  el.innerHTML=`<div class="section"><div class="sec-head">Your Classes</div>${rooms.map(r=>`<div class="class-card"><div><div class="class-name">${H(r.class_name)}</div><div class="class-meta">${r.subject||''} · ${r.classroom_students?.length||0} students</div></div><span class="code-pill">${r.class_code}</span></div>`).join('')}</div>`;
+}
+
+async function createRoom(){
+  const name=(document.getElementById('cName').value||'').trim();
+  const subj=document.getElementById('cSubj').value;
+  if(!name)return toast('Enter a class name','error');
+  const code=name.replace(/\s+/g,'').substring(0,6).toUpperCase()+Math.floor(Math.random()*100);
+  const{error}=await db.from('classrooms').insert({teacher_id:USER.id,class_name:name,subject:subj,class_code:code});
+  if(error)return toast('Error: '+error.message,'error');
+  document.getElementById('cName').value='';
+  toast('Class created! Code: '+code,'success');
+  loadRooms();
+}
+
+async function pgStudents(){
+  set(`<div class="page"><div class="page-title">👥 Student Progress</div><div class="page-sub">Readiness scores across all your classrooms</div><div id="stCont"><div class="empty-box"><p>Loading...</p></div></div></div>`);
+  const{data:rooms}=await db.from('classrooms').select('id,class_name').eq('teacher_id',USER.id);
+  const el=document.getElementById('stCont');if(!el)return;
+  if(!rooms?.length){el.innerHTML=`<div class="card"><div class="empty-box"><h3>No classrooms yet</h3><p>Create a classroom first.</p></div></div>`;return;}
+  const{data:cs}=await db.from('classroom_students').select('student_id,classroom_id,profiles(full_name,grade_level),readiness_scores(subject,readiness_percentage,color_status)').in('classroom_id',rooms.map(r=>r.id));
+  if(!cs?.length){el.innerHTML=`<div class="card"><div class="empty-box"><h3>No students enrolled</h3><p>Students join by entering your class code in their dashboard.</p></div></div>`;return;}
+  const rows=cs.map(c=>{
+    const p=c.profiles,scores=c.readiness_scores||[];
+    const room=rooms.find(r=>r.id===c.classroom_id);
+    const avg=scores.length?Math.round(scores.reduce((s,r)=>s+r.readiness_percentage,0)/scores.length):null;
+    const worst=scores.sort((a,b)=>a.readiness_percentage-b.readiness_percentage)[0];
+    const st=worst?.color_status||'none';
+    const stLbl=st==='red'?'🔴 At Risk':st==='yellow'?'🟡 Needs Work':st==='green'?'🟢 On Track':'⬜ No data';
+    return`<tr><td><b>${H(p?.full_name||'Unknown')}</b></td><td>${H(room?.class_name||'')}</td><td>${avg!==null?avg+'%':'—'}</td><td>${stLbl}</td><td>${worst?H(worst.subject):'—'}</td></tr>`;
+  }).join('');
+  el.innerHTML=`<div class="section"><table><thead><tr><th>Student</th><th>Class</th><th>Avg</th><th>Status</th><th>Focus Subject</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+/* ═══════ PARENT PAGES ═══════ */
+
+async function pgChildren(){
+  set(`<div class="page"><div class="page-title">👨‍👩‍👧 My Children</div><div class="page-sub">Link your child's account to monitor their readiness</div>
+    <div class="section"><div class="sec-head">Link a Child</div>
+      <div class="irow"><input class="finp" id="cEmail" type="email" placeholder="Child's email address" style="max-width:280px"><button class="btn-black" onclick="linkChild()">Link Account →</button></div>
+      <p style="font-size:12px;color:var(--gray)">Enter your child's ZenEd email to connect accounts.</p>
+    </div>
+    <div id="childList"><div class="empty-box"><p>Loading...</p></div></div>
+  </div>`);
+  const{data:links}=await db.from('parent_child_links').select('*, profiles!parent_child_links_student_id_fkey(full_name,grade_level)').eq('parent_id',USER.id);
+  const el=document.getElementById('childList');if(!el)return;
+  if(!links?.length){el.innerHTML=`<div class="section"><div class="empty-box"><h3>No children linked</h3><p>Enter your child's email above.</p></div></div>`;return;}
+  el.innerHTML=`<div class="section"><div class="sec-head">Linked Children</div>${links.map(l=>`<div class="class-card"><div><div class="class-name">${H(l.profiles?.full_name||'Child')}</div><div class="class-meta">Grade ${l.profiles?.grade_level||'—'}</div></div></div>`).join('')}</div>`;
+}
+
+async function linkChild(){
+  const email=(document.getElementById('cEmail').value||'').trim();
+  if(!email)return toast('Enter your child\'s email','error');
+  const{data:child,error}=await db.from('profiles').select('*').eq('email',email).eq('role','student').single();
+  if(error||!child)return toast('Student not found with that email','error');
+  const{error:e2}=await db.from('parent_child_links').insert({parent_id:USER.id,student_id:child.id});
+  if(e2)return toast('Already linked','info');
+  toast('Linked to '+child.full_name+'! ✓','success');pgChildren();
+}
+
+/* ═══════ INIT ═══════ */
+window.onload=async()=>{
+  const{data:{session}}=await db.auth.getSession();
+  document.getElementById('loader').classList.add('hide');
+  if(session?.user){await loadAndEnter(session.user);}
+  else{document.getElementById('authScreen').style.display='flex';}
+  db.auth.onAuthStateChange(event=>{
+    if(event==='SIGNED_OUT'){
+      document.getElementById('app').style.display='none';
+      document.getElementById('mobNav').style.display='none';
+      document.getElementById('authScreen').style.display='flex';
+    }
+  });
+};
+</script>
+</body>
+</html>

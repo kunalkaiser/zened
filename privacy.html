@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy | ZenEd</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:ital,wght@0,700;0,900;1,700;1,900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0d0d0d;
+  --white: #ffffff;
+  --off-white: #f0f7ff;
+  --teal: #0ea87a;
+  --teal-dark: #0b8f68;
+  --teal-light: #e6f7f2;
+  --gray: #64748b;
+  --gray-light: #f1f5f9;
+  --border: #e2e8f0;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body { font-family:'Plus Jakarta Sans',sans-serif; background:var(--white); color:var(--black); -webkit-font-smoothing:antialiased; }
+
+/* LOGO */
+.logo { display:flex; align-items:center; gap:10px; text-decoration:none; }
+.logo-icon { width:36px; height:36px; background:linear-gradient(135deg,#0ea87a,#076b4f); border-radius:10px; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 10px rgba(14,168,122,0.4); flex-shrink:0; }
+.logo-icon svg { width:20px; height:20px; }
+.logo-word { font-weight:800; font-size:20px; letter-spacing:-0.5px; color:var(--black); }
+.logo-word span { color:var(--teal); }
+
+/* NAV */
+nav { padding:0 48px; height:64px; display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid var(--border); position:sticky; top:0; background:rgba(255,255,255,0.97); backdrop-filter:blur(12px); z-index:100; }
+.nav-cta { font-size:14px; font-weight:700; color:var(--white); background:var(--teal); padding:9px 22px; border-radius:100px; text-decoration:none; transition:all 0.2s; }
+.nav-cta:hover { background:var(--teal-dark); }
+
+/* PAGE */
+.page { max-width:740px; margin:0 auto; padding:64px 48px 100px; }
+.page-label { font-size:12px; font-weight:700; letter-spacing:2px; text-transform:uppercase; color:var(--teal); margin-bottom:12px; }
+.page-title { font-family:'Fraunces',serif; font-size:52px; font-weight:900; letter-spacing:-2px; line-height:1; margin-bottom:10px; }
+.page-date { font-size:14px; color:var(--gray); margin-bottom:48px; padding-bottom:36px; border-bottom:1px solid var(--border); }
+
+/* TOC */
+.toc { background:var(--off-white); border-radius:16px; padding:24px 28px; margin-bottom:52px; border:1px solid var(--border); }
+.toc-title { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:var(--gray); margin-bottom:16px; }
+.toc-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px 24px; }
+.toc-grid a { font-size:13px; color:var(--teal); text-decoration:none; font-weight:600; transition:opacity 0.2s; }
+.toc-grid a:hover { opacity:0.7; }
+
+/* SECTIONS */
+.legal-section { margin-bottom:48px; }
+.legal-section h2 { font-family:'Fraunces',serif; font-size:26px; font-weight:700; letter-spacing:-0.5px; margin-bottom:16px; margin-top:8px; }
+.legal-section p { font-size:15px; color:#374151; line-height:1.8; margin-bottom:14px; font-weight:400; }
+.legal-section ul { padding-left:20px; margin-bottom:14px; }
+.legal-section ul li { font-size:15px; color:#374151; line-height:1.8; margin-bottom:6px; }
+.legal-section a { color:var(--teal); font-weight:600; text-decoration:none; }
+.legal-section a:hover { text-decoration:underline; }
+.highlight-box { background:var(--teal-light); border-left:3px solid var(--teal); border-radius:0 12px 12px 0; padding:16px 20px; margin-bottom:16px; }
+.highlight-box p { color:#0b5940; margin:0; font-weight:500; font-size:14px; }
+.gray-box { background:var(--gray-light); border-radius:12px; padding:16px 20px; margin-bottom:14px; font-size:13px; color:#4b5563; line-height:1.7; }
+.divider { height:1px; background:var(--border); margin:48px 0; }
+
+/* FOOTER */
+footer { padding:36px 48px; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; gap:20px; }
+.footer-copy { font-size:12px; color:#9ca3af; }
+.footer-links { display:flex; gap:20px; }
+.footer-links a { font-size:13px; color:var(--gray); text-decoration:none; transition:color 0.2s; }
+.footer-links a:hover { color:var(--teal); }
+
+@media(max-width:640px) {
+  nav, .page, footer { padding-left:20px; padding-right:20px; }
+  .toc-grid { grid-template-columns:1fr; }
+  .page-title { font-size:36px; }
+  footer { flex-direction:column; align-items:flex-start; gap:12px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-word">Zen<span>Ed</span></span>
+  </a>
+  <a href="app.html" class="nav-cta">Get started →</a>
+</nav>
+
+<div class="page">
+  <div class="page-label">Legal</div>
+  <h1 class="page-title">Privacy Policy</h1>
+  <p class="page-date">Last updated: February 23, 2026</p>
+
+  <div class="highlight-box">
+    <p>🔒 <strong>The short version:</strong> ZenEd collects only what's needed to run the platform. We never sell your data. Student data is used only to show you your own readiness scores. We take privacy especially seriously for minors.</p>
+  </div>
+
+  <div class="toc">
+    <div class="toc-title">Table of Contents</div>
+    <div class="toc-grid">
+      <a href="#collect">1. What We Collect</a>
+      <a href="#use">2. How We Use Your Data</a>
+      <a href="#sharing">3. Data Sharing</a>
+      <a href="#minors">4. Children's Privacy (COPPA)</a>
+      <a href="#student-data">5. Student Data & FERPA</a>
+      <a href="#storage">6. Data Storage & Security</a>
+      <a href="#rights">7. Your Rights</a>
+      <a href="#cookies">8. Cookies</a>
+      <a href="#third-party">9. Third-Party Services</a>
+      <a href="#changes">10. Changes to This Policy</a>
+      <a href="#contact">11. Contact Us</a>
+    </div>
+  </div>
+
+  <div class="legal-section">
+    <p>ZenEd ("we," "us," or "our") is committed to protecting the privacy of all users, especially students. This Privacy Policy explains what information we collect, how we use it, and your rights regarding your data when you use ZenEd at <a href="https://zeneds.netlify.app">zeneds.netlify.app</a> (the "Service").</p>
+    <p>By using ZenEd, you agree to the collection and use of information as described in this policy. If you do not agree, please do not use the Service.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="legal-section" id="collect">
+    <h2>1. What We Collect</h2>
+    <p><strong>Information you provide when creating an account:</strong></p>
+    <ul>
+      <li>Name (first name or full name)</li>
+      <li>Email address</li>
+      <li>Role (student, teacher, or parent)</li>
+      <li>Grade level (for students)</li>
+      <li>Password (stored encrypted — we never see it in plain text)</li>
+    </ul>
+    <p><strong>Information you provide while using ZenEd:</strong></p>
+    <ul>
+      <li>Grade entries (subject, topic, score, assignment type)</li>
+      <li>Classroom codes (if joining or creating a class)</li>
+      <li>Parent-child links (email addresses used to connect accounts)</li>
+      <li>Questions submitted to the AI assistant</li>
+    </ul>
+    <p><strong>Information collected automatically:</strong></p>
+    <ul>
+      <li>Browser type and device information</li>
+      <li>Pages visited and time spent on ZenEd</li>
+      <li>IP address (used for security purposes only)</li>
+    </ul>
+    <p>We do not collect Social Security numbers, financial information, physical addresses, or any government ID information.</p>
+  </div>
+
+  <div class="legal-section" id="use">
+    <h2>2. How We Use Your Data</h2>
+    <p>We use the information we collect to:</p>
+    <ul>
+      <li>Create and manage your account</li>
+      <li>Calculate readiness scores and predicted Regents exam scores</li>
+      <li>Generate personalized study recommendations</li>
+      <li>Allow teachers to monitor classroom readiness (only for students who joined their class)</li>
+      <li>Allow parents to view their linked child's readiness data</li>
+      <li>Power the ZenEd AI assistant to answer questions</li>
+      <li>Improve and maintain the platform</li>
+      <li>Send important service updates (not marketing emails)</li>
+    </ul>
+    <p>We do <strong>not</strong> use student data for advertising, marketing, or to build profiles for commercial purposes.</p>
+  </div>
+
+  <div class="legal-section" id="sharing">
+    <h2>3. Data Sharing</h2>
+    <p>We do <strong>not sell</strong> your personal information to anyone, ever.</p>
+    <p>Your data is shared only in these limited circumstances:</p>
+    <ul>
+      <li><strong>With your teacher</strong> — if you join their classroom using a class code, they can see your subject readiness scores and averages. They cannot see individual grade entries.</li>
+      <li><strong>With your parent</strong> — if a parent links to your account, they can see your readiness scores across subjects.</li>
+      <li><strong>With Supabase</strong> — our database provider (supabase.co) stores your data securely. Supabase is SOC 2 Type 2 compliant.</li>
+      <li><strong>With Anthropic</strong> — questions you type into the AI assistant are processed by Anthropic's Claude API. Do not submit personal information in chat messages.</li>
+      <li><strong>When required by law</strong> — we may disclose information if required by a valid legal process.</li>
+    </ul>
+  </div>
+
+  <div class="legal-section" id="minors">
+    <h2>4. Children's Privacy (COPPA)</h2>
+    <p>ZenEd is designed for high school students and takes children's privacy seriously.</p>
+    <p><strong>Users under 13:</strong> We do not knowingly collect personal information from children under 13 without verifiable parental consent, in compliance with the Children's Online Privacy Protection Act (COPPA). If we learn that a user under 13 has provided personal information without parental consent, we will delete that information promptly.</p>
+    <p><strong>Users 13–17:</strong> We encourage parents and guardians to be aware of their child's use of ZenEd. Parents can link to their child's account to monitor readiness scores. If you believe your child's account should be removed, contact us at <a href="mailto:hello@zened.app">hello@zened.app</a>.</p>
+    <p>If you are a parent and have questions about your child's data, we will respond within 5 business days.</p>
+  </div>
+
+  <div class="legal-section" id="student-data">
+    <h2>5. Student Data & FERPA</h2>
+    <p>ZenEd is an independent consumer platform — students sign up directly, not through their school. Because schools do not provision ZenEd accounts, the platform is not subject to FERPA requirements in the traditional sense.</p>
+    <p>However, we voluntarily apply FERPA-aligned principles to all student data:</p>
+    <ul>
+      <li>Student grade data is used only to provide the ZenEd service to that student</li>
+      <li>We do not share student data with third parties for commercial purposes</li>
+      <li>Students (and parents of minors) can request deletion of their data at any time</li>
+      <li>Teachers only see data for students who voluntarily joined their classroom</li>
+    </ul>
+    <div class="gray-box">ZenEd is not affiliated with, endorsed by, or a contractor of the New York City Department of Education or any NYC public school.</div>
+  </div>
+
+  <div class="legal-section" id="storage">
+    <h2>6. Data Storage & Security</h2>
+    <p>Your data is stored on Supabase's secure cloud infrastructure. We use the following security practices:</p>
+    <ul>
+      <li>All passwords are hashed using industry-standard encryption — we never store plain-text passwords</li>
+      <li>All data is transmitted over HTTPS (encrypted in transit)</li>
+      <li>Row-level security policies ensure users can only access their own data</li>
+      <li>Teacher and parent access is limited to only the data they are authorized to see</li>
+    </ul>
+    <p>While we take reasonable measures to protect your data, no internet transmission is 100% secure. We encourage you to use a strong, unique password for your ZenEd account.</p>
+  </div>
+
+  <div class="legal-section" id="rights">
+    <h2>7. Your Rights</h2>
+    <p>You have the right to:</p>
+    <ul>
+      <li><strong>Access</strong> — request a copy of the personal data we hold about you</li>
+      <li><strong>Correct</strong> — update or correct inaccurate information in your account</li>
+      <li><strong>Delete</strong> — request deletion of your account and all associated data</li>
+      <li><strong>Withdraw consent</strong> — stop using the Service at any time</li>
+    </ul>
+    <p>To exercise any of these rights, email us at <a href="mailto:hello@zened.app">hello@zened.app</a>. We will respond within 10 business days. Account deletion requests will be processed within 30 days.</p>
+  </div>
+
+  <div class="legal-section" id="cookies">
+    <h2>8. Cookies</h2>
+    <p>ZenEd uses minimal cookies and browser storage:</p>
+    <ul>
+      <li><strong>Authentication cookies</strong> — to keep you logged in between sessions (set by Supabase Auth)</li>
+      <li><strong>Session storage</strong> — temporary data used while you're actively using the platform</li>
+    </ul>
+    <p>We do not use advertising cookies, tracking pixels, or third-party analytics cookies. You can clear cookies at any time through your browser settings, which will log you out of ZenEd.</p>
+  </div>
+
+  <div class="legal-section" id="third-party">
+    <h2>9. Third-Party Services</h2>
+    <p>ZenEd links to third-party educational resources including Khan Academy, Regents Prep, Albert.io, Hk Maker Lab, NYAS, NYC Science Research Mentoring Consortium, Snow.day, SYEP, CUNY, and others. These services have their own privacy policies — we are not responsible for their data practices.</p>
+    <p>ZenEd uses the following third-party services to operate:</p>
+    <ul>
+      <li><strong>Supabase</strong> (supabase.com) — database and authentication</li>
+      <li><strong>Anthropic Claude API</strong> (anthropic.com) — AI assistant</li>
+      <li><strong>Netlify</strong> (netlify.com) — website hosting</li>
+      <li><strong>Google Fonts</strong> — typography (no tracking)</li>
+    </ul>
+  </div>
+
+  <div class="legal-section" id="changes">
+    <h2>10. Changes to This Policy</h2>
+    <p>We may update this Privacy Policy from time to time. We will notify you of significant changes by updating the "Last updated" date at the top of this page. For material changes affecting how we use student data, we will make reasonable efforts to notify users directly via email.</p>
+    <p>Continued use of ZenEd after changes are posted constitutes your acceptance of the updated policy.</p>
+  </div>
+
+  <div class="legal-section" id="contact">
+    <h2>11. Contact Us</h2>
+    <p>If you have any questions, concerns, or requests related to this Privacy Policy or your data, please contact us:</p>
+    <div class="gray-box">
+      <strong>ZenEd</strong><br>
+      New York, NY<br>
+      Email: <a href="mailto:hello@zened.app">hello@zened.app</a><br>
+      Response time: Within 5 business days for privacy inquiries
+    </div>
+    <p>If you are a parent or guardian with concerns about your child's data, we treat those requests as our highest priority.</p>
+  </div>
+
+</div>
+
+<footer>
+  <a href="index.html" class="logo">
+    <div class="logo-icon" style="width:30px;height:30px;border-radius:8px">
+      <svg viewBox="0 0 24 24" fill="none" width="16" height="16">
+        <path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/>
+        <path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-word" style="font-size:17px">Zen<span>Ed</span></span>
+  </a>
+  <div class="footer-links">
+    <a href="terms.html">Terms of Use</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="mission.html">Mission</a>
+    <a href="mailto:hello@zened.app">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 ZenEd</div>
+</footer>
+
+</body>
+</html>
