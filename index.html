@@ -594,50 +594,5 @@ function buildResults() {
   track('results_viewed', {goals:[...goals], atRisk, onTrack, total:ids.length});
 }
 
-// ── RESOURCE BROWSER ──
-const RES = [
-  {cat:'internship',icon:'💼',name:'SYEP — Paid Summer Jobs',tags:['paid','hot'],url:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page'},
-  {cat:'internship',icon:'❄️',name:'Snow.day — 500+ Free Programs',tags:['free'],url:'https://snow.day'},
-  {cat:'internship',icon:'🔧',name:'Hk Maker Lab — Columbia',tags:['free','stem'],url:'https://hkmakerlab.columbia.edu'},
-  {cat:'internship',icon:'🔬',name:'NYAS Junior Academy',tags:['free','stem'],url:'https://www.nyas.org/programs/global-stem-alliance/junior-academy/'},
-  {cat:'internship',icon:'🧬',name:'NYC Science Research',tags:['free','stem'],url:'https://scienceresearchmentoring.org'},
-  {cat:'scholarship',icon:'🏆',name:'Fastweb — 1.5M Scholarships',tags:['free'],url:'https://www.fastweb.com'},
-  {cat:'scholarship',icon:'✨',name:'Bold.org — No-Essay Awards',tags:['free'],url:'https://bold.org'},
-  {cat:'scholarship',icon:'📈',name:'Raise.me — Earn Now in 9th',tags:['free'],url:'https://www.raise.me'},
-  {cat:'scholarship',icon:'🎓',name:'CUNY Excelsior — Free Tuition',tags:['free'],url:'https://www.hesc.ny.gov'},
-  {cat:'scholarship',icon:'📋',name:'FAFSA — Federal Aid',tags:['free'],url:'https://studentaid.gov'},
-  {cat:'sat',icon:'📝',name:'Khan Academy SAT (Official)',tags:['free'],url:'https://www.khanacademy.org/sat'},
-  {cat:'sat',icon:'💻',name:'Bluebook — Digital SAT Tests',tags:['free'],url:'https://bluebook.collegeboard.org'},
-  {cat:'sat',icon:'📊',name:'Free ACT Practice Tests',tags:['free'],url:'https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html'},
-  {cat:'college',icon:'🎓',name:'NYC College Access Centers',tags:['free'],url:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers'},
-  {cat:'college',icon:'📝',name:'Common App — 1,000+ Colleges',tags:['free'],url:'https://www.commonapp.org'},
-  {cat:'college',icon:'🏛️',name:'CUNY College Now — Free Credits',tags:['free'],url:'https://www.cuny.edu/about/administration/offices/k16/college-now/'},
-  {cat:'study',icon:'🟢',name:'Khan Academy — All Subjects',tags:['free'],url:'https://www.khanacademy.org'},
-  {cat:'study',icon:'🔬',name:'LabXchange — Harvard Science Labs',tags:['free','stem'],url:'https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12'},
-  {cat:'study',icon:'📖',name:'Regents Prep + Past Exams',tags:['free'],url:'https://www.regentsprep.org'},
-  {cat:'graduate',icon:'🏅',name:'Portrait of a Graduate (NYSED)',tags:['free'],url:'https://www.nysed.gov/next-generation-learning-standards'},
-  {cat:'graduate',icon:'⚙️',name:'CTE Programs — 400+ Pathways',tags:['free'],url:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education'},
-  {cat:'graduate',icon:'💻',name:'P-TECH — Free Associate Degree',tags:['free','stem'],url:'https://www.ptech.org'},
-];
-let activeResCat = 'all';
-function filterRes(cat, btn) {
-  activeResCat = cat;
-  document.querySelectorAll('.res-pill').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderResGrid();
-  track('resource_filter', {cat});
-}
-function renderResGrid() {
-  const filtered = activeResCat==='all' ? RES : RES.filter(r=>r.cat===activeResCat);
-  document.getElementById('resGrid').innerHTML = filtered.slice(0,6).map(r=>`
-    <a href="${r.url}" target="_blank" class="rc" onclick="track('resource_click',{name:'${r.name}',cat:'${r.cat}'})">
-      <div class="rc-icon">${r.icon}</div>
-      <div class="rc-name">${r.name}</div>
-      <div class="rc-tags">${r.tags.map(t=>`<span class="rc-tag ${t==='hot'?'hot':t==='paid'?'paid':t==='stem'?'stem':'free'}">${t==='hot'?'⚡ Apply now':t==='paid'?'💰 Paid':t==='stem'?'STEM':'Free'}</span>`).join('')}</div>
-    </a>`).join('');
-}
-renderResGrid();
-</script>
-</body>
-</html>
+
 
