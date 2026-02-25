@@ -333,17 +333,20 @@ footer{padding:28px 32px;border-top:1px solid var(--border);background:white;dis
       </div>
     </div>
 
-    <!-- Simple resources CTA -->
+<!-- Resource browser (always shown) -->
 <div class="res-browser">
   <div class="res-browser-head">
     <div>
       <div class="res-browser-label">📚 Resources for you</div>
       <div class="res-browser-title">Find your next opportunity</div>
     </div>
+    <a href="resources.html" class="res-see-all">See all →</a>
   </div>
-  <a href="resources.html" class="res-full-btn" style="margin-top:16px;">
-    Browse all resources on ZenEd →
-  </a>
+  <div class="res-pills" id="resPills">
+    ...
+  </div>
+  <div class="res-grid" id="resGrid"></div>
+  <a href="resources.html" class="res-full-btn">Browse all 26+ resources on ZenEd →</a>
 </div>
       <div class="res-pills" id="resPills">
         <button class="res-pill active" onclick="filterRes('all',this)">All</button>
