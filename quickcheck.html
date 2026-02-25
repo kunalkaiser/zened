@@ -116,28 +116,31 @@ nav{padding:0 32px;height:56px;display:flex;align-items:center;justify-content:s
 .study-link{font-size:12px;color:var(--teal);text-decoration:none;font-weight:600;}
 .study-link:hover{text-decoration:underline;}
 
-/* ── SUMMER INTERNSHIP SECTION ── */
-.summer-banner{background:linear-gradient(135deg,#0f172a,#1e3a5f);border-radius:20px;padding:28px;margin-bottom:14px;color:white;}
-.summer-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,0.2);color:#fbbf24;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;margin-bottom:12px;letter-spacing:0.5px;text-transform:uppercase;}
-.summer-title{font-family:'Fraunces',serif;font-size:24px;font-weight:900;margin-bottom:6px;letter-spacing:-0.5px;}
-.summer-sub{font-size:13px;color:#94a3b8;line-height:1.6;margin-bottom:20px;}
-.opp-grid{display:flex;flex-direction:column;gap:10px;}
-.opp-card{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:14px;padding:16px;display:flex;gap:14px;align-items:flex-start;text-decoration:none;color:white;transition:all 0.2s;}
-.opp-card:hover{background:rgba(255,255,255,0.12);border-color:rgba(14,168,122,0.5);transform:translateX(3px);}
-.opp-icon{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
-.opp-body{flex:1;}
-.opp-name{font-size:14px;font-weight:700;margin-bottom:3px;}
-.opp-desc{font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:6px;}
-.opp-tags{display:flex;gap:6px;flex-wrap:wrap;}
-.opp-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;}
-.opp-tag.urgent{background:rgba(239,68,68,0.2);color:#fca5a5;}
-.opp-tag.paid{background:rgba(245,158,11,0.2);color:#fbbf24;}
-.opp-tag.free{background:rgba(14,168,122,0.2);color:#6ee7b7;}
-.opp-tag.stem{background:rgba(59,130,246,0.2);color:#93c5fd;}
-.opp-tag.any{background:rgba(148,163,184,0.15);color:#94a3b8;}
-.opp-arrow{color:#64748b;font-size:16px;align-self:center;flex-shrink:0;}
-.see-all-btn{display:block;text-align:center;background:rgba(14,168,122,0.15);border:1px solid rgba(14,168,122,0.3);color:var(--teal);padding:12px;border-radius:12px;font-weight:700;font-size:14px;text-decoration:none;margin-top:12px;transition:all 0.2s;}
-.see-all-btn:hover{background:rgba(14,168,122,0.25);}
+/* ── RESOURCE BROWSER ── */
+.res-browser{background:white;border-radius:20px;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
+.res-browser-head{display:flex;align-items:center;justify-content:space-between;padding:20px 20px 0;}
+.res-browser-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:4px;}
+.res-browser-title{font-size:18px;font-weight:800;letter-spacing:-0.4px;}
+.res-see-all{font-size:13px;font-weight:700;color:var(--teal);text-decoration:none;white-space:nowrap;}
+.res-see-all:hover{text-decoration:underline;}
+.res-pills{display:flex;gap:6px;overflow-x:auto;padding:14px 20px 0;scrollbar-width:none;}
+.res-pills::-webkit-scrollbar{display:none;}
+.res-pill{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--gray);white-space:nowrap;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s;flex-shrink:0;}
+.res-pill:hover{border-color:var(--black);color:var(--black);}
+.res-pill.active{background:var(--black);color:white;border-color:var(--black);}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 20px;}
+.rc{background:var(--cream);border-radius:12px;padding:14px;text-decoration:none;color:var(--black);display:block;transition:all 0.15s;border:1.5px solid transparent;}
+.rc:hover{border-color:var(--teal);background:var(--teal-light);}
+.rc-icon{font-size:22px;margin-bottom:8px;}
+.rc-name{font-size:13px;font-weight:700;line-height:1.3;margin-bottom:6px;}
+.rc-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.rc-tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+.rc-tag.free{background:#e6f7f2;color:#0b8f68;}
+.rc-tag.paid{background:#fef3c7;color:#d97706;}
+.rc-tag.stem{background:#eff6ff;color:#2563eb;}
+.rc-tag.hot{background:#fff1f2;color:#dc2626;}
+.res-full-btn{display:block;margin:0 20px 20px;padding:12px;text-align:center;background:var(--black);color:white;border-radius:12px;font-size:14px;font-weight:700;text-decoration:none;transition:all 0.2s;}
+.res-full-btn:hover{background:#1e1e1e;}
 
 /* SAVE CTA */
 .save-cta{background:var(--black);border-radius:20px;padding:30px;text-align:center;color:white;}
@@ -289,85 +292,29 @@ nav{padding:0 32px;height:56px;display:flex;align-items:center;justify-content:s
       </div>
     </div>
 
-    <!-- SUMMER INTERNSHIPS (always shown, or shown if they picked summer) -->
+    <!-- RESOURCE BROWSER -->
     <div id="summerSection">
-      <div class="summer-banner">
-        <div class="summer-badge">☀️ Summer 2025 — Deadlines closing soon</div>
-        <div class="summer-title">Your summer opportunities</div>
-        <div class="summer-sub">These programs are still open. Apply now — most close by March or April.</div>
-        <div class="opp-grid">
-
-          <a href="https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page" target="_blank" class="opp-card">
-            <div class="opp-icon" style="background:rgba(245,158,11,0.15)">💼</div>
-            <div class="opp-body">
-              <div class="opp-name">SYEP — Summer Youth Employment</div>
-              <div class="opp-desc">Real paid jobs across NYC — hospitals, tech companies, nonprofits. Up to $18.84/hr. Ages 14–24.</div>
-              <div class="opp-tags">
-                <span class="opp-tag paid">💰 Paid</span>
-                <span class="opp-tag urgent">⚡ Apply now</span>
-                <span class="opp-tag any">Ages 14–24</span>
-              </div>
-            </div>
-            <div class="opp-arrow">→</div>
-          </a>
-
-          <a href="https://snow.day" target="_blank" class="opp-card">
-            <div class="opp-icon" style="background:rgba(59,130,246,0.15)">❄️</div>
-            <div class="opp-body">
-              <div class="opp-name">Snow.day — Search 500+ Free Programs</div>
-              <div class="opp-desc">The best search engine for free summer programs. Filter by subject, age, stipend, and location.</div>
-              <div class="opp-tags">
-                <span class="opp-tag free">Free</span>
-                <span class="opp-tag urgent">⚡ Deadlines closing</span>
-              </div>
-            </div>
-            <div class="opp-arrow">→</div>
-          </a>
-
-          <a href="https://hkmakerlab.columbia.edu" target="_blank" class="opp-card">
-            <div class="opp-icon" style="background:rgba(14,168,122,0.15)">🔧</div>
-            <div class="opp-body">
-              <div class="opp-name">Hk Maker Lab — Columbia University</div>
-              <div class="opp-desc">Free 5-week engineering program at Columbia. Priority for low-income students. Grades 10–11.</div>
-              <div class="opp-tags">
-                <span class="opp-tag free">Free</span>
-                <span class="opp-tag stem">STEM</span>
-                <span class="opp-tag any">Grades 10–11</span>
-              </div>
-            </div>
-            <div class="opp-arrow">→</div>
-          </a>
-
-          <a href="https://www.nyas.org/programs/global-stem-alliance/junior-academy/" target="_blank" class="opp-card">
-            <div class="opp-icon" style="background:rgba(147,51,234,0.15)">🔬</div>
-            <div class="opp-body">
-              <div class="opp-name">NYAS Junior Academy — Science Mentorship</div>
-              <div class="opp-desc">Virtual STEM mentorship with real scientists. Free, open to all NYC students. Great for college apps.</div>
-              <div class="opp-tags">
-                <span class="opp-tag free">Free</span>
-                <span class="opp-tag stem">STEM</span>
-                <span class="opp-tag urgent">⚡ Spring apps open</span>
-              </div>
-            </div>
-            <div class="opp-arrow">→</div>
-          </a>
-
-          <a href="https://scienceresearchmentoring.org" target="_blank" class="opp-card">
-            <div class="opp-icon" style="background:rgba(16,185,129,0.15)">🧬</div>
-            <div class="opp-body">
-              <div class="opp-name">NYC Science Research Mentoring</div>
-              <div class="opp-desc">100+ hours of real lab research at AMNH, Cold Spring Harbor, and more. Competitive — strong GPA needed.</div>
-              <div class="opp-tags">
-                <span class="opp-tag free">Free</span>
-                <span class="opp-tag stem">STEM</span>
-                <span class="opp-tag any">GPA 85+</span>
-              </div>
-            </div>
-            <div class="opp-arrow">→</div>
-          </a>
-
+      <div class="res-browser">
+        <div class="res-browser-head">
+          <div>
+            <div class="res-browser-label">📚 Resources for you</div>
+            <div class="res-browser-title">Find your next opportunity</div>
+          </div>
+          <a href="resources.html" class="res-see-all">See all →</a>
         </div>
-        <a href="resources.html" class="see-all-btn">See all 18+ NYC programs, scholarships & internships →</a>
+        <!-- Category pills -->
+        <div class="res-pills" id="resPills">
+          <button class="res-pill active" onclick="filterRes('all',this)">All</button>
+          <button class="res-pill" onclick="filterRes('internship',this)">☀️ Internships</button>
+          <button class="res-pill" onclick="filterRes('scholarship',this)">🏆 Scholarships</button>
+          <button class="res-pill" onclick="filterRes('sat',this)">📝 SAT/ACT</button>
+          <button class="res-pill" onclick="filterRes('college',this)">🎓 College</button>
+          <button class="res-pill" onclick="filterRes('study',this)">📚 Self-Study</button>
+          <button class="res-pill" onclick="filterRes('graduate',this)">🏅 Graduation</button>
+        </div>
+        <!-- Mini cards grid -->
+        <div class="res-grid" id="resGrid"></div>
+        <a href="resources.html" class="res-full-btn">Browse all resources on ZenEd →</a>
       </div>
     </div>
 
@@ -613,6 +560,49 @@ function buildResults(){
     }).join('');
   }
 }
+
+// ── RESOURCE BROWSER ──
+const RES = [
+  {cat:'internship', icon:'💼', name:'SYEP — Paid Summer Jobs', tags:['paid','hot'], url:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page'},
+  {cat:'internship', icon:'❄️', name:'Snow.day — 500+ Free Programs', tags:['free'], url:'https://snow.day'},
+  {cat:'internship', icon:'🔧', name:'Hk Maker Lab — Columbia', tags:['free','stem'], url:'https://hkmakerlab.columbia.edu'},
+  {cat:'internship', icon:'🔬', name:'NYAS Junior Academy', tags:['free','stem'], url:'https://www.nyas.org/programs/global-stem-alliance/junior-academy/'},
+  {cat:'internship', icon:'🧬', name:'NYC Science Research', tags:['free','stem'], url:'https://scienceresearchmentoring.org'},
+  {cat:'scholarship', icon:'🏆', name:'Fastweb — 1.5M Scholarships', tags:['free'], url:'https://www.fastweb.com'},
+  {cat:'scholarship', icon:'✨', name:'Bold.org — No-Essay Awards', tags:['free'], url:'https://bold.org'},
+  {cat:'scholarship', icon:'📈', name:'Raise.me — Earn Now in 9th', tags:['free'], url:'https://www.raise.me'},
+  {cat:'scholarship', icon:'🎓', name:'CUNY Excelsior — Free Tuition', tags:['free'], url:'https://www.hesc.ny.gov'},
+  {cat:'scholarship', icon:'📋', name:'FAFSA — Federal Aid', tags:['free'], url:'https://studentaid.gov'},
+  {cat:'sat', icon:'📝', name:'Khan Academy SAT (Official)', tags:['free'], url:'https://www.khanacademy.org/sat'},
+  {cat:'sat', icon:'💻', name:'Bluebook — Digital SAT Tests', tags:['free'], url:'https://bluebook.collegeboard.org'},
+  {cat:'sat', icon:'📊', name:'Free ACT Practice Tests', tags:['free'], url:'https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html'},
+  {cat:'college', icon:'🎓', name:'NYC College Access Centers', tags:['free'], url:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers'},
+  {cat:'college', icon:'📝', name:'Common App — 1,000+ Colleges', tags:['free'], url:'https://www.commonapp.org'},
+  {cat:'college', icon:'🏛️', name:'CUNY College Now — Free Credits', tags:['free'], url:'https://www.cuny.edu/about/administration/offices/k16/college-now/'},
+  {cat:'study', icon:'🟢', name:'Khan Academy — All Subjects', tags:['free'], url:'https://www.khanacademy.org'},
+  {cat:'study', icon:'🔬', name:'LabXchange — Harvard Science Labs', tags:['free','stem'], url:'https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12'},
+  {cat:'study', icon:'📖', name:'Regents Prep + Past Exams', tags:['free'], url:'https://www.regentsprep.org'},
+  {cat:'graduate', icon:'🏅', name:'Portrait of a Graduate (NYSED)', tags:['free'], url:'https://www.nysed.gov/next-generation-learning-standards'},
+  {cat:'graduate', icon:'⚙️', name:'CTE Programs — 400+ Pathways', tags:['free'], url:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education'},
+  {cat:'graduate', icon:'💻', name:'P-TECH — Free Associate Degree', tags:['free','stem'], url:'https://www.ptech.org'},
+];
+let activeResCat='all';
+function filterRes(cat,btn){
+  activeResCat=cat;
+  document.querySelectorAll('.res-pill').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderResGrid();
+}
+function renderResGrid(){
+  const filtered=activeResCat==='all'?RES:RES.filter(r=>r.cat===activeResCat);
+  document.getElementById('resGrid').innerHTML=filtered.slice(0,6).map(r=>`
+    <a href="${r.url}" target="_blank" class="rc">
+      <div class="rc-icon">${r.icon}</div>
+      <div class="rc-name">${r.name}</div>
+      <div class="rc-tags">${r.tags.map(t=>`<span class="rc-tag ${t==='hot'?'hot':t==='paid'?'paid':t==='stem'?'stem':'free'}">${t==='hot'?'⚡ Apply now':t==='paid'?'💰 Paid':t==='stem'?'STEM':'Free'}</span>`).join('')}</div>
+    </a>`).join('');
+}
+renderResGrid();
 </script>
 </body>
 </html>
