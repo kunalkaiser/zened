@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — Your grades. Your plan. Your future.</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink:   #0d0d0d;
+  --white: #ffffff;
+  --soft:  #f6f6f4;
+  --line:  #e8e8e5;
+  --muted: #6b7280;
+  --green: #00a86b;
+  --green2:#007a4d;
+  --glite: #e6f6ef;
+  --red:   #dc2626;
+  --amber: #d97706;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior:smooth; }
+body {
+  font-family: 'Instrument Sans', sans-serif;
+  background: #fff;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ── */
+nav {
+  height: 58px; padding: 0 36px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  background: #fff; position: sticky; top: 0; z-index: 200;
+}
+.logo { display:flex; align-items:center; gap:9px; text-decoration:none; color:var(--ink); }
+.logo-ico {
+  width: 30px; height: 30px;
+  background: var(--green);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 14px; font-weight: 900;
+  font-family: 'Fraunces', serif; font-style: italic;
+  flex-shrink: 0;
+}
+.logo-word {
+  font-family: 'Fraunces', serif; font-weight: 900;
+  font-size: 19px; letter-spacing: -0.4px;
+}
+.logo-word em { color: var(--green); font-style: italic; }
+.nav-right { display:flex; gap:6px; align-items:center; }
+.nav-link {
+  font-size: 13px; font-weight: 500; color: var(--muted);
+  text-decoration: none; padding: 6px 10px; border-radius: 8px;
+  transition: color .15s;
+}
+.nav-link:hover { color: var(--ink); }
+.nav-signin {
+  font-size: 13px; font-weight: 600; color: var(--ink);
+  border: 1.5px solid var(--ink);
+  padding: 6px 18px; border-radius: 100px;
+  text-decoration: none; transition: all .15s;
+}
+.nav-signin:hover { background: var(--ink); color: #fff; }
+.btn-support-nav {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: #FFDD00; color: #000;
+  font-size: 12px; font-weight: 700;
+  padding: 5px 13px; border-radius: 100px;
+  text-decoration: none; white-space: nowrap;
+  transition: background .15s;
+}
+.btn-support-nav:hover { background: #f0d000; }
+
+/* ── HERO ── */
+.hero {
+  text-align: center;
+  padding: 52px 24px 28px;
+  max-width: 680px; margin: 0 auto;
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line);
+  padding: 5px 16px; border-radius: 100px;
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  margin-bottom: 24px; animation: fadeUp .4s ease;
+}
+.hero-badge-dot { width:6px; height:6px; background:var(--green); border-radius:50%; }
+.hero-title {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(52px, 10vw, 80px);
+  font-weight: 900; line-height: .95;
+  letter-spacing: -3px; margin-bottom: 18px;
+  animation: fadeUp .4s .06s ease both;
+}
+.hero-title em { font-style: italic; color: var(--green); }
+.hero-sub {
+  font-size: 16px; color: var(--muted); line-height: 1.6;
+  animation: fadeUp .4s .12s ease both;
+}
+
+/* ── GOAL SECTION ── */
+.goal-section {
+  max-width: 700px; margin: 0 auto;
+  padding: 0 20px 32px;
+  animation: fadeUp .4s .18s ease both;
+}
+.step-label {
+  text-align: center;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--muted); margin: 28px 0 14px;
+}
+.goal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 24px;
+}
+.goal-card {
+  background: #fff; border: 1.5px solid var(--line);
+  border-radius: 14px; padding: 20px 16px;
+  cursor: pointer; text-align: left; position: relative;
+  transition: border-color .15s, box-shadow .15s;
+  display: flex; flex-direction: column;
+}
+.goal-card:hover {
+  border-color: var(--ink);
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+.goal-card.selected { border-color: var(--green); background: var(--glite); }
+.goal-card-check {
+  position: absolute; top: 12px; right: 12px;
+  width: 20px; height: 20px;
+  background: var(--green); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 10px; font-weight: 800;
+  opacity: 0; transition: opacity .15s;
+}
+.goal-card.selected .goal-card-check { opacity: 1; }
+.goal-icon { font-size: 24px; margin-bottom: 10px; }
+.goal-title { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.goal-desc  { font-size: 11px; color: var(--muted); line-height: 1.5; flex: 1; }
+
+/* ── CTA ── */
+.cta-wrap { text-align: center; }
+.btn-go {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--ink); color: #fff;
+  padding: 14px 38px; border-radius: 100px;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  border: none; font-family: 'Instrument Sans', sans-serif;
+  letter-spacing: -.2px; transition: all .15s;
+}
+.btn-go:hover { background: #222; transform: translateY(-1px); }
+.btn-go:disabled { opacity: .25; cursor: not-allowed; transform: none; }
+.cta-note { font-size: 12px; color: var(--muted); margin-top: 10px; }
+
+/* ── DIVIDER ── */
+.divider { max-width: 560px; margin: 0 auto; height: 1px; background: var(--line); }
+
+/* ── FLOW SCREENS ── */
+.flow-section { max-width: 580px; margin: 0 auto; padding: 0 20px; }
+@keyframes slideIn {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.flow-screen { display:none; animation: slideIn .22s ease; }
+.flow-screen.active { display:block; }
+
+/* ── PROGRESS BAR ── */
+.progress-wrap { margin-bottom: 24px; }
+.progress-bar { height: 2px; background: var(--line); border-radius: 2px; overflow: hidden; }
+.progress-fill { height:100%; background:var(--ink); border-radius:2px; transition:width .4s ease; }
+.progress-label { font-size: 11px; color: var(--muted); margin-top: 7px; font-weight: 500; }
+
+/* ── BACK / NEXT ── */
+.btn-back-flow {
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: none; cursor: pointer;
+  font-family: 'Instrument Sans', sans-serif;
+  font-size: 13px; font-weight: 600; color: var(--muted);
+  padding: 0; margin-bottom: 22px; transition: color .15s;
+}
+.btn-back-flow:hover { color: var(--ink); }
+.btn-next {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--ink); color: #fff;
+  padding: 12px 28px; border-radius: 100px;
+  font-size: 14px; font-weight: 700; cursor: pointer;
+  border: none; font-family: 'Instrument Sans', sans-serif;
+  transition: all .15s;
+}
+.btn-next:hover { background: #222; }
+.btn-next:disabled { opacity: .25; cursor: not-allowed; }
+
+/* ── SUBJECT GRID ── */
+.subj-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px,1fr));
+  gap: 8px; margin-bottom: 24px;
+}
+.subj-card {
+  background: #fff; border: 1.5px solid var(--line);
+  border-radius: 12px; padding: 15px; cursor: pointer;
+  transition: border-color .15s; text-align: left; position: relative;
+}
+.subj-card:hover { border-color: var(--ink); }
+.subj-card.selected { border-color: var(--green); background: var(--glite); }
+.subj-card-check {
+  position: absolute; top: 9px; right: 9px;
+  width: 16px; height: 16px; background: var(--green);
+  border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; color: #fff; font-size: 9px;
+  opacity: 0; transition: opacity .15s;
+}
+.subj-card.selected .subj-card-check { opacity: 1; }
+.subj-icon { font-size: 20px; margin-bottom: 6px; }
+.subj-name { font-size: 12px; font-weight: 700; }
+
+/* ── SCORE INPUT ── */
+.score-wrap {
+  background: #fff; border-radius: 14px;
+  border: 1.5px solid var(--line); padding: 28px; margin-bottom: 20px;
+}
+.score-subj-name {
+  font-family: 'Fraunces', serif; font-size: 22px;
+  font-weight: 900; margin-bottom: 4px; letter-spacing: -.5px;
+}
+.score-counter { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
+.score-input {
+  width: 100%; font-family: 'Fraunces', serif;
+  font-size: 68px; font-weight: 900; text-align: center;
+  border: none; outline: none; color: var(--ink);
+  background: transparent; margin-bottom: 8px; letter-spacing: -4px;
+}
+.score-hint { text-align: center; font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+.quickpicks { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.qp {
+  padding: 6px 14px; border: 1.5px solid var(--line); border-radius: 100px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  background: #fff; font-family: 'Instrument Sans', sans-serif;
+  color: var(--muted); transition: all .15s;
+}
+.qp:hover { border-color: var(--ink); color: var(--ink); }
+.qp.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+/* ── RESULT HERO ── */
+.result-hero { text-align: center; margin-bottom: 24px; }
+.result-emoji { font-size: 44px; margin-bottom: 10px; }
+.result-title {
+  font-family: 'Fraunces', serif; font-size: 30px;
+  font-weight: 900; letter-spacing: -1px; margin-bottom: 6px;
+}
+.result-sub { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* ── RESULT CARDS ── */
+.rcard {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #fff; border: 1.5px solid var(--line);
+  border-left: 4px solid var(--line);
+  border-radius: 12px; padding: 15px 18px; margin-bottom: 8px;
+}
+.rcard.green { border-left-color: var(--green); background: #f0fdf8; }
+.rcard.yellow{ border-left-color: var(--amber); background: #fffbeb; }
+.rcard.red   { border-left-color: var(--red);   background: #fef2f2; }
+.rcard-subj  { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
+.rcard-status{ font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.rcard.green .rcard-status { color: var(--green); }
+.rcard.yellow .rcard-status{ color: var(--amber); }
+.rcard.red   .rcard-status { color: var(--red);   }
+.rcard-action{ font-size: 11px; color: var(--muted); }
+.rcard-score {
+  font-family: 'Fraunces', serif; font-size: 40px;
+  font-weight: 900; letter-spacing: -2px; flex-shrink: 0;
+}
+.rcard.green .rcard-score { color: var(--green); }
+.rcard.yellow .rcard-score{ color: var(--amber); }
+.rcard.red   .rcard-score { color: var(--red);   }
+
+/* ── PANELS ── */
+.panel {
+  background: #fff; border: 1.5px solid var(--line);
+  border-radius: 14px; padding: 20px; margin-bottom: 12px;
+}
+.panel-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .8px; color: var(--muted); margin-bottom: 14px;
+}
+.study-item { display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+.sdot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 5px; }
+.sdot.red    { background: var(--red);   }
+.sdot.yellow { background: var(--amber); }
+.sdot.green  { background: var(--green); }
+.study-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.study-link { font-size: 12px; color: var(--green); font-weight: 600; text-decoration: none; }
+.study-link:hover { text-decoration: underline; }
+
+/* ── RESOURCE BROWSER ── */
+.res-browser {
+  background: #fff; border: 1.5px solid var(--line);
+  border-radius: 14px; overflow: hidden; margin-bottom: 12px;
+}
+.res-browser-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 18px 0;
+}
+.res-browser-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .8px; color: var(--green); margin-bottom: 3px;
+}
+.res-browser-title {
+  font-family: 'Fraunces', serif; font-size: 17px;
+  font-weight: 900; letter-spacing: -.4px;
+}
+.res-see-all {
+  font-size: 12px; font-weight: 600; color: var(--ink);
+  border: 1.5px solid var(--line); padding: 5px 12px;
+  border-radius: 100px; text-decoration: none;
+  transition: border-color .15s; white-space: nowrap;
+}
+.res-see-all:hover { border-color: var(--ink); }
+.res-pills {
+  display: flex; gap: 6px; overflow-x: auto; padding: 10px 18px 0;
+  scrollbar-width: none;
+}
+.res-pills::-webkit-scrollbar { display: none; }
+.res-pill {
+  padding: 4px 12px; border-radius: 100px; font-size: 12px;
+  font-weight: 600; cursor: pointer; border: 1.5px solid var(--line);
+  background: #fff; color: var(--muted); white-space: nowrap;
+  font-family: 'Instrument Sans', sans-serif;
+  transition: all .15s; flex-shrink: 0;
+}
+.res-pill:hover { border-color: var(--ink); color: var(--ink); }
+.res-pill.active { background: var(--ink); color: #fff; border-color: var(--ink); }
+.res-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 10px 18px; }
+.rc {
+  background: var(--soft); border-radius: 10px; padding: 12px;
+  text-decoration: none; color: var(--ink); display: block;
+  transition: all .15s; border: 1.5px solid transparent;
+}
+.rc:hover { border-color: var(--ink); background: #fff; }
+.rc-icon { font-size: 18px; margin-bottom: 6px; }
+.rc-name { font-size: 12px; font-weight: 600; line-height: 1.3; margin-bottom: 5px; }
+.rc-tags { display: flex; gap: 4px; flex-wrap: wrap; }
+.rc-tag  { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 100px; }
+.rc-tag.free { background: #e6f6ef; color: #006644; }
+.rc-tag.paid { background: #fef3c7; color: #b45309; }
+.rc-tag.stem { background: #eff6ff; color: #2563eb; }
+.rc-tag.hot  { background: #fef2f2; color: #dc2626; }
+.res-full-btn {
+  display: block; margin: 0 18px 16px;
+  padding: 10px; text-align: center;
+  background: var(--ink); color: #fff;
+  border-radius: 100px; font-size: 13px; font-weight: 700;
+  text-decoration: none; transition: background .15s;
+}
+.res-full-btn:hover { background: #222; }
+
+/* ── SIGNUP CTA ── */
+.save-cta {
+  background: var(--ink); border-radius: 16px;
+  padding: 30px 26px; text-align: center; color: #fff; margin-bottom: 12px;
+}
+.save-cta-badge {
+  display: inline-block; background: rgba(255,255,255,.1);
+  color: #a3e6cb; font-size: 11px; font-weight: 700;
+  padding: 4px 12px; border-radius: 100px; margin-bottom: 12px;
+  letter-spacing: .5px; text-transform: uppercase;
+}
+.save-cta h2 {
+  font-family: 'Fraunces', serif; font-size: 25px;
+  font-weight: 900; margin-bottom: 8px; letter-spacing: -.8px;
+}
+.save-cta p { font-size: 13px; color: #9ca3af; line-height: 1.7; margin-bottom: 20px; }
+.save-benefits {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 8px; margin-bottom: 20px; text-align: left;
+}
+.save-benefit {
+  background: rgba(255,255,255,.07); border-radius: 10px;
+  padding: 10px 12px; font-size: 12px; color: #d1d5db;
+  display: flex; align-items: center; gap: 8px;
+}
+.save-benefit-icon { font-size: 15px; flex-shrink: 0; }
+.btn-signup {
+  display: block; background: var(--green); color: #fff;
+  padding: 13px 28px; border-radius: 100px; font-size: 14px;
+  font-weight: 700; text-decoration: none; margin-bottom: 10px;
+  transition: background .15s;
+}
+.btn-signup:hover { background: var(--green2); }
+.btn-skip { font-size: 12px; color: #6b7280; text-decoration: none; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 28px 36px; border-top: 1px solid var(--line);
+  background: #fff; display: flex; align-items: center;
+  justify-content: space-between; flex-wrap: wrap; gap: 14px;
+  margin-top: 80px;
+}
+.footer-links { display: flex; gap: 18px; }
+.footer-links a {
+  font-size: 12px; color: var(--muted);
+  text-decoration: none; font-weight: 500;
+}
+.footer-links a:hover { color: var(--ink); }
+
+/* ── MOBILE ── */
+@media (max-width: 540px) {
+  nav { padding: 0 16px; }
+  .nav-link { display: none; }
+  .hero { padding: 40px 16px 20px; }
+  .hero-title { letter-spacing: -2px; }
+  .goal-section { padding: 0 16px 28px; }
+  .goal-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .goal-card { padding: 16px 13px; }
+  .goal-icon { font-size: 20px; }
+  .goal-title { font-size: 12px; }
+  .goal-desc  { display: none; }
+  .save-benefits { grid-template-columns: 1fr; }
+  .res-grid { grid-template-columns: 1fr; }
+  .flow-section { padding: 0 14px; }
+  footer { padding: 20px 16px; flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 380px) {
+  .hero-title { font-size: 44px; }
+  .btn-go { padding: 13px 28px; font-size: 14px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="logo" onclick="resetFlow();return false;">
+    <div class="logo-ico_skip"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <span class="logo-word">Zen<em>Ed</em></span>
+  </a>
+  <div class="nav-right">
+    <a href="resources.html" class="nav-link">Resources</a>
+    <a href="mission.html" class="nav-link">Mission</a>
+    <a href="app.html" class="nav-signin">Sign in</a>
+  </div>
+</nav>
+
+<!-- ══ SCREEN 1: HERO + GOAL CARDS ══ -->
+<div id="s1">
+  <div class="hero">
+    <div class="hero-badge"><span class="hero-badge-dot"></span>Free for every high school student · NYC & beyond</div>
+    <h1 class="hero-title">Your grades.<br>Your <em>plan.</em><br>Your future.</h1>
+    <p class="hero-sub">Pick what you need — get instant answers. No login, no wait.</p>
+  </div>
+
+  <div class="flow-section">
+    <div class="step-label">What do you need help with?</div>
+    <div class="goal-grid" style="grid-template-columns:repeat(3,1fr);max-width:680px">
+      <button class="goal-card" id="gc-regents" onclick="toggleGoal('regents',this)">
+        <div class="goal-card-check">✓</div>
+        <span class="goal-icon">📝</span>
+        <div class="goal-title">Passing my Regents</div>
+        <div class="goal-desc">Check readiness by unit, get a study plan tonight</div>
+      </button>
+      <button class="goal-card" id="gc-sat" onclick="toggleGoal('sat',this)">
+        <div class="goal-card-check">✓</div>
+        <span class="goal-icon">🧪</span>
+        <div class="goal-title">SAT / ACT Prep</div>
+        <div class="goal-desc">Diagnostic + week-by-week free study plan</div>
+      </button>
+      <button class="goal-card" id="gc-college" onclick="toggleGoal('college',this)">
+        <div class="goal-card-check">✓</div>
+        <span class="goal-icon">🎓</span>
+        <div class="goal-title">College admissions</div>
+        <div class="goal-desc">CUNY, SUNY, deadlines, FAFSA, essays — NY-first</div>
+      </button>
+      <button class="goal-card" id="gc-cte" onclick="toggleGoal('cte',this)">
+        <div class="goal-card-check">✓</div>
+        <span class="goal-icon">⚙️</span>
+        <div class="goal-title">CTE pathways</div>
+        <div class="goal-desc">Tech, Health, Business, Law — jobs without a 4-year degree</div>
+      </button>
+      <button class="goal-card" id="gc-tutoring" onclick="toggleGoal('tutoring',this)">
+        <div class="goal-card-check">✓</div>
+        <span class="goal-icon">📄</span>
+        <div class="goal-title">Resume builder</div>
+        <div class="goal-desc">Free resume for students with no work experience</div>
+      </button>
+      <button class="goal-card" id="gc-summer" onclick="toggleGoal('summer',this)">
+        <div class="goal-card-check">✓</div>
+        <span class="goal-icon">🗂️</span>
+        <div class="goal-title">All resources</div>
+        <div class="goal-desc">Internships, scholarships, labs, programs & more</div>
+      </button>
+    </div>
+    <div class="cta-wrap">
+      <button class="btn-go" id="startBtn" onclick="startFlow()" disabled>Let's go →</button>
+      <div class="cta-note">No account needed · Results in 30 seconds · Free</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: SUBJECT PICKER ══ -->
+<div class="flow-screen" id="s2">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="goTo('s1')">← Back</button>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div>
+      <div class="progress-label">Step 1 of 3 — Pick your subject</div>
+    </div>
+    <div class="step-label">Which Regents are you taking?</div>
+    <div class="subj-grid" id="subjGrid">
+      <button class="subj-card" onclick="toggleSubj('biology',this)">
+        <div class="subj-card-check">✓</div>
+        <div class="subj-icon">🧬</div>
+        <div class="subj-name">Biology</div>
+      </button>
+      <button class="subj-card" onclick="toggleSubj('algebra',this)">
+        <div class="subj-card-check">✓</div>
+        <div class="subj-icon">📐</div>
+        <div class="subj-name">Algebra 1</div>
+      </button>
+      <button class="subj-card" onclick="toggleSubj('ela',this)">
+        <div class="subj-card-check">✓</div>
+        <div class="subj-icon">📖</div>
+        <div class="subj-name">English ELA</div>
+      </button>
+      <button class="subj-card" onclick="toggleSubj('us_history',this)">
+        <div class="subj-card-check">✓</div>
+        <div class="subj-icon">🇺🇸</div>
+        <div class="subj-name">US History</div>
+      </button>
+      <button class="subj-card" onclick="toggleSubj('shsat',this)">
+        <div class="subj-card-check">✓</div>
+        <div class="subj-icon">🏫</div>
+        <div class="subj-name">SHSAT Prep</div>
+      </button>
+    </div>
+    <div style="text-align:center">
+      <button class="btn-next" id="s2Next" onclick="goS2b()" disabled>Pick units →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2b: UNIT PICKER ══ -->
+<div class="flow-screen" id="s2b">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="goTo('s2')">← Back</button>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div>
+      <div class="progress-label" id="s2bLabel">Step 2 of 3 — Which units have you covered?</div>
+    </div>
+    <div class="step-label" id="s2bTitle"></div>
+    <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:16px">Pick the units you've been tested on or have grades for.</p>
+    <div class="subj-grid" id="unitGrid"></div>
+    <div style="text-align:center">
+      <button class="btn-next" id="s2bNext" onclick="goS3()" disabled>Enter grades →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: GRADE INPUT ══ -->
+<div class="flow-screen" id="s3">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="prevUnit()">← Back</button>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="pFill" style="width:75%"></div></div>
+      <div class="progress-label" id="s3Sub">Step 3 of 3</div>
+    </div>
+    <div id="s3Card"></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:12px">
+      <button class="btn-back-flow" id="backBtn" onclick="prevUnit()" style="visibility:hidden">← Previous</button>
+      <button class="btn-next" id="s3Next" onclick="nextUnit()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: RESULTS ══ -->
+<!-- ══ SIGNUP MODAL ══ -->
+<div id="signupModal" style="display:none;position:fixed;inset:0;z-index:1000;align-items:flex-end;justify-content:center">
+  <div onclick="closeModal()" style="position:absolute;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(4px)"></div>
+  <div style="position:relative;width:100%;max-width:520px;background:var(--black);border-radius:24px 24px 0 0;padding:32px 28px 40px;animation:slideUp 0.3s ease">
+    <button onclick="closeModal()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.1);border:none;color:white;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center">×</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:36px;margin-bottom:8px" id="modalEmoji">✨</div>
+      <div style="font-family:'Fraunces',serif;font-size:22px;font-weight:900;color:white;letter-spacing:-0.5px;margin-bottom:6px" id="modalTitle">Save everything before you go</div>
+      <div style="font-size:13px;color:#94a3b8;line-height:1.6" id="modalSub">Create a free account to keep your results and unlock your full dashboard.</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px">
+      <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px"><span style="font-size:16px">📊</span>Unit scores saved & tracked weekly</div>
+      <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px"><span style="font-size:16px">🎯</span>Daily study plan for your weak units</div>
+      <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px"><span style="font-size:16px">⏰</span>Internship & college deadline alerts</div>
+      <div style="background:rgba(255,255,255,0.07);border-radius:10px;padding:10px 12px;font-size:12px;color:#cbd5e1;display:flex;align-items:center;gap:8px"><span style="font-size:16px">📄</span>Resume saved to your account</div>
+    </div>
+    <a href="app.html?from=results" id="modalSignupBtn" class="btn-signup" style="display:block;text-align:center;margin-bottom:10px">Create free account — it takes 30 seconds →</a>
+    <div style="text-align:center">
+      <button onclick="continueWithoutSaving()" style="background:none;border:none;font-size:12px;color:#64748b;cursor:pointer;font-family:'Instrument Sans',sans-serif;text-decoration:underline">Continue without saving</button>
+    </div>
+  </div>
+</div>
+<style>@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}</style>
+
+<div class="flow-screen" id="s4">
+  <div class="flow-section" style="padding-top:32px;padding-bottom:60px">
+    <button class="btn-back-flow" onclick="goTo('s1');resetFlow()">← Start over</button>
+
+    <!-- Regents results -->
+    <div id="regentsResults">
+      <div class="result-hero">
+        <div class="result-emoji" id="rEmoji"></div>
+        <div class="result-title" id="rTitle"></div>
+        <div class="result-sub" id="rSub"></div>
+      </div>
+      <div id="rCards" style="margin-bottom:14px"></div>
+      <div class="panel" id="studyPanel">
+        <div class="panel-title">📖 Study these tonight</div>
+        <div id="studyItems"></div>
+      </div>
+    </div>
+
+    <!-- Resume preview (shown when tutoring goal selected) -->
+    <div id="resumeSection" style="display:none;margin-bottom:14px">
+      <div style="background:white;border-radius:20px;border:1.5px solid var(--border);overflow:hidden">
+        <div style="padding:20px 20px 0;display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--teal);margin-bottom:3px">📄 Resume Builder</div>
+            <div style="font-size:17px;font-weight:800;letter-spacing:-0.3px">Build your resume — free</div>
+          </div>
+        </div>
+        <div style="padding:16px 20px">
+          <div style="font-size:13px;color:var(--gray);margin-bottom:16px">No experience needed. Enter your info below for a quick preview, then build the full version.</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+            <div><label style="font-size:11px;font-weight:700;color:var(--gray);display:block;margin-bottom:4px">Your name</label>
+              <input id="rqName" type="text" placeholder="Maya Johnson" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:'Instrument Sans',sans-serif;outline:none" oninput="updateMiniResume()"></div>
+            <div><label style="font-size:11px;font-weight:700;color:var(--gray);display:block;margin-bottom:4px">Grade</label>
+              <select id="rqGrade" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:'Instrument Sans',sans-serif;outline:none;background:white" onchange="updateMiniResume()">
+                <option value="">Select...</option>
+                <option>9th Grade</option><option>10th Grade</option><option>11th Grade</option><option>12th Grade</option>
+              </select></div>
+          </div>
+          <div style="margin-bottom:12px"><label style="font-size:11px;font-weight:700;color:var(--gray);display:block;margin-bottom:4px">Top skill or activity</label>
+            <input id="rqSkill" type="text" placeholder="e.g. Python, Soccer team captain, Volunteer tutor" style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:9px;font-size:13px;font-family:'Instrument Sans',sans-serif;outline:none" oninput="updateMiniResume()"></div>
+          <!-- Mini resume preview -->
+          <div id="miniResumePreview" style="background:#f8fafc;border:1.5px solid var(--border);border-radius:12px;padding:16px;margin-bottom:14px;display:none">
+            <div style="font-family:'DM Serif Display',serif;font-size:18px;font-weight:400;margin-bottom:4px" id="mrName">Your Name</div>
+            <div style="font-size:12px;color:var(--teal);font-weight:600;margin-bottom:8px" id="mrGrade"></div>
+            <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">Top Skill</div>
+            <div style="font-size:13px;font-weight:600" id="mrSkill" style="color:var(--black)"></div>
+          </div>
+          <a onclick="interceptLink('resume.html','resume')" href="#" style="display:block;text-align:center;background:var(--black);color:white;padding:12px;border-radius:11px;font-size:14px;font-weight:800;text-decoration:none;transition:all 0.2s">Build full resume →</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resource browser (always shown) -->
+    <div class="res-browser">
+      <div class="res-browser-head">
+        <div>
+          <div class="res-browser-label">📚 Resources for you</div>
+          <div class="res-browser-title">Find your next opportunity</div>
+        </div>
+        <a onclick="interceptLink('resources.html','resources')" href="#" class="res-see-all">See all →</a>
+      </div>
+      <div class="res-pills" id="resPills">
+        <button class="res-pill active" onclick="filterRes('all',this)">All</button>
+        <button class="res-pill" onclick="filterRes('internship',this)">☀️ Internships</button>
+        <button class="res-pill" onclick="filterRes('scholarship',this)">🏆 Scholarships</button>
+        <button class="res-pill" onclick="filterRes('sat',this)">📝 SAT/ACT</button>
+        <button class="res-pill" onclick="filterRes('college',this)">🎓 College</button>
+        <button class="res-pill" onclick="filterRes('study',this)">📚 Self-Study</button>
+        <button class="res-pill" onclick="filterRes('graduate',this)">🏅 Graduation</button>
+      </div>
+      <div class="res-grid" id="resGrid"></div>
+      <a onclick="interceptLink('resources.html','resources')" href="#" class="res-full-btn">Browse all 26+ resources on ZenEd →</a>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══ SAT SCREEN 1: Have you taken it? ══ -->
+<div class="flow-screen" id="sat1">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="goTo('s1')">← Back</button>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:25%"></div></div><div class="progress-label">SAT Prep · Step 1 of 3</div></div>
+    <div class="step-label">Have you taken the SAT or PSAT?</div>
+    <div class="subj-grid" style="grid-template-columns:1fr 1fr;max-width:480px;margin:0 auto 24px">
+      <button class="subj-card" style="text-align:center" onclick="setSATStatus('never',this)"><div class="subj-card-check">✓</div><div class="subj-icon">🆕</div><div class="subj-name">Never taken it</div><div style="font-size:11px;color:var(--gray);margin-top:4px">First time preparing</div></button>
+      <button class="subj-card" style="text-align:center" onclick="setSATStatus('psat',this)"><div class="subj-card-check">✓</div><div class="subj-icon">📊</div><div class="subj-name">Took the PSAT</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Have a score to work from</div></button>
+      <button class="subj-card" style="text-align:center" onclick="setSATStatus('sat',this)"><div class="subj-card-check">✓</div><div class="subj-icon">📝</div><div class="subj-name">Took the SAT</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Want to improve my score</div></button>
+      <button class="subj-card" style="text-align:center" onclick="setSATStatus('act',this)"><div class="subj-card-check">✓</div><div class="subj-icon">📋</div><div class="subj-name">Preparing for ACT</div><div style="font-size:11px;color:var(--gray);margin-top:4px">ACT instead of SAT</div></button>
+    </div>
+    <div style="text-align:center"><button class="btn-next" id="sat1Next" onclick="goTo('sat2')" disabled>Next →</button></div>
+  </div>
+</div>
+
+<!-- ══ SAT: STEP 2 ══ -->
+<div class="flow-screen" id="sat2">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="goTo('sat1')">← Back</button>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div><div class="progress-label">SAT Prep · Step 2 of 3</div></div>
+    <div id="sat2Content"></div>
+    <div style="text-align:center"><button class="btn-next" onclick="goTo('sat3')">Next →</button></div>
+  </div>
+</div>
+
+<!-- ══ SAT: STEP 3 ══ -->
+<div class="flow-screen" id="sat3">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="goTo('sat2')">← Back</button>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:75%"></div></div><div class="progress-label">SAT Prep · Step 3 of 3</div></div>
+    <div class="step-label">Which section feels hardest?</div>
+    <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px">We'll focus your plan here first — biggest gains come from your weakest section.</p>
+    <div class="subj-grid" style="grid-template-columns:1fr 1fr;max-width:480px;margin:0 auto 24px">
+      <button class="subj-card" onclick="toggleSATSection('math',this)"><div class="subj-card-check">✓</div><div class="subj-icon">📐</div><div class="subj-name">Math</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Algebra, advanced math, geometry</div></button>
+      <button class="subj-card" onclick="toggleSATSection('reading',this)"><div class="subj-card-check">✓</div><div class="subj-icon">📖</div><div class="subj-name">Reading & Writing</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Comprehension, grammar, editing</div></button>
+      <button class="subj-card" onclick="toggleSATSection('both',this)"><div class="subj-card-check">✓</div><div class="subj-icon">⚖️</div><div class="subj-name">Both equally weak</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Start with a full practice test</div></button>
+      <button class="subj-card" onclick="toggleSATSection('time',this)"><div class="subj-card-check">✓</div><div class="subj-icon">⏱️</div><div class="subj-name">Timing / test anxiety</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Run out of time, get nervous</div></button>
+    </div>
+    <div style="text-align:center"><button class="btn-next" id="sat3Next" onclick="buildSATResults()" disabled>See my plan →</button></div>
+  </div>
+</div>
+
+<!-- ══ CTE: STEP 1 ══ -->
+<div class="flow-screen" id="cte1">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="goTo('s1')">← Back</button>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:33%"></div></div><div class="progress-label">CTE Pathways · Step 1 of 2</div></div>
+    <div class="step-label">What industry interests you?</div>
+    <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px">CTE programs let you graduate with real skills and certifications — no 4-year degree required.</p>
+    <div class="subj-grid" style="grid-template-columns:1fr 1fr;max-width:520px;margin:0 auto 24px">
+      <button class="subj-card" onclick="toggleCTE('tech',this)"><div class="subj-card-check">✓</div><div class="subj-icon">💻</div><div class="subj-name">Technology & Coding</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Avg salary: $65K–$110K</div></button>
+      <button class="subj-card" onclick="toggleCTE('health',this)"><div class="subj-card-check">✓</div><div class="subj-icon">🏥</div><div class="subj-name">Healthcare & Medicine</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Avg salary: $50K–$100K</div></button>
+      <button class="subj-card" onclick="toggleCTE('business',this)"><div class="subj-card-check">✓</div><div class="subj-icon">💼</div><div class="subj-name">Business & Finance</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Avg salary: $50K–$85K</div></button>
+      <button class="subj-card" onclick="toggleCTE('law',this)"><div class="subj-card-check">✓</div><div class="subj-icon">⚖️</div><div class="subj-name">Law & Criminal Justice</div><div style="font-size:11px;color:var(--gray);margin-top:4px">Avg salary: $48K–$90K</div></button>
+    </div>
+    <div style="text-align:center"><button class="btn-next" id="cte1Next" onclick="goTo('cte2')" disabled>Next →</button></div>
+  </div>
+</div>
+
+<!-- ══ CTE: STEP 2 ══ -->
+<div class="flow-screen" id="cte2">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="goTo('cte1')">← Back</button>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:66%"></div></div><div class="progress-label">CTE Pathways · Step 2 of 2</div></div>
+    <div class="step-label">What do you want after graduation?</div>
+    <div style="max-width:480px;margin:0 auto 24px;display:flex;flex-direction:column;gap:10px">
+      <button class="subj-card" style="text-align:left;display:flex;align-items:center;gap:14px" onclick="setCTEGoal('job',this)"><div class="subj-card-check">✓</div><span style="font-size:28px;flex-shrink:0">💰</span><div><div class="subj-name">A job right away</div><div style="font-size:11px;color:var(--gray);margin-top:3px">Start earning after HS — certifications get you hired fast</div></div></button>
+      <button class="subj-card" style="text-align:left;display:flex;align-items:center;gap:14px" onclick="setCTEGoal('associate',this)"><div class="subj-card-check">✓</div><span style="font-size:28px;flex-shrink:0">🏛️</span><div><div class="subj-name">Associate degree (2 years)</div><div style="font-size:11px;color:var(--gray);margin-top:3px">CUNY or P-TECH — free or affordable, done in 2 years</div></div></button>
+      <button class="subj-card" style="text-align:left;display:flex;align-items:center;gap:14px" onclick="setCTEGoal('both',this)"><div class="subj-card-check">✓</div><span style="font-size:28px;flex-shrink:0">🚀</span><div><div class="subj-name">Keep all options open</div><div style="font-size:11px;color:var(--gray);margin-top:3px">Get certified AND keep a path to 4-year degree if you want later</div></div></button>
+    </div>
+    <div style="text-align:center"><button class="btn-next" id="cte2Next" onclick="buildCTEResults()" disabled>See my pathways →</button></div>
+  </div>
+</div>
+
+<!-- ══ COLLEGE: STEP 1 ══ -->
+<div class="flow-screen" id="col1">
+  <div class="flow-section" style="padding-top:32px">
+    <button class="btn-back-flow" onclick="goTo('s1')">← Back</button>
+    <div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:50%"></div></div><div class="progress-label">College Admissions · Step 1 of 1</div></div>
+    <div class="step-label">What grade are you in?</div>
+    <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px">Your roadmap is different depending on where you are. We'll build the right one.</p>
+    <div class="subj-grid" style="grid-template-columns:repeat(4,1fr);max-width:480px;margin:0 auto 24px">
+      <button class="subj-card" style="text-align:center" onclick="setColGrade('9',this)"><div class="subj-card-check">✓</div><div class="subj-icon">9️⃣</div><div class="subj-name">9th</div></button>
+      <button class="subj-card" style="text-align:center" onclick="setColGrade('10',this)"><div class="subj-card-check">✓</div><div class="subj-icon">🔟</div><div class="subj-name">10th</div></button>
+      <button class="subj-card" style="text-align:center" onclick="setColGrade('11',this)"><div class="subj-card-check">✓</div><div class="subj-icon">1️⃣</div><div class="subj-name">11th</div></button>
+      <button class="subj-card" style="text-align:center" onclick="setColGrade('12',this)"><div class="subj-card-check">✓</div><div class="subj-icon">🎓</div><div class="subj-name">12th</div></button>
+    </div>
+    <div style="text-align:center"><button class="btn-next" id="col1Next" onclick="buildCollegeResults()" disabled>See my roadmap →</button></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="logo" onclick="resetFlow();return false;">
+    <div class="logo-ico" style="width:26px;height:26px;border-radius:7px"><svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+    <span class="logo-word" style="font-size:16px">Zen<em>Ed</em></span>
+  </a>
+  <div class="footer-links">
+    <a href="mission.html">Mission</a>
+    <a href="resources.html">Resources</a>
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+  </div>
+  <div style="font-size:12px;color:#bbb">© 2026 ZenEd · Always free</div>
+<div style="text-align:center;margin:16px 0 4px;width:100%;">
+  <a href="https://buymeacoffee.com/zened" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#FFDD00;color:#000;font-size:13px;font-weight:800;padding:9px 20px;border-radius:20px;text-decoration:none;box-shadow:0 2px 10px rgba(0,0,0,0.1);transition:all 0.2s;">☕ Support ZenEd — keep it free for students</a>
+  <div style="font-size:11px;color:#aaa;margin-top:6px;">Every dollar keeps ZenEd free for students who can't afford tutors.</div>
+</div>
+</footer>
+
+<script>
+// ══════════════════════════════════════
+// USAGE TRACKING (localStorage — no server needed)
+// ══════════════════════════════════════
+function track(event, data) {
+  try {
+    const log = JSON.parse(localStorage.getItem('zened_events') || '[]');
+    log.push({ event, data, ts: new Date().toISOString() });
+    localStorage.setItem('zened_events', JSON.stringify(log.slice(-200))); // keep last 200
+  } catch(e) {}
+}
+// You can view analytics any time in the browser console:
+// JSON.parse(localStorage.getItem('zened_events'))
+
+// ══════════════════════════════════════
+// FLOW STATE
+// ══════════════════════════════════════
+// ── NY→M+ SCALE ──
+const NY_SCALE = [
+  {label:'NY',  num:45,  color:'red',    pass:false},
+  {label:'NY+', num:57,  color:'red',    pass:false},
+  {label:'L',   num:61,  color:'yellow', pass:false},
+  {label:'L+',  num:63,  color:'yellow', pass:false},
+  {label:'D',   num:66,  color:'yellow', pass:true},
+  {label:'D+',  num:68,  color:'yellow', pass:true},
+  {label:'P',   num:72,  color:'green',  pass:true},
+  {label:'P+',  num:77,  color:'green',  pass:true},
+  {label:'M',   num:85,  color:'green',  pass:true},
+  {label:'M+',  num:95,  color:'green',  pass:true},
+];
+function scaleFromNum(n){ return [...NY_SCALE].reverse().find(s=>n>=s.num)||NY_SCALE[0]; }
+function toNum(val){
+  const lbl=String(val).trim().toUpperCase();
+  const found=NY_SCALE.find(s=>s.label===lbl);
+  if(found)return found.num;
+  const n=parseInt(val);
+  return isNaN(n)?null:Math.max(0,Math.min(100,n));
+}
+
+// ── SUBJECTS + UNITS ──
+const SUBJS = {
+  biology:    {name:'Biology', icon:'🧬', units:[
+    {id:'u1',emoji:'🏃',name:'Unit 1: Marathon Runner',   topic:'Homeostasis & Cellular Respiration', tip:'Gas exchange and cellular respiration appear on every Regents.', link:'https://www.newvisions.org/curriculum/science/biology', khan:'https://www.regentsprep.org/science/ap-biology/cellular-energetics'},
+    {id:'u2',emoji:'🦠',name:'Unit 2: Humans vs. Bacteria',topic:'Natural Selection & Antibiotic Resistance',tip:'Know the Rock Pocket Mice experiment — it\'s on the Regents.', link:'https://www.newvisions.org/curriculum/science/biology', khan:'https://www.regentsprep.org/science/ap-biology/natural-selection'},
+    {id:'u3',emoji:'🧬',name:'Unit 3: Sick Humans',        topic:'DNA Structure & Protein Synthesis',  tip:'DNA→RNA→Protein is essential. Practice CER writing too.', link:'https://www.newvisions.org/curriculum/science/biology', khan:'https://www.regentsprep.org/science/ap-biology/gene-expression-and-regulation'},
+    {id:'u4',emoji:'🦁',name:'Unit 4: Mountain Lion',      topic:'Meiosis, Mitosis & Genetics',        tip:'Punnett squares appear every year. Know mitosis vs meiosis.', link:'https://www.newvisions.org/curriculum/science/biology', khan:'https://www.regentsprep.org/science/ap-biology/heredity'},
+    {id:'u5',emoji:'🌱',name:'Unit 5: Food for All',        topic:'Photosynthesis & Ecosystems',        tip:'Photosynthesis and food webs are high-frequency Regents topics.', link:'https://www.newvisions.org/curriculum/science/biology', khan:'https://www.regentsprep.org/science/ap-biology/cellular-energetics/photosynthesis'},
+    {id:'u6',emoji:'🦣',name:'Unit 6: Woolly Mammoth',     topic:'Biodiversity & Human Impact',        tip:'Human impact on ecosystems is common in the last Regents section.', link:'https://www.newvisions.org/curriculum/science/biology', khan:'https://www.regentsprep.org/science/ap-biology/ecology'},
+  ]},
+  algebra:    {name:'Algebra 1', icon:'📐', units:[
+    {id:'a1',emoji:'📐',name:'Linear Equations & Systems', topic:'Linear Equations, Inequalities, Word Problems', tip:'Systems of equations appear every year. Practice writing from word problems.', link:'https://www.regentsprep.org/algebra/', khan:'https://www.regentsprep.org/algebra/'},
+    {id:'a2',emoji:'📈',name:'Functions & Quadratics',      topic:'Functions, Quadratics, Factoring',    tip:'Know how to factor and use the quadratic formula.', link:'https://www.regentsprep.org/algebra/', khan:'https://www.regentsprep.org/algebra/'},
+    {id:'a3',emoji:'📊',name:'Statistics & Data',           topic:'Statistics, Scatter Plots, Probability', tip:'Statistics questions are worth a lot — students often skip them.', link:'https://www.regentsprep.org/algebra2/', khan:'https://www.regentsprep.org/algebra/'},
+  ]},
+  ela:        {name:'English ELA', icon:'📖', units:[
+    {id:'e1',emoji:'📖',name:'Reading & Text Analysis',   topic:'Reading Comprehension, Literary Analysis', tip:'Read questions BEFORE the passage — saves time and focuses reading.', link:'https://www.regentsprep.org/ela/', khan:'https://www.regentsprep.org/ela'},
+    {id:'e2',emoji:'✍️',name:'Writing & Argumentation',  topic:'Argument Essay, Evidence & Reasoning', tip:'Your essay needs a clear claim, 3 pieces of evidence, and a counterargument.', link:'https://www.regentsprep.org/ela/', khan:'https://www.regentsprep.org/ela'},
+    {id:'e3',emoji:'🔤',name:'Grammar & Editing',          topic:'Revising & Editing, Grammar',          tip:'Revising & Editing is the most coachable part of ELA. Practice eliminating redundancy.', link:'https://www.regentsprep.org/ela/', khan:'https://www.regentsprep.org/ela'},
+  ]},
+  us_history: {name:'US History', icon:'🇺🇸', units:[
+    {id:'h1',emoji:'🏛️',name:'Foundations to Civil War',  topic:'Constitution, Civil War, Reconstruction', tip:'Know the major turning points — Constitution, Civil War causes.', link:'https://www.regentsprep.org/us-history/', khan:'https://www.regentsprep.org/us-history/'},
+    {id:'h2',emoji:'🏭',name:'Industrial Era to WWII',    topic:'Progressive Era, Great Depression, WWII', tip:'The Great Depression and New Deal appear on almost every Regents.', link:'https://www.regentsprep.org/us-history/', khan:'https://www.regentsprep.org/us-history/'},
+    {id:'h3',emoji:'🌎',name:'Cold War to Modern',         topic:'Cold War, Civil Rights, DBQ Skills',   tip:'DBQ — always tie your answer back to the document AND historical context.', link:'https://www.regentsprep.org/us-history/', khan:'https://www.regentsprep.org/us-history/'},
+  ]},
+  shsat:      {name:'SHSAT Prep', icon:'🏫', units:[
+    {id:'s1',emoji:'📝',name:'ELA & Scrambled Paragraphs', topic:'Scrambled Paragraphs, Reading, Editing', tip:'Scrambled Paragraphs are unique to SHSAT — practice this daily.', link:'https://www.schools.nyc.gov/enrollment/high-school/specialized-high-schools/how-to-prepare', khan:'https://www.schools.nyc.gov/enrollment/high-school/specialized-high-schools/how-to-prepare'},
+    {id:'s2',emoji:'🔢',name:'Math',                       topic:'Algebra, Geometry, Word Problems',    tip:'SHSAT math is harder than Regents Algebra. Focus on multi-step word problems.', link:'https://www.schools.nyc.gov/enrollment/high-school/specialized-high-schools/how-to-prepare', khan:'https://www.schools.nyc.gov/enrollment/high-school/specialized-high-schools/how-to-prepare'},
+  ]},
+};
+
+let goals = [], selSubjs = [], selUnits = [], unitScores = {}, unitIdx = 0;
+
+function goTo(id) {
+  document.querySelectorAll('.flow-screen').forEach(s => s.classList.remove('active'));
+  const s1 = document.getElementById('s1');
+  if (id === 's1') { s1.style.display = 'block'; }
+  else { s1.style.display = 'none'; document.getElementById(id).classList.add('active'); }
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function resetFlow() {
+  goals = []; selSubjs = []; selUnits = []; unitScores = {}; unitIdx = 0;
+  satStatus=null; satWeakSection=null; satScore=null; satTarget=null; satTimeframe=null;
+  cteIndustry=null; cteGoal=null; colGrade=null;
+  document.querySelectorAll('.goal-card,.subj-card').forEach(c => c.classList.remove('selected'));
+  document.getElementById('startBtn').disabled = true;
+  document.getElementById('s1').style.display = 'block';
+  document.querySelectorAll('.flow-screen').forEach(s => s.classList.remove('active'));
+}
+
+// ── GOAL SELECTION ──
+function toggleGoal(id, el) {
+  el.classList.toggle('selected');
+  if (goals.includes(id)) goals = goals.filter(g => g !== id);
+  else goals.push(id);
+  document.getElementById('startBtn').disabled = goals.length === 0;
+  track('goal_toggle', {goal:id, allGoals:[...goals]});
+}
+
+function startFlow() {
+  track('flow_start', {goals:[...goals]});
+  // Solo "all resources" → go straight there
+  if (goals.includes('summer') && goals.length === 1) { window.location.href='resources.html'; return; }
+  if (goals.includes('summer')) window.open('resources.html','_blank');
+  // Solo "resume" → go straight to resume builder
+  if (goals.includes('tutoring') && goals.length === 1) { window.location.href='resume.html'; return; }
+  if (goals.includes('tutoring') && goals.length > 1) window.open('resume.html','_blank');
+  // Priority: regents > sat > college > cte
+  if (goals.includes('regents')) goTo('s2');
+  else if (goals.includes('sat'))     goTo('sat1');
+  else if (goals.includes('college')) goTo('col1');
+  else if (goals.includes('cte'))     goTo('cte1');
+  else { buildResults(); goTo('s4'); }
+}
+
+// ── SUBJECT SELECTION ──
+function toggleSubj(id, el) {
+  el.classList.toggle('selected');
+  if (selSubjs.includes(id)) selSubjs = selSubjs.filter(s => s !== id);
+  else selSubjs.push(id);
+  document.getElementById('s2Next').disabled = selSubjs.length === 0;
+}
+
+function goS2b() {
+  // Build unit picker for selected subjects
+  selUnits = [];
+  const allUnits = selSubjs.flatMap(sId => (SUBJS[sId]?.units||[]).map(u=>({...u, subjId:sId, subjName:SUBJS[sId].name, subjIcon:SUBJS[sId].icon})));
+  const title = selSubjs.length === 1 ? `${SUBJS[selSubjs[0]].icon} ${SUBJS[selSubjs[0]].name} — which units?` : 'Which units have you covered?';
+  document.getElementById('s2bTitle').textContent = title;
+  document.getElementById('unitGrid').innerHTML = allUnits.map(u => `
+    <button class="subj-card" onclick="toggleUnit('${u.subjId}|${u.id}',this)" style="text-align:left">
+      <div class="subj-card-check">✓</div>
+      <div class="subj-icon">${u.emoji}</div>
+      <div class="subj-name" style="font-size:12px;line-height:1.3">${u.name.replace(/Unit \d+: /,'')}</div>
+      ${selSubjs.length > 1 ? '<div style="font-size:10px;color:var(--gray);margin-top:3px">'+u.subjIcon+' '+u.subjName+'</div>' : ''}
+    </button>`).join('');
+  goTo('s2b');
+}
+
+function toggleUnit(key, el) {
+  el.classList.toggle('selected');
+  if (selUnits.includes(key)) selUnits = selUnits.filter(u => u !== key);
+  else selUnits.push(key);
+  document.getElementById('s2bNext').disabled = selUnits.length === 0;
+}
+
+// ── GRADE INPUT ──
+function goS3() {
+  track('units_selected', {units:[...selUnits]});
+  unitIdx = 0;
+  renderUnitCard();
+  goTo('s3');
+}
+
+function getUnitData(key) {
+  const [subjId, unitId] = key.split('|');
+  const subj = SUBJS[subjId];
+  const unit = subj?.units?.find(u => u.id === unitId);
+  return {subjId, subj, unit};
+}
+
+function renderUnitCard() {
+  const key = selUnits[unitIdx];
+  const {subjId, subj, unit} = getUnitData(key);
+  const total = selUnits.length;
+  const pct = Math.round(50 + (unitIdx / total) * 45);
+  document.getElementById('pFill').style.width = pct + '%';
+  document.getElementById('s3Sub').textContent = `Grade ${unitIdx+1} of ${total} — ${subj.name}`;
+  const saved = unitScores[key] || '';
+  document.getElementById('s3Card').innerHTML = `
+    <div class="score-wrap" style="margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+        <span style="font-size:28px">${unit.emoji}</span>
+        <div>
+          <div class="score-subj-name" style="font-size:17px">${unit.name}</div>
+          <div style="font-size:12px;color:var(--teal);font-weight:600">${unit.topic}</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:16px;padding:10px;background:var(--gray-light);border-radius:8px">
+        💡 <em>${unit.tip}</em>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Your grade on this unit:</div>
+
+      <!-- NY scale tap buttons -->
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+        ${NY_SCALE.map(s=>{
+          const clr = s.color==='red'?'#dc2626':s.color==='yellow'?'#d97706':'#059669';
+          const isOn = saved===s.label;
+          return `<button onclick="tapUnit('${key}','${s.label}',this)"
+            style="padding:8px 14px;border:2px solid ${isOn?'var(--black)':clr};border-radius:20px;font-size:13px;font-weight:800;cursor:pointer;background:${isOn?'var(--black)':'white'};color:${isOn?'white':clr};font-family:'Instrument Sans',sans-serif;transition:all 0.15s"
+            class="unit-scale-btn" data-key="${key}" data-lbl="${s.label}">${s.label}</button>`;
+        }).join('')}
+      </div>
+
+      <div style="font-size:11px;color:var(--gray);margin-bottom:10px;text-align:center">— or enter a number —</div>
+      <input type="number" id="uInp" placeholder="e.g. 72" min="0" max="100"
+        value="${/^\d+$/.test(saved)?saved:''}"
+        style="width:100%;padding:12px;border:1.5px solid var(--border);border-radius:10px;font-size:16px;font-weight:700;text-align:center;font-family:'Instrument Sans',sans-serif;outline:none"
+        oninput="unitScores['${key}']=this.value;clearScaleBtns('${key}')"
+        onkeypress="if(event.key==='Enter')nextUnit()">
+      <div id="gradePreview_${unitIdx}" style="text-align:center;font-size:13px;font-weight:700;margin-top:8px;min-height:20px"></div>
+    </div>`;
+  document.getElementById('backBtn').style.visibility = unitIdx === 0 ? 'hidden' : 'visible';
+  const isLast = unitIdx === selUnits.length - 1;
+  document.getElementById('s3Next').textContent = isLast ? 'See my results →' : 'Next unit →';
+  updatePreview(key, unitIdx);
+}
+
+function tapUnit(key, lbl, btn) {
+  unitScores[key] = lbl;
+  document.querySelectorAll(`.unit-scale-btn[data-key="${key}"]`).forEach(b => {
+    const isOn = b.dataset.lbl === lbl;
+    const sc = NY_SCALE.find(s=>s.label===b.dataset.lbl);
+    const clr = sc?.color==='red'?'#dc2626':sc?.color==='yellow'?'#d97706':'#059669';
+    b.style.background = isOn ? 'var(--black)' : 'white';
+    b.style.color = isOn ? 'white' : clr;
+    b.style.borderColor = isOn ? 'var(--black)' : clr;
+  });
+  const inp = document.getElementById('uInp');
+  if(inp) inp.value = '';
+  updatePreview(key, unitIdx);
+}
+
+function clearScaleBtns(key) {
+  document.querySelectorAll(`.unit-scale-btn[data-key="${key}"]`).forEach(b => {
+    const sc = NY_SCALE.find(s=>s.label===b.dataset.lbl);
+    const clr = sc?.color==='red'?'#dc2626':sc?.color==='yellow'?'#d97706':'#059669';
+    b.style.background = 'white'; b.style.color = clr; b.style.borderColor = clr;
+  });
+  const inp = document.getElementById('uInp');
+  if(inp) unitScores[key] = inp.value;
+  updatePreview(key, unitIdx);
+}
+
+function updatePreview(key, idx) {
+  const prev = document.getElementById('gradePreview_'+idx);
+  if(!prev) return;
+  const raw = unitScores[key];
+  if(!raw){prev.innerHTML='';return;}
+  const num = toNum(raw);
+  if(num===null){prev.innerHTML='<span style="color:#dc2626">❓ invalid</span>';return;}
+  const sc = scaleFromNum(num);
+  const clr = sc.color==='red'?'#dc2626':sc.color==='yellow'?'#d97706':'#059669';
+  prev.innerHTML = `<span style="color:${clr}">${sc.pass?'✓ Passing':'✗ Not passing yet'} · ${sc.label} · ${num}%</span>`;
+}
+
+function nextUnit() {
+  const key = selUnits[unitIdx];
+  const inp = document.getElementById('uInp');
+  if(inp?.value) unitScores[key] = inp.value;
+  if(!unitScores[key]) return toast('Please enter a grade first','error');
+  if(unitIdx < selUnits.length - 1) { unitIdx++; renderUnitCard(); }
+  else { track('grades_entered',{scores:{...unitScores}}); buildResults(); goTo('s4'); }
+}
+
+function prevUnit() {
+  if(unitIdx > 0) { unitIdx--; renderUnitCard(); }
+  else goTo('s2b');
+}
+
+// ── BUILD RESULTS ──
+function buildResults() {
+  document.getElementById('regentsResults').style.display = goals.includes('regents') ? 'block' : 'none';
+  if (!goals.includes('regents') || !selUnits.length) return;
+
+  const unitResults = selUnits.map(key => {
+    const {subjId, subj, unit} = getUnitData(key);
+    const raw = unitScores[key];
+    const num = toNum(raw) ?? 0;
+    const sc = scaleFromNum(num);
+    return {key, subjId, subj, unit, num, sc};
+  });
+
+  const atRisk = unitResults.filter(r => !r.sc.pass).length;
+  const onTrack = unitResults.filter(r => r.sc.color === 'green').length;
+
+  let emoji, title, sub;
+  if(atRisk===0 && onTrack===unitResults.length){emoji='🎉';title="You're on track!";sub="Your unit grades look solid. Keep studying and you'll pass.";}
+  else if(atRisk===0){emoji='⚠️';title="You're passing — don't get comfortable.";sub="Some units are borderline. A bit more work and you'll be safe.";}
+  else if(atRisk===unitResults.length){emoji='🚨';title="You need to start studying now.";sub="Multiple units are below passing — but you have time to turn it around.";}
+  else{emoji='📊';title=`${atRisk} unit${atRisk>1?'s':''} need your attention.`;sub="Focus on the red ones first — they're pulling your grade down.";}
+
+  document.getElementById('rEmoji').textContent=emoji;
+  document.getElementById('rTitle').textContent=title;
+  document.getElementById('rSub').textContent=sub;
+
+  const colors={red:'#dc2626',yellow:'#d97706',green:'#059669'};
+  const bgs={red:'#fff1f2',yellow:'#fffbeb',green:'#f0fdf4'};
+
+  document.getElementById('rCards').innerHTML = unitResults.map(({subj, unit, num, sc}) => {
+    const gap = !sc.pass ? `Need ${65-num} more points to pass` : sc.color==='yellow' ? `${num-65} pts above passing — aim for P+ (75)` : 'On track!';
+    return `<div class="rcard ${sc.color}">
+      <div class="rcard-left">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px">${subj.icon} ${subj.name}</div>
+        <div class="rcard-subj">${unit.emoji} ${unit.name.replace(/Unit \d+: /,'')}</div>
+        <div style="font-size:11px;color:${colors[sc.color]};font-weight:600;margin-bottom:2px">${unit.topic}</div>
+        <div class="rcard-status" style="color:${colors[sc.color]}">${sc.pass?'✓':'✗'} ${sc.label} — ${sc.pass?'Passing':'Not passing'}</div>
+        <div class="rcard-action">${gap}</div>
+      </div>
+      <div class="rcard-score" style="color:${colors[sc.color]}">${sc.label}</div>
+    </div>`;
+  }).join('');
+
+  // Study plan — worst units first
+  const needsWork = [...unitResults].sort((a,b)=>a.num-b.num).filter(r=>r.num<75).slice(0,3);
+  if(!needsWork.length) {
+    document.getElementById('studyPanel').innerHTML=`<div class="panel-title">📖 Keep up your streak</div><p style="font-size:13px;color:var(--gray)">All units are passing! Do 15 min of review per unit each night before the exam.</p>`;
+  } else {
+    document.getElementById('studyItems').innerHTML = needsWork.map(({subj,unit,num,sc})=>{
+      const dotC = sc.color;
+      return `<div class="study-item">
+        <div class="sdot ${dotC}"></div>
+        <div>
+          <div class="study-name">${unit.emoji} ${unit.name} — <em>${unit.topic}</em></div>
+          <div style="font-size:11px;color:var(--gray);margin:2px 0 4px">${unit.tip}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <a href="#" onclick="interceptLink('"+unit.link+"','study');return false" class="study-link">📖 New Visions →</a>
+            <a href="#" onclick="interceptLink('"+unit.khan+"','study');return false" class="study-link" style="color:var(--gray)">📚 RegentsPrep →</a>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+  track('results_viewed',{goals:[...goals],atRisk,onTrack,total:unitResults.length});
+  // Show resume section if tutoring goal selected
+  const resumeSection = document.getElementById('resumeSection');
+  if (resumeSection) resumeSection.style.display = goals.includes('tutoring') ? 'block' : 'none';
+}
+
+
+// ══ SIGNUP MODAL ══
+let pendingUrl = null;
+let signupCount = 0; // track how many times they've dismissed
+
+function interceptLink(url, context) {
+  pendingUrl = url;
+  signupCount++;
+  track('link_intercepted', {url, context, count: signupCount});
+
+  // Customize modal per context
+  const modal = document.getElementById('signupModal');
+  const configs = {
+    resume:    {emoji:'📄', title:'Save your resume before you go', sub:'Sign up free to save your resume and come back to edit it anytime.'},
+    resources: {emoji:'📚', title:'Save your results + get alerts', sub:'Create a free account to save your scores and get internship deadline reminders.'},
+    study:     {emoji:'🎯', title:'Save your study plan', sub:'Sign up to get your personalized daily study plan and track improvement over time.'},
+    default:   {emoji:'✨', title:'Save everything before you go', sub:'Create a free account to keep your results and unlock your full dashboard.'},
+  };
+  const cfg = configs[context] || configs.default;
+  document.getElementById('modalEmoji').textContent = cfg.emoji;
+  document.getElementById('modalTitle').textContent = cfg.title;
+  document.getElementById('modalSub').textContent = cfg.sub;
+
+  // Update signup button destination with context
+  document.getElementById('modalSignupBtn').href = `app.html?from=${context}`;
+
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  document.getElementById('signupModal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function continueWithoutSaving() {
+  closeModal();
+  track('signup_skipped', {url: pendingUrl, count: signupCount});
+  if (pendingUrl) {
+    // External resource links open in new tab, internal pages navigate
+    if (pendingUrl.startsWith('http')) window.open(pendingUrl, '_blank');
+    else window.location.href = pendingUrl;
+    pendingUrl = null;
+  }
+}
+
+// ── MINI RESUME PREVIEW ──
+function updateMiniResume() {
+  const name = document.getElementById('rqName')?.value.trim();
+  const grade = document.getElementById('rqGrade')?.value;
+  const skill = document.getElementById('rqSkill')?.value.trim();
+  const preview = document.getElementById('miniResumePreview');
+  if (!preview) return;
+  if (name || skill) {
+    preview.style.display = 'block';
+    document.getElementById('mrName').textContent = name || 'Your Name';
+    document.getElementById('mrGrade').textContent = grade ? `High School Student · ${grade}` : 'High School Student';
+    document.getElementById('mrSkill').textContent = skill || '—';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+
+
+const RES = [
+  {cat:'internship',icon:'💼',name:'SYEP — Paid Summer Jobs',tags:['paid','hot'],url:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page'},
+  {cat:'internship',icon:'❄️',name:'Snow.day — 500+ Free Programs',tags:['free'],url:'https://snow.day'},
+  {cat:'internship',icon:'🔧',name:'Hk Maker Lab — Columbia',tags:['free','stem'],url:'https://outreach.engineering.columbia.edu/content/hk-maker-lab'},
+  {cat:'internship',icon:'🔬',name:'NYAS Junior Academy',tags:['free','stem'],url:'https://www.nyas.org/learning/high-school-research-programs/high-school-resources/'},
+  {cat:'internship',icon:'🧠',name:'BrainYAC — Zuckerman Institute (Columbia)',tags:['free','stem'],url:'https://zuckermaninstitute.columbia.edu/brainyac'},
+  {cat:'internship',icon:'🧬',name:'NYC Science Research',tags:['free','stem'],url:'https://www.amnh.org/learn-teach/teens/science-research-mentoring-program'},
+  {cat:'scholarship',icon:'🏆',name:'Fastweb — 1.5M Scholarships',tags:['free'],url:'https://www.fastweb.com'},
+  {cat:'scholarship',icon:'✨',name:'Bold.org — No-Essay Awards',tags:['free'],url:'https://bold.org'},
+  {cat:'scholarship',icon:'📈',name:'Raise.me — Earn Now in 9th',tags:['free'],url:'https://www.raise.me'},
+  {cat:'scholarship',icon:'🎓',name:'CUNY Excelsior — Free Tuition',tags:['free'],url:'https://www.hesc.ny.gov'},
+  {cat:'scholarship',icon:'📋',name:'FAFSA — Federal Aid',tags:['free'],url:'https://studentaid.gov'},
+  {cat:'sat',icon:'📝',name:'RegentsPrep SAT (Official)',tags:['free'],url:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests'},
+  {cat:'sat',icon:'💻',name:'Bluebook — Digital SAT Tests',tags:['free'],url:'https://bluebook.collegeboard.org'},
+  {cat:'sat',icon:'📊',name:'Free ACT Practice Tests',tags:['free'],url:'https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html'},
+  {cat:'college',icon:'🎓',name:'NYC College Access Centers',tags:['free'],url:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers'},
+  {cat:'college',icon:'📝',name:'Common App — 1,000+ Colleges',tags:['free'],url:'https://www.commonapp.org'},
+  {cat:'college',icon:'🏛️',name:'CUNY College Now — Free Credits',tags:['free'],url:'https://www.cuny.edu/about/administration/offices/k16/college-now/'},
+  {cat:'study',icon:'🟢',name:'RegentsPrep — All Subjects',tags:['free'],url:'https://www.regentsprep.org'},
+  {cat:'study',icon:'🔬',name:'LabXchange — Harvard Science Labs',tags:['free','stem'],url:'https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12'},
+  {cat:'study',icon:'📖',name:'Regents Prep + Past Exams',tags:['free'],url:'https://www.regentsprep.org'},
+  {cat:'graduate',icon:'🏅',name:'Portrait of a Graduate (NYSED)',tags:['free'],url:'https://www.nysed.gov/next-generation-learning-standards'},
+  {cat:'graduate',icon:'⚙️',name:'CTE Programs — 400+ Pathways',tags:['free'],url:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education'},
+  {cat:'graduate',icon:'💻',name:'P-TECH — Free Associate Degree',tags:['free','stem'],url:'https://www.ptech.org'},
+];
+let activeResCat = 'all';
+
+// ══════════════════════════════════════════════════════
+// SAT FLOW
+// ══════════════════════════════════════════════════════
+let satStatus=null, satWeakSection=null, satScore=null, satTarget=null, satTimeframe=null;
+
+const SAT_DATA = {
+  math:{label:'Math',icon:'📐',tip:'SAT Math is 44 questions in 70 min. No calculator on module 1. Algebra covers ~35% — start there.',
+    modules:[
+      {name:'Algebra & Linear Functions',link:'https://www.regentsprep.org/algebra/',desc:'Highest-value topic — ~35% of SAT Math'},
+      {name:'Advanced Math & Quadratics',link:'https://www.regentsprep.org/algebra/2',desc:'Quadratics, polynomials, exponential functions'},
+      {name:'Problem Solving & Data',link:'https://www.regentsprep.org/algebra2/',desc:'Percentages, ratios, scatter plots'},
+      {name:'Geometry & Trigonometry',link:'https://www.regentsprep.org/geometry/',desc:'Area, volume, angles, basic trig'},
+    ]},
+  reading:{label:'Reading & Writing',icon:'📖',tip:'54 questions in 64 min. Each has its own short passage — great for pacing. Grammar questions are the fastest wins.',
+    modules:[
+      {name:'Information & Ideas',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',desc:'Main idea, details, inference — most questions'},
+      {name:'Craft & Structure',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',desc:'Vocabulary in context, text structure, purpose'},
+      {name:'Expression of Ideas',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',desc:'Transitions, rhetorical synthesis, rewriting'},
+      {name:'Standard English Conventions',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',desc:'Punctuation, sentence boundaries — fastest to improve'},
+    ]},
+  both:{label:'Both Sections',icon:'⚖️',tip:'Take a full Bluebook practice test first — your score gap tells you exactly where to focus.',
+    modules:[
+      {name:'Bluebook Full Practice Test',link:'https://bluebook.collegeboard.org',desc:'Take this first — see which score is lower'},
+      {name:'RegentsPrep SAT Personalized',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',desc:'Connect PSAT scores for instant custom plan'},
+      {name:'Math: Algebra & Functions',link:'https://www.regentsprep.org/algebra/',desc:'Highest-value Math topics'},
+      {name:'Reading: Grammar & Editing',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',desc:'Fastest Reading/Writing gains'},
+    ]},
+  time:{label:'Timing & Anxiety',icon:'⏱️',tip:'Timing only improves with timed practice. Take 4+ full timed tests. Review every wrong answer after each one.',
+    modules:[
+      {name:'SAT Timing Strategy',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',desc:'When to skip, when to guess, how to pace'},
+      {name:'Bluebook Timed Practice',link:'https://bluebook.collegeboard.org',desc:'Same app used on test day — 4 free full tests'},
+      {name:'Test Anxiety Techniques',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',desc:'Breathing, mindset, elimination strategies'},
+    ]},
+};
+
+const SAT_SCHEDULES = {
+  '2weeks':{label:'2 weeks',daily:90,plan:['Days 1–3: Full Bluebook practice test — identify exactly which question types you miss','Days 4–7: RegentsPrep — drill ONLY your 2 weakest question types, nothing else','Days 8–11: 2 more full timed Bluebook tests, review every wrong answer the same day','Days 12–14: Light review only, sleep 8hrs, no cramming the night before']},
+  '1month':{label:'1 month',daily:60,plan:['Week 1: Full Bluebook test + connect PSAT score to Khan for personalized plan','Week 2: RegentsPrep personalized — 60 min/day focused on weak topics only','Week 3: Second full Bluebook test, compare to Week 1, adjust your focus','Week 4: Final practice test + review only weak question types, rest before test day']},
+  '3months':{label:'3 months',daily:45,plan:['Month 1: Khan diagnostic + 2 Bluebook tests, build section foundations (45 min/day)','Month 2: Section deep work — alternate Math and Reading weeks, track % correct','Month 3: Full test every 2 weeks, review wrong answers, polish weak spots only']},
+  'long':{label:'6+ months',daily:30,plan:['Months 1–2: Khan Algebra 1 + Reading grammar foundations (30 min/day is enough)','Months 3–4: Monthly Bluebook test, build section by section from your lowest scores','Months 5–6: Intensive — 2 timed tests/month, targeted drilling on remaining weak areas','Bonus: Take PSAT in October — free data AND qualifies for National Merit Scholarship']},
+};
+
+function setSATStatus(val, el) {
+  satStatus = val;
+  document.querySelectorAll('#sat1 .subj-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('sat1Next').disabled = false;
+  const isACT = val==='act', hasScore = val!=='never';
+  const sat2 = document.getElementById('sat2Content');
+  if (!hasScore) {
+    sat2.innerHTML = `<div class="step-label">How much time until your test?</div>
+      <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:20px">We'll build a realistic study schedule based on your timeline.</p>
+      <div class="subj-grid" style="grid-template-columns:1fr 1fr;max-width:480px;margin:0 auto 20px">
+        ${Object.entries(SAT_SCHEDULES).map(([k,v])=>`<button class="subj-card" onclick="setSATTimeframe('${k}',this)"><div class="subj-card-check">✓</div><div class="subj-name">${v.label}</div></button>`).join('')}
+      </div>`;
+  } else {
+    sat2.innerHTML = `<div class="step-label">What's your current ${isACT?'ACT':'SAT'} score?</div>
+      <p style="font-size:13px;color:var(--gray);text-align:center;margin-bottom:16px">${isACT?'ACT scored 1–36. Avg NYC public school: ~18':'SAT scored 400–1600. Avg NYC public school: ~990'}</p>
+      <div class="score-wrap" style="max-width:400px;margin:0 auto 16px">
+        <input type="number" id="satScoreInp" class="score-input" placeholder="${isACT?'22':'1050'}" min="${isACT?1:400}" max="${isACT?36:1600}" style="font-size:42px" oninput="satScore=parseInt(this.value)">
+        <div class="score-hint">${isACT?'CUNY: 18+ · SUNY: 20+ · competitive private: 27+':'CUNY: 1000+ · SUNY: 1050+ · competitive private: 1200+'}</div>
+        <div style="margin-top:14px">
+          <label style="font-size:12px;font-weight:700;color:var(--gray);display:block;margin-bottom:6px">Target score</label>
+          <input type="number" id="satTargetInp" class="score-input" placeholder="${isACT?'26':'1200'}" min="${isACT?1:400}" max="${isACT?36:1600}" style="font-size:32px;color:var(--teal)" oninput="satTarget=parseInt(this.value)">
+        </div>
+      </div>
+      <div style="max-width:400px;margin:0 auto 16px">
+        <label style="font-size:12px;font-weight:700;color:var(--gray);display:block;margin-bottom:8px">Time until your next test:</label>
+        <div class="subj-grid" style="grid-template-columns:1fr 1fr">
+          ${Object.entries(SAT_SCHEDULES).map(([k,v])=>`<button class="subj-card" style="padding:12px" onclick="setSATTimeframe('${k}',this)"><div class="subj-card-check">✓</div><div class="subj-name">${v.label}</div></button>`).join('')}
+        </div>
+      </div>`;
+  }
+}
+
+function setSATTimeframe(val, el) {
+  satTimeframe = val;
+  document.querySelectorAll('#sat2 .subj-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleSATSection(val, el) {
+  satWeakSection = val;
+  document.querySelectorAll('#sat3 .subj-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('sat3Next').disabled = false;
+}
+
+function buildSATResults() {
+  const section = SAT_DATA[satWeakSection] || SAT_DATA.both;
+  const schedule = SAT_SCHEDULES[satTimeframe] || SAT_SCHEDULES['1month'];
+  const isACT = satStatus==='act';
+  const gap = (satScore && satTarget) ? satTarget-satScore : null;
+  const colC = satScore ? (isACT?(satScore>=27?'green':satScore>=20?'yellow':'red'):(satScore>=1200?'green':satScore>=1000?'yellow':'red')) : null;
+
+  let html = `<button class="btn-back-flow" onclick="goTo('sat3')">← Back</button>
+  <div class="result-hero">
+    <div class="result-emoji">🎯</div>
+    <div class="result-title">Your ${isACT?'ACT':'SAT'} Study Plan</div>
+    <div class="result-sub">${gap!==null&&gap>0?`Current: ${satScore} → Target: ${satTarget} · Need +${gap} points`:'Personalized plan based on your timeline and weak areas'}</div>
+  </div>`;
+
+  if (satScore && colC) {
+    const msg = isACT
+      ? (satScore>=27?'Strong — competitive for selective schools':satScore>=20?'Solid — meets CUNY/SUNY requirements':'Needs work — focused prep adds 4–6 points fast')
+      : (satScore>=1200?'Strong — competitive for selective schools':satScore>=1000?'Meets CUNY/SUNY minimum — room to grow':'Below average — focused prep can add 150+ points');
+    html += `<div class="rcard ${colC}" style="margin-bottom:14px">
+      <div class="rcard-left">
+        <div class="rcard-subj">${isACT?'ACT':'SAT'} Current Score</div>
+        <div class="rcard-status">${msg}</div>
+        ${gap!==null&&gap>0?`<div class="rcard-action">+${gap} points to reach your target</div>`:''}
+      </div><div class="rcard-score">${satScore}</div>
+    </div>`;
+  }
+
+  html += `<div style="background:#fffbeb;border:1.5px solid #f59e0b;border-radius:14px;padding:14px 16px;margin-bottom:14px">
+    <div style="font-size:13px;font-weight:800;margin-bottom:5px">💰 Take the test for free — fee waivers</div>
+    <div style="font-size:12px;color:#374151;line-height:1.7">Free/reduced lunch = <strong>2 free SAT tests</strong> and <strong>4 free ACT tests</strong>. Ask your counselor for a fee waiver code before registering. Also unlocks fee waivers for 20+ college applications.</div>
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">📅 Your ${schedule.label} plan (${schedule.daily} min/day)</div>
+    ${schedule.plan.map((step,i)=>`<div class="study-item"><div class="sdot ${i===0?'red':i===schedule.plan.length-1?'green':'yellow'}"></div><div><div class="study-name">${step}</div></div></div>`).join('')}
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">${section.icon} Focus: ${section.label}</div>
+    <div style="font-size:12px;color:var(--gray);background:var(--gray-light);border-radius:8px;padding:8px 12px;margin-bottom:10px">💡 ${section.tip}</div>
+    ${section.modules.map(m=>`<div class="study-item"><div class="sdot red"></div><div>
+      <div class="study-name">${m.name}</div>
+      <div style="font-size:11px;color:var(--gray);margin:2px 0 4px">${m.desc}</div>
+      <a href="#" onclick="interceptLink('${m.link}','study');return false" class="study-link">Start studying →</a>
+    </div></div>`).join('')}
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">🔑 3 essential tools — all free</div>
+    ${[
+      {n:'RegentsPrep SAT — Official & Free',d:'Made with College Board. Connect PSAT scores for instant personalized plan.',l:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests'},
+      {n:'Bluebook — Official Digital Practice Tests',d:'Same app as test day. 4 full free tests. Take every single one.',l:'https://bluebook.collegeboard.org'},
+      {n:'NYC DOE SAT/ACT Prep + Fee Waivers',d:'Free NYC prep programs and test fee waivers for public school students.',l:'https://www.schools.nyc.gov/learning/student-journey/college-and-career-planning/sat-act'},
+    ].map(r=>`<div class="study-item"><div class="sdot green"></div><div>
+      <div class="study-name">${r.n}</div>
+      <div style="font-size:11px;color:var(--gray);margin:2px 0 4px">${r.d}</div>
+      <a href="#" onclick="interceptLink('${r.l}','study');return false" class="study-link">Open →</a>
+    </div></div>`).join('')}
+  </div>`;
+
+  document.getElementById('s4').querySelector('.flow-section').innerHTML = html;
+  buildResultsCommon();
+  goTo('s4');
+}
+
+// ══════════════════════════════════════════════════════
+// CTE FLOW
+// ══════════════════════════════════════════════════════
+let cteIndustry=null, cteGoal=null;
+
+const CTE_DATA = {
+  tech:{label:'Technology & Coding',icon:'💻',salary:'$65K–$110K',
+    certifications:['CompTIA IT Fundamentals (ITF+) — entry level, $0 study materials','Google IT Support Certificate (Coursera — free for students)','AWS Cloud Practitioner — in-demand cloud cert','CompTIA A+ — most recognized IT cert for jobs','Cybersecurity Fundamentals (Cisco Networking Academy — free)'],
+    programs:[
+      {name:'P-TECH — Free Associate Degree + IBM mentorship',link:'https://www.ptech.org',note:'6-year program: HS diploma + free CUNY associate degree + guaranteed IBM job interview. 30+ NYC schools.'},
+      {name:'CUNY Tech Talent Pipeline',link:'https://talem.nyc',note:'Free coding bootcamp partnerships + paid internships at NYC tech companies. No experience needed.'},
+      {name:'NYC CS4All — Computer Science for All',link:'https://www.schools.nyc.gov/learning/programs/computer-science-for-all',note:'Free CS courses in NYC public schools — coding, networks, cybersecurity, game design.'},
+      {name:'SYEP Tech Track',link:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page',note:'Paid summer internships at NYC tech companies for ages 14–24. Apply every January.'},
+      {name:'NYC CTE Technology Programs',link:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education',note:'400+ tech CTE seats across NYC high schools: networks, cybersecurity, web dev, game design.'},
+    ],
+    colleges:['CUNY City Tech — Computer Systems Technology (Excelsior ✓)','CUNY Queensborough — Computer Information Systems (Excelsior ✓)','CUNY BMCC — Computer Information Technology (Excelsior ✓)','SUNY Canton — Computer Information Systems'],
+    jobs:['IT Support Specialist — $50K','Junior Web Developer — $65K','Cybersecurity Analyst — $80K','Data Analyst — $70K','Network Administrator — $72K'],
+  },
+  health:{label:'Healthcare & Medicine',icon:'🏥',salary:'$50K–$100K',
+    certifications:['CNA (Certified Nursing Assistant) — 6 weeks training, immediate hire','EMT Basic Certification — 120 hours, NYC Fire Dept pipeline','Phlebotomy Technician Certification — 4–8 weeks','Medical Assistant Certification (CCMA) — 6 months','CPR/First Aid — required for ALL health careers, get it now'],
+    programs:[
+      {name:'NYC Health + Hospitals CNA Training',link:'https://www.nychealthandhospitals.org',note:'Free CNA training for NYC residents. Strong pipeline to nursing jobs at city hospitals.'},
+      {name:'CUNY Pathways to Healthcare',link:'https://www.cuny.edu',note:'Nursing and Health Sciences at BMCC, City Tech, Lehman — free with Excelsior for eligible students.'},
+      {name:'NYC CTE Health Science Programs',link:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education',note:'80+ Health Science CTE programs in NYC: medical terminology, anatomy, clinical rotations.'},
+      {name:'NYAS Junior Academy — Science Track',link:'https://www.nyas.org/learning/high-school-research-programs/high-school-resources/',note:'Free virtual mentorship with real scientists and doctors. Strengthens college AND job applications.'},
+      {name:'SYEP — Health Track',link:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page',note:'Paid placements at NYC hospitals, clinics, and health agencies. Ages 14–24. Apply in January.'},
+    ],
+    colleges:['CUNY BMCC — Nursing, Health Info Technology (Excelsior ✓)','CUNY Lehman — Nursing (Excelsior ✓)','CUNY City Tech — Dental Hygiene, Radiologic Technology (Excelsior ✓)','SUNY Downstate — Nursing, Health Sciences'],
+    jobs:['CNA — $38K (growing fastest in NYC)','Medical Assistant — $42K','EMT — $50K','Phlebotomist — $40K','Registered Nurse — $85K with associate degree'],
+  },
+  business:{label:'Business & Finance',icon:'💼',salary:'$50K–$85K',
+    certifications:['Microsoft Excel Specialist (MOS) — most requested by employers','QuickBooks ProAdvisor — free online, used in every small business','Google Analytics Certification — free, used in marketing jobs','HubSpot Marketing Certification — free, 6 hours','FINRA SIE Exam — entry point for financial industry careers'],
+    programs:[
+      {name:'CUNY Small Business Development Center',link:'https://www.cuny.edu',note:'Free business courses and mentorship at CUNY campuses. Great for entrepreneurship and business admin.'},
+      {name:'NYC Business Solutions — Free Training',link:'https://www.nyc.gov/businesssolutions',note:'Free accounting, Excel, business admin certification programs for NYC residents.'},
+      {name:'NYC CTE Business & Finance Programs',link:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education',note:'Accounting, entrepreneurship, marketing, banking CTE programs across NYC high schools.'},
+      {name:'SYEP — Business & Corporate Track',link:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page',note:'Paid summer placements at NYC corporations, nonprofits, financial firms. Ages 14–24.'},
+      {name:'Raise.me — Micro Scholarships',link:'https://www.raise.me',note:'Start in 9th grade earning micro-scholarships for GPA and activities. Redeemable at 300+ colleges.'},
+    ],
+    colleges:['CUNY Baruch College — #1 CUNY for business, Forbes Top 20 public (Excelsior ✓)','CUNY BMCC — Business Administration (Excelsior ✓)','CUNY Brooklyn College — Business (Excelsior ✓)','SUNY Buffalo — Business School'],
+    jobs:['Bookkeeper — $45K','Marketing Coordinator — $50K','Financial Analyst — $70K','Accountant — $65K','Business Analyst — $72K','Operations Manager — $75K'],
+  },
+  law:{label:'Law & Criminal Justice',icon:'⚖️',salary:'$48K–$90K',
+    certifications:['Paralegal Certificate (CUNY — 1 year program)','Court Interpreter Certification (NYS — if bilingual this is extremely valuable)','Security Guard License (NYS — quick entry-level path)','Mediation & Conflict Resolution Certificate','Social Work Assistant Certification (CUNY)'],
+    programs:[
+      {name:'Legal Outreach — Law Career Prep',link:'https://www.legaloutreach.org',note:'Free program for NYC public school students: college access + law career prep. Mock trials, internships. Based in Brooklyn.'},
+      {name:'CUNY Law School Pipeline',link:'https://www.law.cuny.edu',note:'CUNY Law is the most affordable law school in the US. Pipeline programs for high school students exist.'},
+      {name:'NYC Dept of Probation — YouthConnect',link:'https://www.nyc.gov/site/probation/individuals/youthconnect.page',note:'Mentorship + career development for NYC youth interested in criminal justice and social services.'},
+      {name:'NYC CTE Law & Government Programs',link:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education',note:'Law, public safety, government CTE across NYC — mock trials, court visits, internships included.'},
+      {name:'SYEP — Government & Nonprofit Track',link:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page',note:'Placements at city agencies, courts, law firms, nonprofits. Real legal environment. Ages 14–24.'},
+    ],
+    colleges:['CUNY John Jay College — Criminal Justice, Law (#1 in US for this field, Excelsior ✓)','CUNY Hunter — Urban Policy, Sociology, Social Work (Excelsior ✓)','CUNY Lehman — Political Science, Social Work (Excelsior ✓)','SUNY Albany — Criminal Justice'],
+    jobs:['Paralegal — $52K','Social Worker — $55K','Court Officer — $72K + city pension','Probation Officer — $58K','Community Organizer — $48K','Lawyer — $85K+ (after law school)'],
+  },
+};
+
+function toggleCTE(val, el) {
+  cteIndustry = val;
+  document.querySelectorAll('#cte1 .subj-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cte1Next').disabled = false;
+}
+
+function setCTEGoal(val, el) {
+  cteGoal = val;
+  document.querySelectorAll('#cte2 .subj-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('cte2Next').disabled = false;
+}
+
+function buildCTEResults() {
+  const cte = CTE_DATA[cteIndustry]; if(!cte) return;
+  let html = `<button class="btn-back-flow" onclick="goTo('cte2')">← Back</button>
+  <div class="result-hero">
+    <div class="result-emoji">${cte.icon}</div>
+    <div class="result-title">${cte.label} Pathways</div>
+    <div class="result-sub">Real programs · Real certifications · Real salaries — no 4-year degree required for most.</div>
+  </div>`;
+
+  html += `<div style="background:var(--black);border-radius:16px;padding:18px;margin-bottom:14px;color:white">
+    <div style="font-size:11px;font-weight:800;color:var(--teal);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px">💡 The honest truth about CTE</div>
+    <div style="font-size:13px;color:#cbd5e1;line-height:1.7">A CTE certification + 2 years experience can pay <strong style="color:white">more than a 4-year degree</strong> in ${cte.label}. NYC hires heavily from CTE and associate degree programs — union jobs, city government, healthcare, and tech all have strong pipelines. You do <em style="color:white">not</em> need to go into debt for a great career.</div>
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">💰 Jobs you can get — starting salaries</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">${cte.jobs.map(j=>`<div style="background:var(--teal-light);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;color:var(--teal-dark)">${j}</div>`).join('')}</div>
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">🏅 Certifications to earn in high school</div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:10px">Put these on your resume immediately. Most are free or low-cost for students.</div>
+    ${cte.certifications.map((c,i)=>`<div class="study-item"><div class="sdot ${i<2?'red':'yellow'}"></div><div><div class="study-name">${c}</div></div></div>`).join('')}
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">🏫 NYC Programs — apply now</div>
+    ${cte.programs.map(p=>`<div class="study-item"><div class="sdot green"></div><div>
+      <div class="study-name">${p.name}</div>
+      <div style="font-size:11px;color:var(--gray);margin:2px 0 4px">${p.note}</div>
+      <a href="#" onclick="interceptLink('${p.link}','resources');return false" class="study-link">Learn more →</a>
+    </div></div>`).join('')}
+  </div>`;
+
+  if (cteGoal !== 'job') {
+    html += `<div class="panel" style="margin-bottom:14px">
+      <div class="panel-title">🏛️ Best CUNY/SUNY for ${cte.label}</div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:10px">Associate degrees (2 years) are often free with Excelsior. Transfer to 4-year later if you want.</div>
+      ${cte.colleges.map(c=>`<div class="study-item"><div class="sdot green"></div><div><div class="study-name">${c}</div></div></div>`).join('')}
+      <a href="#" onclick="interceptLink('https://www.hesc.ny.gov','resources');return false" class="study-link" style="display:inline-block;margin-top:8px">Apply for Excelsior free tuition →</a>
+    </div>`;
+  }
+  document.getElementById('s4').querySelector('.flow-section').innerHTML = html;
+  buildResultsCommon(); goTo('s4');
+}
+
+// ══════════════════════════════════════════════════════
+// COLLEGE ADMISSIONS FLOW
+// ══════════════════════════════════════════════════════
+let colGrade = null;
+
+const COLLEGE_DATA = {
+  '9':{title:'9th Grade — Start strong now',urgent:null,cuny_tip:'You have 3 years. Focus on GPA and activities — CUNY is affordable and Excelsior covers tuition if family earns under $125K.',
+    checklist:[
+      {task:'Sign up for Raise.me — earn micro-scholarships for your GPA starting TODAY',link:'https://www.raise.me',hot:true},
+      {task:'Start a basic resume — even one activity or volunteer experience counts',link:'resume.html',hot:false},
+      {task:'Ask your counselor about CUNY College Now — take free college classes while in HS',link:'https://www.cuny.edu/about/administration/offices/k16/college-now/',hot:false},
+      {task:'Explore NYC CTE programs — a pathway can strengthen your profile and your options',link:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education',hot:false},
+      {task:'Learn about the Portrait of a Graduate — changing NYC graduation requirements by 2027',link:'https://www.nysed.gov/next-generation-learning-standards',hot:false},
+    ]},
+  '10':{title:'10th Grade — Build momentum',urgent:'📅 October: Take the PSAT — free at your school and unlocks a personalized RegentsPrep SAT plan!',cuny_tip:'Sophomore year is the best time to visit CUNY campuses. Most are free to tour. Knowing your target school makes senior year much less stressful.',
+    checklist:[
+      {task:'Take the PSAT this October — free, gives you a personalized SAT prep roadmap from Khan',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',hot:true},
+      {task:'Raise.me — still earning micro-scholarships for GPA, volunteer hours, activities',link:'https://www.raise.me',hot:true},
+      {task:'Visit 1–2 CUNY campuses — free tours. Start with Baruch, City Tech, or Hunter',link:'https://www.cuny.edu',hot:false},
+      {task:'CUNY College Now — take a free college credit class this summer at a CUNY campus',link:'https://www.cuny.edu/about/administration/offices/k16/college-now/',hot:false},
+      {task:'Update your activities list — clubs, jobs, volunteer, sports. Colleges want growth over time',link:'resume.html',hot:false},
+    ]},
+  '11':{title:'11th Grade — The most important year',urgent:'⚠️ THIS IS YOUR MOST IMPORTANT YEAR. Colleges see 9th–11th grade transcripts. Every grade counts now.',cuny_tip:'CUNY has rolling admissions — apply early. Baruch and Hunter are competitive. BMCC, Queensborough, and Bronx CC have open access.',
+    checklist:[
+      {task:'Register for SAT this spring at collegeboard.org. Study NOW using RegentsPrep',link:'https://satsuite.collegeboard.org/digital/digital-practice-preparation/practice-tests',hot:true},
+      {task:'CUNY application opens Nov 1 — know your target campuses and programs NOW',link:'https://www.cuny.edu/admissions/undergraduate/',hot:true},
+      {task:'FAFSA opens Dec 1 — file ASAP. Earlier = more financial aid. studentaid.gov',link:'https://studentaid.gov',hot:true},
+      {task:'Apply for Excelsior Scholarship at hesc.ny.gov — family under $125K = free CUNY tuition',link:'https://www.hesc.ny.gov',hot:true},
+      {task:'Visit NYC College Access Center — free 1-on-1 help with applications and FAFSA',link:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers',hot:false},
+      {task:'Request teacher rec letters BEFORE summer — give teachers 6 weeks minimum',link:null,hot:false},
+      {task:'Start Common App college essays in July — topics release in August each year',link:'https://www.commonapp.org',hot:false},
+    ]},
+  '12':{title:'12th Grade — Deadlines are NOW',urgent:'🚨 DO NOT WAIT. Every week you delay costs money. File FAFSA and CUNY application today.',cuny_tip:'Most students underestimate CUNY. Baruch is a Top 20 public business school. CUNY Law is the most affordable law school in the US. Your NY residency is a financial asset — use it.',
+    checklist:[
+      {task:'CUNY Application: Apply at cuny.edu RIGHT NOW — rolling admissions, earlier = better aid',link:'https://www.cuny.edu/admissions/undergraduate/',hot:true},
+      {task:'FAFSA: File TODAY at studentaid.gov — every week late = less money available',link:'https://studentaid.gov',hot:true},
+      {task:'Excelsior Scholarship deadline: June 30 — apply at hesc.ny.gov before it closes',link:'https://www.hesc.ny.gov',hot:true},
+      {task:'Common App — apply to 2–3 SUNY schools as affordable in-state backups',link:'https://www.commonapp.org',hot:false},
+      {task:'NYC College Access Center — free help with applications, essays, FAFSA appeals',link:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers',hot:false},
+      {task:'Apply to 5+ scholarships on Fastweb and Bold.org — 30 min each, adds up fast',link:'https://www.fastweb.com',hot:false},
+      {task:'Compare financial aid offers carefully — CUNY + Excelsior often beats a partial scholarship elsewhere',link:null,hot:false},
+    ]},
+};
+
+const CUNY_SCHOOLS = [
+  {name:'Baruch College',focus:'Business, Finance, Public Affairs',sel:'Competitive (GPA 3.5+)',link:'https://www.baruch.cuny.edu',ex:true},
+  {name:'Hunter College',focus:'Pre-Med, Education, Social Sciences',sel:'Competitive (GPA 3.3+)',link:'https://www.hunter.cuny.edu',ex:true},
+  {name:'Brooklyn College',focus:'Liberal Arts, Business, Science',sel:'Moderate (GPA 3.0+)',link:'https://www.brooklyn.cuny.edu',ex:true},
+  {name:'City College (CCNY)',focus:'Engineering, Architecture, Sciences',sel:'Moderate (GPA 3.0+)',link:'https://www.ccny.cuny.edu',ex:true},
+  {name:'CUNY City Tech',focus:'Technology, Nursing, Design',sel:'Open access',link:'https://www.citytech.cuny.edu',ex:true},
+  {name:'BMCC',focus:'Liberal Arts, Business, Nursing (transfer)',sel:'Open access',link:'https://www.bmcc.cuny.edu',ex:true},
+  {name:'John Jay College',focus:'Criminal Justice, Law, Public Service',sel:'Moderate',link:'https://www.jjay.cuny.edu',ex:true},
+  {name:'SUNY Stony Brook',focus:'STEM, Medicine, Research',sel:'Competitive',link:'https://www.stonybrook.edu',ex:false},
+  {name:'SUNY Buffalo',focus:'Engineering, Business, Pre-Med',sel:'Moderate',link:'https://www.buffalo.edu',ex:false},
+  {name:'SUNY New Paltz',focus:'Arts, Education, Business',sel:'Moderate',link:'https://www.newpaltz.edu',ex:false},
+];
+
+function setColGrade(val, el) {
+  colGrade = val;
+  document.querySelectorAll('#col1 .subj-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('col1Next').disabled = false;
+}
+
+function buildCollegeResults() {
+  const data = COLLEGE_DATA[colGrade]; if(!data) return;
+  let html = `<button class="btn-back-flow" onclick="goTo('col1')">← Back</button>
+  <div class="result-hero">
+    <div class="result-emoji">🎓</div>
+    <div class="result-title">${data.title}</div>
+    <div class="result-sub">NY-first college roadmap — CUNY and SUNY are world-class and affordable.</div>
+  </div>`;
+
+  if (data.urgent) html += `<div style="background:#fff1f2;border:1.5px solid #dc2626;border-radius:14px;padding:14px 16px;margin-bottom:14px;font-size:13px;font-weight:700;color:#dc2626">${data.urgent}</div>`;
+
+  html += `<div style="background:var(--teal-light);border:1.5px solid var(--teal);border-radius:14px;padding:14px 16px;margin-bottom:14px">
+    <div style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:var(--teal);margin-bottom:4px">🏛️ CUNY Tip — ${colGrade}th Grade</div>
+    <div style="font-size:13px;color:#0b5e44;line-height:1.6">${data.cuny_tip}</div>
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">✅ Your ${colGrade}th Grade College Checklist</div>
+    ${data.checklist.map(item=>`<div class="study-item">
+      <div class="sdot ${item.hot?'red':'green'}"></div><div>
+        <div class="study-name">${item.hot?'🔴 ':''}<strong>${item.task}</strong></div>
+        ${item.link?`<a href="#" onclick="interceptLink('${item.link}','resources');return false" class="study-link">Do this now →</a>`:''}
+      </div>
+    </div>`).join('')}
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">🏛️ Top CUNY & SUNY Schools — NY-First</div>
+    <div style="font-size:12px;color:var(--gray);margin-bottom:12px">Excelsior covers tuition at all CUNY schools if family earns under $125K/year.</div>
+    ${CUNY_SCHOOLS.map(s=>`<div class="study-item"><div class="sdot ${s.ex?'green':'yellow'}"></div><div>
+      <div class="study-name">${s.name} ${s.ex?'<span style="font-size:10px;background:var(--teal-light);color:var(--teal);padding:2px 7px;border-radius:10px;font-weight:700">Excelsior ✓</span>':''}</div>
+      <div style="font-size:11px;color:var(--gray);margin:2px 0 4px">${s.focus} · ${s.sel}</div>
+      <a href="#" onclick="interceptLink('${s.link}','resources');return false" class="study-link">Visit website →</a>
+    </div></div>`).join('')}
+  </div>`;
+
+  html += `<div class="panel" style="margin-bottom:14px">
+    <div class="panel-title">📅 Key Deadlines Every Year</div>
+    ${[
+      {date:'October',task:'Take PSAT — free at your school',hot:false},
+      {date:'Nov 1',task:'CUNY application opens',hot:true},
+      {date:'Dec 1',task:'FAFSA opens — file IMMEDIATELY',hot:true},
+      {date:'Jan–Mar',task:'SAT test dates — register 6 weeks early',hot:false},
+      {date:'Feb 15',task:'CUNY priority deadline for fall',hot:true},
+      {date:'April',task:'Compare all financial aid offers',hot:false},
+      {date:'May 1',task:'National decision deadline — commit to your school',hot:false},
+      {date:'June 30',task:'Excelsior Scholarship deadline at hesc.ny.gov',hot:true},
+    ].map(d=>`<div class="study-item"><div class="sdot ${d.hot?'red':'green'}"></div><div>
+      <div style="font-size:11px;font-weight:800;color:var(--gray);text-transform:uppercase">${d.date}</div>
+      <div class="study-name">${d.hot?'🔴 ':''}<strong>${d.task}</strong></div>
+    </div></div>`).join('')}
+  </div>`;
+
+  document.getElementById('s4').querySelector('.flow-section').innerHTML = html;
+  buildResultsCommon(); goTo('s4');
+}
+
+// ══════════════════════════════════════════════════════
+// SHARED: append resource browser + intercept clicks
+// ══════════════════════════════════════════════════════
+function buildResultsCommon() {
+  const section = document.getElementById('s4').querySelector('.flow-section');
+  section.insertAdjacentHTML('beforeend',`<div class="res-browser" style="margin-top:14px">
+    <div class="res-browser-head"><div>
+      <div class="res-browser-label">📚 Resources for you</div>
+      <div class="res-browser-title">Find your next opportunity</div>
+    </div><a onclick="interceptLink('resources.html','resources')" href="#" class="res-see-all">See all →</a></div>
+    <div class="res-pills" id="resPills">
+      <button class="res-pill active" onclick="filterRes('all',this)">All</button>
+      <button class="res-pill" onclick="filterRes('internship',this)">☀️ Internships</button>
+      <button class="res-pill" onclick="filterRes('scholarship',this)">🏆 Scholarships</button>
+      <button class="res-pill" onclick="filterRes('sat',this)">📝 SAT/ACT</button>
+      <button class="res-pill" onclick="filterRes('college',this)">🎓 College</button>
+      <button class="res-pill" onclick="filterRes('study',this)">📚 Self-Study</button>
+    </div>
+    <div class="res-grid" id="resGrid"></div>
+    <a onclick="interceptLink('resources.html','resources')" href="#" class="res-full-btn">Browse all 26+ resources →</a>
+  </div>`);
+  setTimeout(()=>{
+    renderResGrid();
+    document.querySelectorAll('.rc').forEach(card=>{
+      const href=card.getAttribute('href');
+      if(href&&href!=='#'){card.setAttribute('data-href',href);card.setAttribute('href','#');
+        card.onclick=(e)=>{e.preventDefault();interceptLink(card.getAttribute('data-href'),'resources');};
+      }
+    });
+  },50);
+}
+
+function filterRes(cat, btn) {
+  activeResCat = cat;
+  document.querySelectorAll('.res-pill').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderResGrid();
+  track('resource_filter', {cat});
+}
+function renderResGrid() {
+  const filtered = activeResCat==='all' ? RES : RES.filter(r=>r.cat===activeResCat);
+  document.getElementById('resGrid').innerHTML = filtered.slice(0,6).map(r=>`
+    <a href="${r.url}" target="_blank" class="rc" onclick="track('resource_click',{name:'${r.name}',cat:'${r.cat}'})">
+      <div class="rc-icon">${r.icon}</div>
+      <div class="rc-name">${r.name}</div>
+      <div class="rc-tags">${r.tags.map(t=>{const cls=t==='hot'?'hot':t==='paid'?'paid':t==='stem'?'stem':'free';const lbl=t==='hot'?'⚡ Apply now':t==='paid'?'💰 Paid':t==='stem'?'STEM':'Free';return '<span class="rc-tag '+cls+'">'+lbl+'</span>';}).join('')}</div>
+    </a>`).join('');
+}
+renderResGrid();
+</script>
+</body>
+</html>
