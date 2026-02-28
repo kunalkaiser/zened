@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Regents Practice — ZenEd</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0d0d0d;--white:#fff;--soft:#f6f6f4;--line:#e8e8e5;--muted:#6b7280;--green:#00a86b;--green2:#007a4d;--glite:#e6f6ef;--red:#dc2626;--amber:#d97706;--blue:#2563eb;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Instrument Sans',sans-serif;background:#fff;color:var(--ink);-webkit-font-smoothing:antialiased;}
+nav{height:58px;padding:0 36px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:200;}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--ink);}
+.logo-ico{width:30px;height:30px;background:var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-word{font-family:'Fraunces',serif;font-weight:900;font-size:19px;letter-spacing:-0.4px;}
+.logo-word em{color:var(--green);font-style:italic;}
+.nav-right{display:flex;gap:6px;align-items:center;}
+.nav-link{font-size:13px;font-weight:500;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:8px;transition:color .15s;}
+.nav-link:hover{color:var(--ink);}
+.nav-link.active{color:var(--ink);font-weight:700;}
+.nav-signin{font-size:13px;font-weight:600;color:var(--ink);border:1.5px solid var(--ink);padding:6px 18px;border-radius:100px;text-decoration:none;transition:all .15s;}
+.nav-signin:hover{background:var(--ink);color:#fff;}
+.support-btn{display:inline-flex;align-items:center;gap:5px;background:#FFDD00;color:#000;font-size:12px;font-weight:700;padding:5px 13px;border-radius:100px;text-decoration:none;}
+.hero{max-width:800px;margin:0 auto;padding:52px 24px 32px;text-align:center;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--line);padding:5px 16px;border-radius:100px;font-size:12px;font-weight:500;color:var(--muted);margin-bottom:20px;}
+.hero-badge-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-title{font-family:'Fraunces',serif;font-size:clamp(40px,8vw,66px);font-weight:900;line-height:.95;letter-spacing:-2.5px;margin-bottom:14px;}
+.hero-title em{font-style:italic;color:var(--green);}
+.hero-sub{font-size:16px;color:var(--muted);line-height:1.6;max-width:520px;margin:0 auto 28px;}
+.hero-stats{display:flex;justify-content:center;gap:32px;flex-wrap:wrap;}
+.stat-n{font-family:'Fraunces',serif;font-size:28px;font-weight:900;letter-spacing:-1px;}
+.stat-l{font-size:12px;color:var(--muted);margin-top:2px;}
+.section-wrap{max-width:960px;margin:0 auto;padding:0 24px 64px;}
+.section-title{font-family:'Fraunces',serif;font-size:22px;font-weight:900;letter-spacing:-0.5px;margin-bottom:6px;}
+.section-desc{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.subject-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-bottom:40px;}
+.subj-card{border:1.5px solid var(--line);border-radius:16px;padding:22px;background:#fff;transition:all .18s;text-decoration:none;color:var(--ink);display:block;}
+.subj-card:hover{border-color:var(--ink);transform:translateY(-2px);box-shadow:0 6px 24px rgba(0,0,0,.07);}
+.subj-icon{font-size:28px;margin-bottom:10px;}
+.subj-name{font-family:'Fraunces',serif;font-size:18px;font-weight:900;letter-spacing:-0.5px;margin-bottom:4px;}
+.subj-sub{font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:14px;}
+.subj-exams{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.subj-exam-tag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:100px;background:var(--soft);color:var(--muted);}
+.subj-cta{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--green2);}
+.divider{border:none;border-top:1px solid var(--line);margin:40px 0;}
+.special-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:40px;}
+.special-card{border:1.5px solid var(--line);border-radius:14px;padding:20px;display:flex;align-items:flex-start;gap:14px;text-decoration:none;color:var(--ink);transition:all .15s;}
+.special-card:hover{border-color:var(--ink);}
+.special-icon{font-size:24px;flex-shrink:0;}
+.special-name{font-size:14px;font-weight:700;margin-bottom:3px;}
+.special-desc{font-size:12px;color:var(--muted);line-height:1.5;}
+.special-link{font-size:12px;font-weight:700;color:var(--green2);margin-top:6px;display:inline-block;}
+.quiz-section{background:var(--soft);border-radius:20px;padding:32px;margin-bottom:40px;}
+.quiz-section-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;}
+.quiz-section-title{font-family:'Fraunces',serif;font-size:24px;font-weight:900;letter-spacing:-0.8px;}
+.quiz-section-sub{font-size:13px;color:var(--muted);margin-top:4px;}
+.quiz-subject-tabs{display:flex;gap:6px;flex-wrap:wrap;}
+.qtab{padding:7px 16px;font-size:13px;font-weight:600;border-radius:100px;border:1.5px solid var(--line);background:#fff;cursor:pointer;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+.qtab:hover{border-color:var(--ink);}
+.qtab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.quiz-widget{background:#fff;border-radius:14px;border:1.5px solid var(--line);overflow:hidden;}
+.quiz-top{padding:18px 20px 0;}
+.qprog-bar{height:3px;background:var(--line);border-radius:3px;overflow:hidden;margin-bottom:18px;}
+.qprog-fill{height:100%;background:var(--green);border-radius:3px;transition:width .4s ease;}
+.quiz-inner{padding:0 20px 20px;}
+.q-num{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;}
+.q-text{font-size:14px;font-weight:600;line-height:1.6;margin-bottom:14px;}
+.q-opts{display:flex;flex-direction:column;gap:7px;}
+.q-opt{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;border:1.5px solid var(--line);border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;transition:all .15s;background:#fff;text-align:left;font-family:'Instrument Sans',sans-serif;line-height:1.5;width:100%;}
+.q-opt:hover:not(:disabled){border-color:var(--ink);}
+.q-opt.correct{border-color:var(--green);background:var(--glite);color:var(--green2);}
+.q-opt.wrong{border-color:var(--red);background:#fef2f2;color:var(--red);}
+.q-opt:disabled{cursor:default;}
+.q-opt-letter{width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;flex-shrink:0;margin-top:1px;}
+.q-exp{margin-top:12px;padding:12px 14px;background:var(--soft);border-radius:10px;font-size:12px;line-height:1.6;display:none;}
+.q-exp.show{display:block;}
+.q-exp strong{color:var(--green2);}
+.quiz-nav{display:flex;align-items:center;justify-content:space-between;margin-top:14px;}
+.quiz-score-label{font-size:13px;font-weight:700;color:var(--muted);}
+.quiz-btn{padding:9px 22px;border-radius:100px;font-size:13px;font-weight:700;cursor:pointer;border:none;font-family:'Instrument Sans',sans-serif;transition:all .15s;}
+.quiz-btn.primary{background:var(--ink);color:#fff;}
+.quiz-btn.primary:hover{background:#222;}
+.quiz-btn:disabled{opacity:.3;cursor:not-allowed;}
+.quiz-result{padding:24px 20px;text-align:center;display:none;}
+.quiz-result.show{display:block;}
+.result-score{font-family:'Fraunces',serif;font-size:60px;font-weight:900;letter-spacing:-3px;line-height:1;}
+.result-score.great{color:var(--green);}
+.result-score.ok{color:var(--amber);}
+.result-score.low{color:var(--red);}
+.result-msg{font-size:14px;color:var(--muted);margin:8px 0 18px;}
+.result-rows{display:flex;flex-direction:column;gap:5px;text-align:left;margin-bottom:16px;}
+.r-row{display:flex;align-items:center;gap:8px;font-size:12px;padding:7px 11px;border-radius:8px;}
+.r-row.right{background:var(--glite);color:var(--green2);}
+.r-row.wrong{background:#fef2f2;color:var(--red);}
+footer{border-top:1px solid var(--line);padding:28px 36px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;}
+.footer-links{display:flex;gap:18px;}
+.footer-links a{font-size:12px;color:var(--muted);text-decoration:none;}
+.footer-links a:hover{color:var(--ink);}
+@media(max-width:700px){nav{padding:0 14px;}.nav-link{display:none;}.hero{padding:36px 16px 24px;}.hero-stats{gap:20px;}.section-wrap{padding:0 16px 48px;}.special-grid{grid-template-columns:1fr;}footer{flex-direction:column;padding:20px 16px;}}
+
+/* ── UNIVERSAL NAV ── */
+nav{position:sticky;top:0;z-index:500;background:#fff;border-bottom:1px solid #e8e8e5;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.logo-ico{width:28px;height:28px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-word{font-family:'Fraunces',serif;font-size:18px;font-weight:900;letter-spacing:-.5px;color:#0d0d0d;}
+.logo-word em{color:#00a86b;font-style:normal;}
+.nav-right{display:flex;align-items:center;gap:6px;}
+.nav-link{font-size:13px;font-weight:600;color:#6b7280;text-decoration:none;padding:6px 10px;border-radius:8px;transition:color .15s;}
+.nav-link:hover,.nav-link.active{color:#0d0d0d;}
+.nav-search-wrap{position:relative;display:flex;align-items:center;}
+.nav-search-btn{width:34px;height:34px;border:1.5px solid #e8e8e5;border-radius:100px;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;}
+.nav-search-btn:hover{border-color:#0d0d0d;}
+.nav-search-input{position:absolute;right:36px;top:50%;transform:translateY(-50%);width:0;opacity:0;border:1.5px solid #e8e8e5;border-radius:100px;padding:0;background:#fff;font-family:'Instrument Sans',sans-serif;font-size:13px;transition:all .25s;pointer-events:none;}
+.nav-search-input.open{width:200px;opacity:1;padding:6px 14px;pointer-events:all;}
+.btn-support-nav{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#0d0d0d;background:#FFDD00;border-radius:100px;padding:6px 14px;text-decoration:none;transition:all .15s;}
+.btn-support-nav:hover{background:#f5d000;}
+.nav-signin{font-size:13px;font-weight:700;color:#fff;background:#0d0d0d;padding:7px 16px;border-radius:100px;text-decoration:none;transition:background .15s;white-space:nowrap;}
+.nav-signin:hover{background:#222;}
+.nav-signin.loggedin{background:#00a86b;}
+@media(max-width:640px){.nav-link{display:none;}.nav-search-input.open{width:140px;}}
+
+.qtab.mock-tab{background:#f0fdf4;border-color:#00a86b;color:#007a4d;}
+.qtab.mock-tab.active,.qtab.mock-tab:hover{background:#00a86b;color:#fff;border-color:#00a86b;}
+</style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-ico">
+      <svg viewBox="0 0 24 24" fill="none" width="14" height="14">
+        <path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-word">Zen<em>Ed</em></span>
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-link" id="nl-home">Home</a>
+    <a href="practice.html" class="nav-link" id="nl-practice">Practice</a>
+    <a href="resources.html" class="nav-link" id="nl-resources">Resources</a>
+    <a href="dashboard.html" class="nav-link" id="nl-dashboard">Dashboard</a>
+    <a href="mission.html" class="nav-link" id="nl-mission">Mission</a>
+    <div class="nav-search-wrap" id="navSearchWrap">
+      <button class="nav-search-btn" onclick="navSearchToggle()" aria-label="Search">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <input class="nav-search-input" id="navSearchInput" type="text" placeholder="Search resources…" onkeydown="if(event.key==='Escape')navSearchClose()" oninput="navSearchRun(this.value)">
+    </div>
+    <a href="https://ko-fi.com/zened" target="_blank" class="btn-support-nav">☕ Support</a>
+    <a href="app.html" class="nav-signin" id="navSigninBtn">Sign in</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-badge"><span class="hero-badge-dot"></span> Official NYSED past exams &middot; Free forever</div>
+  <h1 class="hero-title">Practice like it&rsquo;s<br>the <em>real thing.</em></h1>
+  <p class="hero-sub">Every Regents exam from the last 3 years, straight from NYSED &mdash; plus 10-question warm-up quizzes with full explanations.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-n">30+</div><div class="stat-l">Past exam PDFs</div></div>
+    <div class="stat"><div class="stat-n">40</div><div class="stat-l">Practice questions</div></div>
+    <div class="stat"><div class="stat-n">5</div><div class="stat-l">Subject areas</div></div>
+    <div class="stat"><div class="stat-n">100%</div><div class="stat-l">Free, always</div></div>
+  </div>
+</div>
+
+<div class="section-wrap">
+
+  <div class="section-title">Past Regents Exams</div>
+  <p class="section-desc">Each card links directly to the official NYSED page for that subject &mdash; all exam PDFs, answer keys, rating guides, and conversion charts in one place.</p>
+
+  <div class="subject-grid">
+
+    <a href="https://www.nysedregents.org/regents_sci.html" target="_blank" class="subj-card">
+      <div class="subj-icon">&#128300;</div>
+      <div class="subj-name">Science</div>
+      <div class="subj-sub">Living Environment &middot; Chemistry &middot; Physics &middot; Earth Science &middot; Life Science Biology</div>
+      <div class="subj-exams">
+        <span class="subj-exam-tag">Living Environment</span>
+        <span class="subj-exam-tag">Chemistry</span>
+        <span class="subj-exam-tag">Physics</span>
+        <span class="subj-exam-tag">Earth Science</span>
+      </div>
+      <div class="subj-cta">Browse all science exams &#8594;</div>
+    </a>
+
+    <a href="https://www.nysedregents.org/regents_math.html" target="_blank" class="subj-card">
+      <div class="subj-icon">&#128208;</div>
+      <div class="subj-name">Mathematics</div>
+      <div class="subj-sub">Algebra I &middot; Geometry &middot; Algebra II &mdash; current exams and full archive</div>
+      <div class="subj-exams">
+        <span class="subj-exam-tag">Algebra I</span>
+        <span class="subj-exam-tag">Geometry</span>
+        <span class="subj-exam-tag">Algebra II</span>
+      </div>
+      <div class="subj-cta">Browse all math exams &#8594;</div>
+    </a>
+
+    <a href="https://www.nysedregents.org/regents_ela.html" target="_blank" class="subj-card">
+      <div class="subj-icon">&#128214;</div>
+      <div class="subj-name">English (ELA)</div>
+      <div class="subj-sub">High School English Language Arts &mdash; all sessions including full archive</div>
+      <div class="subj-exams">
+        <span class="subj-exam-tag">HS ELA</span>
+        <span class="subj-exam-tag">All sessions</span>
+        <span class="subj-exam-tag">Archive</span>
+      </div>
+      <div class="subj-cta">Browse all ELA exams &#8594;</div>
+    </a>
+
+    <a href="https://www.nysedregents.org/us-history-govt/home.html" target="_blank" class="subj-card">
+      <div class="subj-icon">&#128509;</div>
+      <div class="subj-name">Social Studies</div>
+      <div class="subj-sub">US History &amp; Government &mdash; exam PDFs, rating guides, and conversion charts</div>
+      <div class="subj-exams">
+        <span class="subj-exam-tag">Jan 2026</span>
+        <span class="subj-exam-tag">Aug 2025</span>
+        <span class="subj-exam-tag">June 2025</span>
+        <span class="subj-exam-tag">+ more</span>
+      </div>
+      <div class="subj-cta">Browse all US History exams &#8594;</div>
+    </a>
+
+  </div>
+
+  <hr class="divider">
+
+  <div class="section-title">More Official Resources</div>
+  <p class="section-desc">These are links every NYC Regents student should bookmark.</p>
+
+  <div class="special-grid">
+    <a href="https://www.nysedregents.org/translatedexams.html" target="_blank" class="special-card">
+      <div class="special-icon">&#127758;</div>
+      <div>
+        <div class="special-name">Translated Regents Exams</div>
+        <div class="special-desc">Regents in Spanish, Chinese, Haitian Creole, Arabic, Bengali, Russian &amp; more. Same exams, your language.</div>
+        <div class="special-link">Browse translated exams &#8594;</div>
+      </div>
+    </a>
+    <a href="https://www.nysed.gov/state-assessment/science-reference-tables" target="_blank" class="special-card">
+      <div class="special-icon">&#128203;</div>
+      <div>
+        <div class="special-name">Science Reference Tables</div>
+        <div class="special-desc">Official reference tables given during Chemistry, Physics, and Earth Science Regents. Know these cold before exam day.</div>
+        <div class="special-link">Download reference tables &#8594;</div>
+      </div>
+    </a>
+    <a href="https://www.nysedregents.org/regents_ss.html" target="_blank" class="special-card">
+      <div class="special-icon">&#128506;</div>
+      <div>
+        <div class="special-name">All Social Studies Exams</div>
+        <div class="special-desc">US History, Global History &amp; Geography II, Participation in Government &mdash; all social studies Regents.</div>
+        <div class="special-link">Browse social studies &#8594;</div>
+      </div>
+    </a>
+    <a href="https://www.nysedregents.org/regents_lang.html" target="_blank" class="special-card">
+      <div class="special-icon">&#128483;</div>
+      <div>
+        <div class="special-name">Foreign Language Regents</div>
+        <div class="special-desc">Spanish, French, Italian, Chinese, Latin &amp; more &mdash; past exams for all foreign language Regents.</div>
+        <div class="special-link">Browse language exams &#8594;</div>
+      </div>
+    </a>
+  </div>
+
+  <hr class="divider">
+
+  <div class="quiz-section">
+    <div class="quiz-section-header">
+      <div>
+        <div class="quiz-section-title">&#127919; Warm-Up Quiz</div>
+        <div class="quiz-section-sub">10 questions &middot; instant feedback &middot; full Regents explanations &middot; randomized every time</div>
+      </div>
+      <div class="quiz-subject-tabs">
+        <button class="qtab active" onclick="switchQuiz('bio',this)">&#129516; Living Env</button>
+        <button class="qtab" onclick="switchQuiz('alg',this)">&#128208; Algebra I</button>
+        <button class="qtab" onclick="switchQuiz('ela',this)">&#128214; ELA</button>
+        <button class="qtab" onclick="switchQuiz('ush',this)">&#128509; US History</button>
+        <button class="qtab" onclick="switchQuiz('sat',this)">🎯 SAT Prep</button>
+        <button class="qtab" onclick="switchQuiz('mock',this)" style="background:#f0fdf4;border-color:#00a86b;color:#007a4d;">📋 Regents Mock</button>
+      </div>
+    </div>
+    <div class="quiz-widget">
+      <div class="quiz-top">
+        <div class="qprog-bar"><div class="qprog-fill" id="qprog" style="width:0%"></div></div>
+      </div>
+      <div class="quiz-inner" id="quizInner"></div>
+      <div class="quiz-result" id="quizResult">
+        <div class="result-score" id="resultScore"></div>
+        <div class="result-msg" id="resultMsg"></div>
+        <div class="result-rows" id="resultRows"></div>
+        <button class="quiz-btn primary" onclick="restartQuiz()" style="width:100%;margin-top:4px">Shuffle &amp; try again &#8594;</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <a href="index.html" class="logo">
+    <div class="logo-ico" style="width:24px;height:24px;">
+      <svg viewBox="0 0 24 24" fill="none" width="11" height="11">
+        <path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+        <path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <span class="logo-word" style="font-size:16px">Zen<em>Ed</em></span>
+  </a>
+  <div class="footer-links">
+    <a href="mission.html">Mission</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    <a href="https://ko-fi.com/zened" target="_blank">&#9749; Support ZenEd</a>
+  </div>
+  <div style="font-size:12px;color:var(--muted)">&#169; 2026 ZenEd &middot; All exam PDFs link to official NYSED</div>
+</footer>
+
+<script>
+const QUIZZES={bio:{questions:[{q:'Which organelle produces energy (ATP) for the cell?',opts:['Nucleus','Mitochondria','Ribosome','Vacuole'],ans:1,exp:'<strong>Mitochondria</strong> are the "powerhouse of the cell." They carry out cellular respiration, converting glucose + oxygen into ATP. One of the most tested topics on the Living Environment Regents.'},{q:'A cell has a cell wall, chloroplasts, and a large central vacuole. This cell is MOST likely from a:',opts:['Bacterium','Animal','Plant','Fungus'],ans:2,exp:'<strong>Plant cells</strong> have three features animal cells lack: cell wall (structure), chloroplasts (photosynthesis), and a large central vacuole (water storage). All three together = plant cell.'},{q:'During which phase of mitosis do chromosomes line up at the cell\'s equator?',opts:['Prophase','Anaphase','Metaphase','Telophase'],ans:2,exp:'<strong>Metaphase</strong> — chromosomes align at the metaphase plate. Memory trick: "M for Middle." Order: Prophase &rarr; Metaphase &rarr; Anaphase &rarr; Telophase.'},{q:'Which process produces ATP WITHOUT using oxygen?',opts:['Aerobic respiration','Photosynthesis','Fermentation','Osmosis'],ans:2,exp:'<strong>Fermentation</strong> is anaerobic (no oxygen needed). Produces only 2 ATP vs. 36&ndash;38 from aerobic respiration. Examples: yeast making alcohol, muscles burning when you sprint.'},{q:'A mutation occurs in a person\'s skin cell. Which statement is BEST?',opts:['It will be passed to children','It will affect only this person\'s skin cells','It will change the person\'s gametes','It will cause evolution'],ans:1,exp:'<strong>Somatic (body) mutations</strong> affect only that organism &mdash; NOT offspring. Only mutations in gametes (sperm/egg) can be inherited. Classic Regents trick question.'},{q:'Enzymes speed up reactions by:',opts:['Providing energy','Raising activation energy','Lowering activation energy','Consuming themselves'],ans:2,exp:'<strong>Enzymes are biological catalysts</strong> &mdash; they lower activation energy so reactions happen faster. They are NOT consumed and can be reused. Shape-specific: each enzyme fits only its substrate.'},{q:'Which organism is ALWAYS found at the base of a food chain?',opts:['Carnivore','Decomposer','Producer','Omnivore'],ans:2,exp:'<strong>Producers</strong> (plants, algae) make their own food via photosynthesis. All other organisms depend on them for energy. No producers = ecosystem collapses.'},{q:'Rabbits with white fur survive better in snow over many generations. This is:',opts:['Genetic engineering','Natural selection','Artificial selection','Mutation'],ans:1,exp:'<strong>Natural selection</strong> &mdash; white rabbits have a survival advantage (snow camouflage), reproduce more, pass the trait. Over time, white fur becomes more common. Darwin\'s core idea.'},{q:'Which molecule carries the genetic code from nucleus to ribosome?',opts:['DNA','tRNA','mRNA','Protein'],ans:2,exp:'<strong>mRNA (messenger RNA)</strong> carries the genetic message. Process: DNA &rarr; mRNA (transcription) &rarr; Protein (translation at ribosome).'},{q:'Which BEST maintains biodiversity in an ecosystem?',opts:['Introducing a new predator','Preserving natural habitats','Increasing agricultural land','Removing all decomposers'],ans:1,exp:'<strong>Preserving natural habitats</strong> directly protects biodiversity. Habitat destruction is the #1 cause of species extinction. Frequently tested on the Living Environment Regents.'}]},alg:{questions:[{q:'Solve for x: 3x + 7 = 22',opts:['x = 3','x = 5','x = 7','x = 9'],ans:1,exp:'<strong>x = 5.</strong> Subtract 7: 3x = 15. Divide by 3: x = 5. Check: 3(5)+7 = 22 &#10003;. Always verify on the Regents.'},{q:'Which set of ordered pairs represents a function?',opts:['{(1,2),(1,3),(2,4)}','{(1,2),(2,3),(3,4)}','{(1,2),(2,1),(1,3)}','{(0,1),(0,2),(0,3)}'],ans:1,exp:'<strong>A function: each x maps to exactly ONE y.</strong> Set B &mdash; x=1&rarr;2, x=2&rarr;3, x=3&rarr;4. No repeated x-values. The other sets have x appearing twice with different y-values.'},{q:'What is the slope through (2, 3) and (6, 11)?',opts:['1','2','3','4'],ans:1,exp:'<strong>Slope = (y&#8322;&ndash;y&#8321;)/(x&#8322;&ndash;x&#8321;) = (11&ndash;3)/(6&ndash;2) = 8/4 = 2.</strong> Formula is on your reference sheet. Positive slope = line rises left to right.'},{q:'Factor completely: x\u00b2 + 5x + 6',opts:['(x+1)(x+6)','(x+2)(x+3)','(x+3)(x+3)','(x\u22122)(x\u22123)'],ans:1,exp:'<strong>(x+2)(x+3).</strong> Find two numbers that multiply to 6 AND add to 5 &rarr; 2 and 3. Check: (x+2)(x+3) = x&#178;+5x+6 &#10003;.'},{q:'Phone plan: $30/month + $0.10/text. Bill = $42.50. How many texts?',opts:['100','115','125','150'],ans:2,exp:'<strong>125 texts.</strong> 30 + 0.10t = 42.50 &rarr; 0.10t = 12.50 &rarr; t = 125. Identify fixed cost ($30) vs. variable cost ($0.10/text), write equation, solve.'},{q:'Shaded region is ABOVE a dashed line y = 2x &ndash; 1. Which inequality?',opts:['y &lt; 2x&ndash;1','y &le; 2x&ndash;1','y &gt; 2x&ndash;1','y &ge; 2x&ndash;1'],ans:2,exp:'<strong>y &gt; 2x&ndash;1.</strong> Above = greater than. Dashed = strict inequality (no "equal to"). Solid line = includes boundary.'},{q:'Solutions to x\u00b2 &ndash; 5x + 6 = 0?',opts:['x=1 and x=6','x=2 and x=3','x=&ndash;2 and x=&ndash;3','x=&ndash;1 and x=6'],ans:1,exp:'<strong>x=2 and x=3.</strong> Factor: (x&ndash;2)(x&ndash;3)=0. Each factor set to 0 gives x=2 and x=3.'},{q:'x=1 gives y=3 and x=3 gives y=7. What is y when x=10?',opts:['19','21','23','25'],ans:1,exp:'<strong>y=21.</strong> Slope=(7&ndash;3)/(3&ndash;1)=2. Equation: y=2x+1. At x=10: y=21.'},{q:'Which equals 3(2x&ndash;4) + 2(x+5)?',opts:['8x&ndash;2','8x+2','7x&ndash;2','8x&ndash;12'],ans:0,exp:'<strong>8x&ndash;2.</strong> Distribute: 6x&ndash;12+2x+10. Combine: 8x+(10&ndash;12)=8x&ndash;2.'},{q:'Shirts $15, pants $40. Marco spent exactly $120, bought more than 2 items. Which works?',opts:['4 shirts, 1 pant','2 shirts, 2 pants','8 shirts, 0 pants','3 shirts, 2 pants'],ans:2,exp:'<strong>8 shirts: 8&times;$15=$120 &#10003; and 8 items &gt; 2 &#10003;.</strong> Check others: 4&times;15+1&times;40=$100&#10007; | 2&times;15+2&times;40=$110&#10007; | 3&times;15+2&times;40=$125&#10007;.'}]},ela:{questions:[{q:'An author uses statistics on depression rates rising alongside social media use. This evidence is:',opts:['Anecdotal','Quantitative/statistical','Expert opinion','Emotional appeal'],ans:1,exp:'<strong>Quantitative evidence</strong> uses numbers and data. Statistics are considered strong evidence because they are measurable and objective. The ELA Regents asks you to identify and evaluate types of evidence.'},{q:'Which sentence has a grammatical error?',opts:['Neither the students nor the teacher was ready.','Each of the boys have completed their homework.','The team is playing well.','She and I went to the store.'],ans:1,exp:'"Each of the boys <strong>has</strong>" &mdash; not "have." "Each" is always singular, taking a singular verb. Same rule: everyone, nobody, someone &rarr; singular verb.'},{q:'In a literary analysis essay, a claim should be:',opts:['A plot summary','A fact needing no support','An arguable statement about meaning','A question about the author\'s purpose'],ans:2,exp:'<strong>A claim is arguable</strong> &mdash; a reasonable person could disagree. It interprets theme, character, or meaning. Your Regents essay must have a clear, arguable central claim.'},{q:'"Felt the weight of a thousand sleepless nights pressing down on his shoulders." This is:',opts:['Simile','Metaphor','Personification','Alliteration'],ans:1,exp:'<strong>Metaphor</strong> &mdash; directly compares exhaustion to physical weight WITHOUT "like" or "as." Similes use "like" or "as." Metaphors say X IS Y.'},{q:'The Text Analysis Response central idea must come from:',opts:['Your personal opinion','The author\'s stated thesis','The source text you\'re analyzing','Outside information'],ans:2,exp:'<strong>The source text.</strong> Identify the central idea of the passage AND analyze how the author develops it through literary elements. Stay inside the text.'},{q:'Which transition shows CONTRAST?',opts:['Furthermore','Therefore','However','Similarly'],ans:2,exp:'"<strong>However</strong>" signals contrast. "Furthermore" adds info. "Therefore" shows cause/effect. "Similarly" compares. Knowing transitions helps in both reading comprehension and writing.'},{q:'A counterargument in an essay is included to:',opts:['Show writer is unsure','Acknowledge and refute an opposing view','Provide more evidence for main claim','Summarize the essay'],ans:1,exp:'<strong>Counterarguments strengthen your essay</strong>. Formula: state opposing view &rarr; concede its validity &rarr; explain why your position is still stronger (refutation).'},{q:'A story is told from "I" who is also the main character. This point of view is:',opts:['Second person','Third person limited','First person','Third person omniscient'],ans:2,exp:'<strong>First person</strong> &mdash; narrator is a character using "I." Second person uses "you." Third person limited follows one character from outside. Third person omniscient knows all characters\' thoughts.'},{q:'Which uses a semicolon correctly?',opts:['I love reading; books and magazines.','She studied hard; therefore, she passed.','He went to the store; and bought milk.','The dog barked; quickly.'],ans:1,exp:'<strong>Semicolons connect two independent clauses.</strong> "She studied hard" and "therefore, she passed the exam" are both complete sentences. Never use semicolons before "and."'},{q:'An author uses short, choppy sentences in a fight scene. This most likely creates:',opts:['A calm, reflective mood','A sense of urgency and tension','A humorous tone','A detailed atmosphere'],ans:1,exp:'<strong>Short sentences = urgency and tension.</strong> They speed up the reader\'s pace, mirroring fast action. This is exactly the stylistic analysis the ELA Regents Text Analysis task requires.'}]},ush:{questions:[{q:'"Checks and balances" was designed primarily to:',opts:['Give the President the most power','Prevent any branch from becoming too powerful','Let states override federal laws','Give the Supreme Court final authority on everything'],ans:1,exp:'<strong>Checks and balances</strong> distribute power so no single branch dominates. Examples: Congress passes laws &rarr; President can veto &rarr; Supreme Court can strike laws down. The Founders feared tyranny.'},{q:'Which document states "all men are created equal" as a founding principle?',opts:['The Constitution','The Declaration of Independence','The Bill of Rights','The Federalist Papers'],ans:1,exp:'<strong>The Declaration of Independence (1776)</strong> &mdash; written by Thomas Jefferson &mdash; contains this phrase. It declared independence and stated Enlightenment ideals shaping American democracy.'},{q:'The Missouri Compromise of 1820 primarily:',opts:['Abolished slavery in the South','Admitted California as free','Maintained the balance of free and slave states','Gave Congress power to end slavery by 1850'],ans:2,exp:'<strong>Missouri Compromise</strong>: admitted Missouri (slave) and Maine (free), maintaining Senate balance. Drew the 36&deg;30\' line &mdash; no slavery north of it (except Missouri). Temporarily resolved the sectional crisis.'},{q:'Reconstruction (1865&ndash;1877) primarily aimed to:',opts:['Punish the South','Rebuild the South and integrate formerly enslaved people','Create new western territories','Restore Confederate leaders'],ans:1,exp:'<strong>Reconstruction</strong> aimed to reunite the nation and give formerly enslaved people citizenship (13th, 14th, 15th Amendments). It failed due to Southern resistance and the Compromise of 1877.'},{q:'The PRIMARY cause of US entry into WWI in 1917 was:',opts:['Japan attacked Pearl Harbor','Germany invaded Poland','Unrestricted submarine warfare + the Zimmermann Telegram','The assassination of Archduke Franz Ferdinand'],ans:2,exp:'<strong>German unrestricted submarine warfare</strong> and the <strong>Zimmermann Telegram</strong> pushed the US to declare war. Franz Ferdinand started WWI in 1914 &mdash; the US stayed neutral for 3 years. Pearl Harbor was WWII.'},{q:'FDR\'s New Deal programs primarily addressed:',opts:['The threat of communism','Economic depression, unemployment, and banking failures','Racial segregation','US involvement in WWII'],ans:1,exp:'<strong>The New Deal</strong> responded to the Great Depression with relief (jobs), recovery (growth), and reform (regulations). Key programs: CCC, Social Security, FDIC.'},{q:'Brown v. Board of Education (1954) overturned:',opts:['Marbury v. Madison','Dred Scott v. Sandford','Plessy v. Ferguson','McCulloch v. Maryland'],ans:2,exp:'<strong>Plessy v. Ferguson (1896)</strong> established "separate but equal," legalizing segregation. Brown ruled separate schools are inherently unequal, becoming the legal foundation for the Civil Rights Movement.'},{q:'The Marshall Plan (1948) was primarily designed to:',opts:['Rebuild European economies to prevent communism\'s spread','Create the United Nations','Establish NATO','Provide military aid to Korea'],ans:0,exp:'<strong>The Marshall Plan</strong> provided $13 billion to rebuild Western European economies. Goal: economically stable democracies resist communism. A cornerstone of Cold War containment policy.'},{q:'The Civil Rights Act of 1964 primarily:',opts:['Gave African Americans the right to vote','Prohibited discrimination based on race, color, religion, sex, or national origin','Established affirmative action','Ended school segregation'],ans:1,exp:'<strong>Civil Rights Act of 1964</strong> prohibited discrimination in public places and employment. Voting rights came separately with the Voting Rights Act (1965). School segregation was addressed by Brown v. Board (1954).'},{q:'"Manifest Destiny" referred to the belief that:',opts:['The US should avoid foreign entanglements','American democracy should spread to Europe','The US was destined to expand across the entire continent','Native Americans should get self-governance'],ans:2,exp:'<strong>Manifest Destiny</strong> was the belief that US expansion to the Pacific was inevitable and divinely ordained. It justified the Mexican-American War and the displacement of Native Americans.'}]},
+  sat:{questions:[
+    {q:'A store marks up a shirt 40% then discounts 20%. Net % change?',opts:['12% decrease','12% increase','8% increase','20% increase'],ans:1,exp:'1.4 × 0.8 = 1.12 → <strong>12% increase</strong>. Never add/subtract % directly.'},
+    {q:'Vertex x-coordinate of f(x) = 3x² − 12x + 5?',opts:['2','−2','4','−4'],ans:0,exp:'x = −b/2a = 12/6 = <strong>2</strong>.'},
+    {q:'"The committee expected a routine vote; _____, the session lasted 6 hours." Best connector?',opts:['moreover','instead','similarly','therefore'],ans:1,exp:'<strong>Instead</strong> signals contrast/surprise.'},
+    {q:'30-60-90 triangle, hypotenuse = 10. Short leg?',opts:['5','5√3','10√3','√3'],ans:0,exp:'Short leg = hypotenuse/2 = <strong>5</strong>. Sides: x, x√3, 2x.'},
+    {q:'|2x − 4| = 10. Solutions?',opts:['x=7 or x=−3','x=7 or x=3','x=3 only','x=−7'],ans:0,exp:'2x−4=10 → x=7; 2x−4=−10 → x=<strong>−3</strong>.'},
+    {q:'Mean of 5 numbers is 12. Four are 8,10,14,16. Fifth number?',opts:['12','10','14','13'],ans:0,exp:'Sum=60. 8+10+14+16=48. Fifth: 60−48=<strong>12</strong>.'},
+    {q:'Line through (2,5) and (6,9). Y-intercept?',opts:['3','1','−3','5'],ans:0,exp:'Slope=1. 5=1(2)+b → b=<strong>3</strong>.'},
+    {q:'Best formal revision of "The results were, like, totally unexpected"?',opts:['completely unexpected','unexpected in nature','so very unexpected','quite the surprise'],ans:0,exp:'<strong>Completely unexpected</strong>: precise, formal, concise.'},
+    {q:'Which best describes a counterargument?',opts:['A supporting detail','An opposing view the author then rebuts','A concession that weakens thesis','A definition'],ans:1,exp:'Counterargument = <strong>opposing view raised then rebutted</strong> to show thorough reasoning.'},
+    {q:'If f(x)=2x−1, what is f(f(3))?',opts:['9','10','11','5'],ans:0,exp:'f(3)=5, f(5)=9. Always evaluate <strong>inside-out</strong>.'}
+  ]},
+  mock:{questions:[
+    {q:'[Living Env] Which process converts sunlight to glucose?',opts:['Cellular respiration','Photosynthesis','Fermentation','Transpiration'],ans:1,exp:'<strong>Photosynthesis</strong>: CO₂ + H₂O + light → glucose + O₂. Occurs in chloroplasts.'},
+    {q:'[Algebra I] Product of (x+3)(x−5)?',opts:['x²−2x−15','x²+2x−15','x²−15','x²−2x+15'],ans:0,exp:'FOIL: <strong>x²−2x−15</strong>.'},
+    {q:'[ELA] Most important element of an ELA Argument Essay?',opts:['Personal anecdotes','Evidence from provided texts','Dictionary definitions','Counter-argument in intro'],ans:1,exp:'Regents requires <strong>text evidence</strong>. Rubric explicitly scores evidence use.'},
+    {q:'[US History] "Checks and balances" is designed to:',opts:['Give Congress more power','Prevent any branch from dominating','Allow states to override federal law','Ensure equal state representation'],ans:1,exp:'Each branch checks the others — <strong>no single branch dominates</strong>.'},
+    {q:'[Living Env] DNA replication results in:',opts:['One old + one new strand per copy','Two all-new molecules','One DNA + one RNA','Four identical copies'],ans:0,exp:'<strong>Semi-conservative replication</strong>: each copy has one original + one new strand.'},
+    {q:'[Algebra I] Solve: 3(x−2) = 2x+7',opts:['x=13','x=1','x=11','x=−1'],ans:0,exp:'3x−6=2x+7 → x=<strong>13</strong>.'},
+    {q:'[US History] New Deal programs primarily addressed:',opts:['Military expansion','Great Depression economic crisis','Women's voting rights','Immigration reduction'],ans:1,exp:'FDR's New Deal: relief, recovery, reform to combat the <strong>Great Depression</strong>.'},
+    {q:'[ELA] "The sun crept over the horizon." Literary device?',opts:['Metaphor','Simile','Personification','Alliteration'],ans:2,exp:'<strong>Personification</strong>: sun (nonhuman) "crept" (human action).'},
+    {q:'[Living Env] Which best describes natural selection?',opts:['Random mutation over time','Heritable traits aiding survival become more common','Humans select desirable traits','Organisms change from need'],ans:1,exp:'<strong>Natural selection</strong>: variation + selection pressure + heritability = more common adaptive traits.'},
+    {q:'[US History] Which amendment abolished slavery?',opts:['13th','14th','15th','16th'],ans:0,exp:'<strong>13th Amendment</strong> (1865) abolished slavery. 14th=citizenship; 15th=voting; 16th=income tax.'},
+    {q:'[ELA] Purpose of Text Analysis Response on ELA Regents?',opts:['Summarize the passage','Analyze how author uses a technique to develop central idea','Compare two texts','Write personal reflection'],ans:1,exp:'Analyze <strong>how</strong> the author's technique (word choice, structure) develops an idea. Summary = 0 points.'},
+    {q:'[Algebra I] f(x)=x²−4x+3. Where does f(x)=0?',opts:['x=1 and x=3','x=−1 and x=−3','x=1 and x=−3','x=0 and x=4'],ans:0,exp:'Factor: (x−1)(x−3)=0 → <strong>x=1 and x=3</strong>.'}
+  ]}};
+
+let currentQuizKey='bio',questions=[],currentQ=0,answered=false,score=0,userAnswers=[];
+
+function switchQuiz(key,el){currentQuizKey=key;document.querySelectorAll('.qtab').forEach(t=>t.classList.remove('active'));el.classList.add('active');restartQuiz();}
+
+function restartQuiz(){const all=QUIZZES[currentQuizKey].questions;questions=[...all].sort(()=>Math.random()-.5).slice(0,10);currentQ=0;score=0;answered=false;userAnswers=[];document.getElementById('quizResult').classList.remove('show');document.getElementById('quizInner').style.display='block';renderQ();}
+
+function renderQ(){const q=questions[currentQ];document.getElementById('qprog').style.width=(currentQ/questions.length*100)+'%';const letters=['A','B','C','D'];document.getElementById('quizInner').innerHTML=`<div class="q-num">Question ${currentQ+1} of ${questions.length}</div><div class="q-text">${q.q}</div><div class="q-opts">${q.opts.map((o,i)=>`<button class="q-opt" onclick="selectAns(${i})" id="opt${i}"><span class="q-opt-letter">${letters[i]}</span>${o}</button>`).join('')}</div><div class="q-exp" id="exp">${q.exp}</div><div class="quiz-nav"><div class="quiz-score-label">${score}/${currentQ} correct</div><button class="quiz-btn primary" id="nextBtn" onclick="nextQ()" disabled>${currentQ===questions.length-1?'See results &rarr;':'Next &rarr;'}</button></div>`;answered=false;}
+
+function selectAns(idx){if(answered)return;answered=true;const q=questions[currentQ];const correct=q.ans;userAnswers.push({q:q.q,selected:idx,correct});if(idx===correct)score++;document.querySelectorAll('.q-opt').forEach((b,i)=>{b.disabled=true;if(i===correct)b.classList.add('correct');if(i===idx&&idx!==correct)b.classList.add('wrong');});document.getElementById('exp').classList.add('show');document.getElementById('nextBtn').disabled=false;}
+
+function nextQ(){currentQ++;if(currentQ>=questions.length)showResults();else renderQ();}
+
+function showResults(){document.getElementById('qprog').style.width='100%';document.getElementById('quizInner').style.display='none';const res=document.getElementById('quizResult');res.classList.add('show');const pct=Math.round(score/questions.length*100);const cls=pct>=80?'great':pct>=60?'ok':'low';const msgs={great:`&#128293; ${pct}% &mdash; Regents-ready!`,ok:`&#128200; ${pct}% &mdash; almost there. Review explanations and retry.`,low:`&#128170; ${pct}% &mdash; good start! Study the explanations and try again.`};document.getElementById('resultScore').className='result-score '+cls;document.getElementById('resultScore').textContent=`${score}/${questions.length}`;document.getElementById('resultMsg').innerHTML=msgs[cls];document.getElementById('resultRows').innerHTML=userAnswers.map((a,i)=>`<div class="r-row ${a.selected===a.correct?'right':'wrong'}"><span>${a.selected===a.correct?'&#10003;':'&#10007;'}</span><span>Q${i+1}: ${a.q.substring(0,65)}${a.q.length>65?'&hellip;':''}</span></div>`).join('');}
+
+restartQuiz();
+
+// ── UNIVERSAL NAV ──
+function toggleNavSearch() {
+  const inp = document.getElementById('navSearchInput');
+  inp.classList.toggle('open');
+  if (inp.classList.contains('open')) { inp.focus(); }
+}
+function navSearchGo(e) {
+  if (e.key === 'Enter') {
+    const q = e.target.value.trim();
+    if (q) window.location.href = 'resources.html?q=' + encodeURIComponent(q);
+  }
+  if (e.key === 'Escape') { e.target.classList.remove('open'); }
+}
+function navSearchLive(v) {
+  // If on resources page, filter live
+  if (typeof filterCards === 'function') filterCards(v);
+}
+// Highlight active nav link
+(function(){
+  const page = location.pathname.split('/').pop() || 'index.html';
+  const map = {'index.html':'nl-home','practice.html':'nl-practice','resources.html':'nl-resources','dashboard.html':'nl-dashboard','mission.html':'nl-mission'};
+  const id = map[page];
+  if (id) { const el = document.getElementById(id); if(el) el.classList.add('active'); }
+})();
+// Update sign-in button if logged in (for pages with supabase)
+(function(){
+  const btn = document.getElementById('navSigninBtn');
+  if (!btn) return;
+  // Check sessionStorage for quick auth state without supabase
+  const name = sessionStorage.getItem('zened_user_name');
+  if (name) {
+    btn.textContent = name.split(' ')[0] || 'Dashboard';
+    btn.href = 'dashboard.html';
+    btn.classList.add('loggedin');
+  }
+})();
+
+// ── NAV SEARCH ──
+const SEARCH_INDEX = [
+  // Resources
+  {ico:'💼',name:'SYEP — Paid Summer Jobs',desc:'NYC paid summer employment program for ages 14-24',url:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page'},
+  {ico:'❄️',name:'Snow.day — 500+ Free Programs',desc:'Search engine for free summer programs, STEM, arts, law',url:'https://snow.day'},
+  {ico:'🔧',name:'HK Maker Lab — Columbia',desc:'Free 5-week engineering program at Columbia University',url:'https://hkmakerlab.columbia.edu'},
+  {ico:'🔬',name:'NYAS Junior Academy',desc:'Virtual science mentorship from real researchers',url:'https://www.nyas.org/programs/global-stem-alliance/junior-academy/'},
+  {ico:'🧬',name:'NYC Science Research Mentoring',desc:'100+ hours at AMNH, Cold Spring Harbor, NY Botanical Garden',url:'https://scienceresearchmentoring.org'},
+  {ico:'🧠',name:'BrainYAC — Columbia Neuroscience',desc:'Free brain science program for high school students',url:'https://zuckermaninstitute.columbia.edu/brainyac'},
+  {ico:'🎓',name:'CUNY Excelsior — Free Tuition',desc:'Families under $125k may attend CUNY for free',url:'https://www.hesc.ny.gov'},
+  {ico:'📋',name:'FAFSA — Federal Student Aid',desc:'File for free federal financial aid — Pell Grants up to $7,395',url:'https://studentaid.gov'},
+  {ico:'🏆',name:'Fastweb — 1.5M Scholarships',desc:'Largest free scholarship database',url:'https://www.fastweb.com'},
+  {ico:'✨',name:'Bold.org — No-Essay Scholarships',desc:'Apply to scholarships with no essay required',url:'https://bold.org'},
+  {ico:'📈',name:'Raise.me — Earn Scholarships Now',desc:'Earn micro-scholarships starting in 9th grade',url:'https://www.raise.me'},
+  {ico:'📝',name:'Official SAT Prep — Khan Academy',desc:'Free personalized SAT prep linked to your PSAT results',url:'https://www.khanacademy.org/sat'},
+  {ico:'💻',name:'Bluebook — Digital SAT Practice',desc:'Full-length practice tests in exact exam format',url:'https://bluebook.collegeboard.org'},
+  {ico:'📊',name:'Free ACT Practice Tests',desc:'Official ACT prep: full tests, score reports',url:'https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html'},
+  {ico:'🏛️',name:'NYC College Access Centers',desc:'Free 1-on-1 college counseling across all 5 boroughs',url:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers'},
+  {ico:'📝',name:'Common App — 1,000+ Colleges',desc:'Apply to universities with one application',url:'https://www.commonapp.org'},
+  {ico:'🎓',name:'CUNY College Now — Free Credits',desc:'Take real CUNY college courses in high school, free',url:'https://www.cuny.edu/about/administration/offices/k16/college-now/'},
+  {ico:'💻',name:'P-TECH — Free Associate Degree',desc:'6-year program: diploma + CUNY degree + IBM mentorship',url:'https://www.ptech.org'},
+  {ico:'🟢',name:'Khan Academy — All Subjects',desc:'Free lessons for Algebra, ELA, Biology, History, SHSAT',url:'https://www.khanacademy.org'},
+  {ico:'🔬',name:'LabXchange — Harvard Science Labs',desc:'Virtual life science labs for grades 9-12, free',url:'https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12'},
+  {ico:'📖',name:'RegentsPrep — Past Exams',desc:'Free NY Regents practice for every subject',url:'https://www.regentsprep.org'},
+  {ico:'🧪',name:'New Visions Biology Curriculum',desc:'Full free Biology curriculum — all 6 units',url:'https://www.newvisions.org/curriculum/science/biology'},
+  {ico:'⚙️',name:'NYC CTE Programs',desc:'400+ career and technical programs at NYC high schools',url:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education'},
+  {ico:'🌆',name:'Growing Up NYC — CTE Guide',desc:'City-wide guide to CTE programs, searchable by interest',url:'https://growingupnyc.cityofnewyork.us/programs/career-technical-education/'},
+  {ico:'🏅',name:'Portrait of a Graduate',desc:"NY's new graduation framework replacing Regents by 2029",url:'https://www.nysed.gov/next-generation-learning-standards'},
+  // Pages
+  {ico:'🏠',name:'Home — Quick Check',desc:'Get your instant readiness score and study plan',url:'index.html'},
+  {ico:'📝',name:'Practice Tests',desc:'Official NYSED past exams and warm-up quizzes',url:'practice.html'},
+  {ico:'📚',name:'Resources',desc:'Browse all scholarships, internships, SAT prep, and more',url:'resources.html'},
+  {ico:'🎯',name:'Mission',desc:"Why we built ZenEd and what we're about",url:'mission.html'},
+];
+
+let navSearchOpen = false;
+
+function navSearchToggle() {
+  const input = document.getElementById('navSearchInput');
+  const wrap = document.getElementById('navSearchWrap');
+  navSearchOpen = !navSearchOpen;
+  input.classList.toggle('open', navSearchOpen);
+  if(navSearchOpen) { input.focus(); }
+  else { navSearchClose(); }
+}
+
+function navSearchClose() {
+  const input = document.getElementById('navSearchInput');
+  const results = document.getElementById('navSearchResults');
+  input.classList.remove('open');
+  results.classList.remove('show');
+  input.value = '';
+  navSearchOpen = false;
+}
+
+function navSearchRun(q) {
+  const results = document.getElementById('navSearchResults');
+  if(!q || q.length < 2) { results.classList.remove('show'); return; }
+  const lower = q.toLowerCase();
+  const matches = SEARCH_INDEX.filter(item =>
+    item.name.toLowerCase().includes(lower) ||
+    item.desc.toLowerCase().includes(lower)
+  ).slice(0, 6);
+  if(!matches.length) {
+    results.innerHTML = '<div class="nsr-empty">No results for "'+q+'"</div>';
+    results.classList.add('show');
+    return;
+  }
+  results.innerHTML = matches.map(m =>
+    `<a href="${m.url}" class="nsr-item" ${m.url.startsWith('http')?'target="_blank"':''}>
+      <div class="nsr-ico">${m.ico}</div>
+      <div><div class="nsr-name">${m.name}</div><div class="nsr-desc">${m.desc}</div></div>
+    </a>`
+  ).join('');
+  results.classList.add('show');
+}
+
+// Close search on outside click
+document.addEventListener('click', e => {
+  if(!document.getElementById('navSearchWrap')?.contains(e.target)) navSearchClose();
+});
+</script>
+</body>
+</html>
