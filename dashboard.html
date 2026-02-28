@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Dashboard — ZenEd</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,900&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--green:#00a86b;--green2:#007a4d;--ink:#0d0d0d;--gray:#6b7280;--line:#e8e8e5;--bg:#fafaf8;--card:#fff}
+body{font-family:'Instrument Sans',sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;}
+
+/* NAV placeholder — injected by universal nav */
+nav{position:sticky;top:0;z-index:500;background:#fff;border-bottom:1px solid #e8e8e5;display:flex;align-items:center;justify-content:space-between;padding:0 24px;height:56px;}
+.logo{display:flex;align-items:center;gap:9px;text-decoration:none;}
+.logo-ico{width:28px;height:28px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo-word{font-family:'Fraunces',serif;font-size:18px;font-weight:900;letter-spacing:-.5px;color:#0d0d0d;}
+.logo-word em{color:#00a86b;font-style:normal;}
+.nav-right{display:flex;align-items:center;gap:6px;}
+.nav-link{font-size:13px;font-weight:600;color:#6b7280;text-decoration:none;padding:6px 10px;border-radius:8px;transition:color .15s;}
+.nav-link:hover,.nav-link.active{color:#0d0d0d;}
+.btn-support-nav{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;color:#0d0d0d;background:#FFDD00;border-radius:100px;padding:6px 14px;text-decoration:none;}
+.nav-signin{font-size:13px;font-weight:700;color:#fff;background:#0d0d0d;padding:7px 16px;border-radius:100px;text-decoration:none;}
+
+/* LOADER */
+#loader{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;transition:opacity .3s;}
+#loader.hide{opacity:0;pointer-events:none;}
+.loader-dot{width:10px;height:10px;background:var(--green);border-radius:50%;display:inline-block;margin:0 3px;animation:dotBounce 1.2s infinite ease-in-out;}
+.loader-dot:nth-child(2){animation-delay:.2s;}
+.loader-dot:nth-child(3){animation-delay:.4s;}
+@keyframes dotBounce{0%,80%,100%{transform:scale(0)}40%{transform:scale(1)}}
+
+/* NOT-LOGGED-IN STATE */
+#guestMsg{display:none;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:40px 24px;}
+
+/* DASHBOARD LAYOUT */
+#dashMain{display:none;max-width:1100px;margin:0 auto;padding:32px 24px 80px;}
+
+/* GREETING */
+.dash-greeting{margin-bottom:32px;}
+.dash-greeting h1{font-family:'Fraunces',serif;font-size:clamp(28px,4vw,42px);font-weight:900;letter-spacing:-1.5px;line-height:1;}
+.dash-greeting h1 em{color:var(--green);font-style:italic;}
+.dash-greeting p{font-size:14px;color:var(--gray);margin-top:8px;}
+
+/* STREAK BANNER */
+.streak-bar{background:linear-gradient(135deg,#0d0d0d,#1a2a1a);border-radius:16px;padding:18px 24px;display:flex;align-items:center;gap:16px;margin-bottom:28px;color:#fff;overflow:hidden;position:relative;}
+.streak-fire{font-size:36px;animation:fireWiggle 2s ease-in-out infinite;}
+@keyframes fireWiggle{0%,100%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}}
+.streak-num{font-family:'Fraunces',serif;font-size:44px;font-weight:900;line-height:1;color:#FFDD00;}
+.streak-label{font-size:13px;color:rgba(255,255,255,.6);margin-top:2px;}
+.streak-msg{font-size:15px;font-weight:600;margin-left:auto;max-width:280px;text-align:right;}
+.streak-glow{position:absolute;right:-40px;top:-40px;width:180px;height:180px;background:radial-gradient(circle,rgba(0,168,107,.25),transparent 70%);border-radius:50%;}
+
+/* STAT CARDS ROW */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+.stat-card{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:18px;position:relative;overflow:hidden;transition:transform .18s,box-shadow .18s;}
+.stat-card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.07);}
+.stat-card-icon{font-size:22px;margin-bottom:10px;}
+.stat-card-val{font-family:'Fraunces',serif;font-size:32px;font-weight:900;letter-spacing:-1.5px;line-height:1;color:var(--ink);}
+.stat-card-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);margin-top:4px;}
+.stat-card-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--green);transform-origin:left;animation:barGrow 1s ease-out forwards;}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+
+/* GRID */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.dash-card{background:#fff;border:1.5px solid var(--line);border-radius:16px;padding:22px;}
+.dash-card.full{grid-column:span 2;}
+.dash-card-header{display:flex;align-items:center;gap:8px;margin-bottom:16px;}
+.dash-card-title{font-family:'Fraunces',serif;font-size:17px;font-weight:900;letter-spacing:-.5px;}
+.dash-card-badge{margin-left:auto;font-size:10px;font-weight:700;padding:3px 10px;border-radius:100px;background:#e6f6ef;color:var(--green2);}
+
+/* SUBJECT RADIAL PROGRESS */
+.subjects-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.subj-item{display:flex;flex-direction:column;align-items:center;gap:8px;}
+.subj-ring{position:relative;width:70px;height:70px;}
+.subj-ring svg{transform:rotate(-90deg);}
+.subj-ring-bg{fill:none;stroke:var(--line);stroke-width:5;}
+.subj-ring-fill{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1.2s ease-out;stroke-dasharray:188;}
+.subj-ring-label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:15px;font-weight:900;}
+.subj-name{font-size:11px;font-weight:600;color:var(--gray);text-align:center;}
+.subj-status{font-size:10px;padding:2px 8px;border-radius:100px;font-weight:700;}
+.status-red{background:#fef2f2;color:#dc2626;}
+.status-yellow{background:#fefce8;color:#ca8a04;}
+.status-green{background:#f0fdf4;color:var(--green2);}
+
+/* ACTIVITY FEED */
+.activity-list{display:flex;flex-direction:column;gap:10px;}
+.activity-item{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);transition:background .15s;}
+.activity-item:hover{background:#fafaf8;}
+.activity-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.activity-txt{flex:1;}
+.activity-name{font-size:13px;font-weight:600;}
+.activity-sub{font-size:11px;color:var(--gray);margin-top:2px;}
+.activity-score{font-family:'Fraunces',serif;font-size:16px;font-weight:900;}
+.activity-time{font-size:10px;color:var(--gray);}
+.activity-action{font-size:11px;font-weight:700;color:var(--green);text-decoration:none;white-space:nowrap;}
+.activity-action:hover{text-decoration:underline;}
+
+/* STUDY PLAN */
+.plan-list{display:flex;flex-direction:column;gap:8px;}
+.plan-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;background:#fafaf8;border:1.5px solid transparent;cursor:pointer;transition:all .15s;}
+.plan-item:hover{border-color:var(--ink);background:#fff;}
+.plan-item.done{opacity:.5;}
+.plan-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;}
+.plan-item.done .plan-check{background:var(--green);border-color:var(--green);}
+.plan-txt{font-size:13px;font-weight:600;flex:1;}
+.plan-tag{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;background:#f0fdf4;color:var(--green2);}
+
+/* GRADE SUMMARY */
+.grade-bars{display:flex;flex-direction:column;gap:10px;}
+.grade-bar-row{display:flex;align-items:center;gap:10px;}
+.grade-bar-subj{font-size:12px;font-weight:600;width:80px;flex-shrink:0;}
+.grade-bar-track{flex:1;height:8px;background:var(--line);border-radius:100px;overflow:hidden;}
+.grade-bar-fill{height:100%;border-radius:100px;transition:width 1s ease-out;}
+.grade-bar-val{font-size:12px;font-weight:700;width:36px;text-align:right;flex-shrink:0;}
+
+/* MOTIVATIONAL CARTOON */
+.mascot-wrap{text-align:center;padding:8px 0;}
+.mascot-svg{width:90px;height:90px;margin:0 auto 10px;animation:mascotFloat 3s ease-in-out infinite;}
+@keyframes mascotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.mascot-quote{font-family:'Fraunces',serif;font-size:14px;font-weight:700;color:var(--ink);font-style:italic;line-height:1.4;}
+
+/* CTA BUTTONS */
+.cta-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap;}
+.btn-cta{padding:9px 18px;border-radius:100px;font-size:12px;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:all .15s;border:1.5px solid transparent;}
+.btn-cta.primary{background:var(--ink);color:#fff;}
+.btn-cta.primary:hover{background:#222;}
+.btn-cta.secondary{border-color:var(--line);color:var(--ink);}
+.btn-cta.secondary:hover{border-color:var(--ink);}
+
+/* CHART AREA */
+.chart-wrap{position:relative;height:140px;margin-top:8px;}
+.chart-bars{display:flex;align-items:flex-end;justify-content:space-between;gap:6px;height:120px;}
+.chart-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.chart-bar{width:100%;border-radius:6px 6px 0 0;min-height:4px;transition:height 1s ease-out;position:relative;}
+.chart-bar-val{font-size:9px;font-weight:700;color:var(--gray);}
+.chart-xlabels{display:flex;justify-content:space-between;margin-top:4px;}
+.chart-xlabel{flex:1;text-align:center;font-size:9px;color:var(--gray);font-weight:600;}
+
+/* RESPONSIVE */
+@media(max-width:700px){
+  .stats-row{grid-template-columns:1fr 1fr;}
+  .dash-grid{grid-template-columns:1fr;}
+  .dash-card.full{grid-column:span 1;}
+  .subjects-grid{grid-template-columns:repeat(2,1fr);}
+  .streak-msg{display:none;}
+}
+
+/* ── NAV SEARCH ── */
+.nav-search-wrap{display:flex;align-items:center;gap:0;position:relative;}
+.nav-search-btn{background:none;border:none;cursor:pointer;padding:7px;color:var(--muted,#6b7280);border-radius:8px;display:flex;align-items:center;transition:color .15s;}
+.nav-search-btn:hover{color:#0d0d0d;}
+.nav-search-input{width:0;overflow:hidden;opacity:0;transition:width .25s ease,opacity .2s;border:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;background:transparent;}
+.nav-search-input.open{width:180px;opacity:1;border-bottom:1.5px solid #0d0d0d;padding:2px 4px;}
+.nav-search-results{position:absolute;top:calc(100% + 10px);right:0;width:320px;background:#fff;border:1.5px solid #e8e8e5;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:500;display:none;max-height:400px;overflow-y:auto;}
+.nav-search-results.show{display:block;}
+.nsr-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;text-decoration:none;color:#0d0d0d;border-bottom:1px solid #f0f0ee;transition:background .12s;}
+.nsr-item:last-child{border-bottom:none;}
+.nsr-item:hover{background:#f6f6f4;}
+.nsr-ico{font-size:18px;flex-shrink:0;margin-top:1px;}
+.nsr-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.nsr-desc{font-size:11px;color:#6b7280;line-height:1.45;}
+.nsr-empty{padding:16px 14px;font-size:13px;color:#6b7280;text-align:center;}
+
+/* ── MOBILE OVERFLOW FIX ── */
+@media(max-width:600px){
+  .dash-grid,.stats-row,.subjects-grid,.score-chart-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .stats-row{grid-template-columns:repeat(2,1fr)!important;}
+  .dash-grid{grid-template-columns:1fr!important;}
+  .dash-card.full,.dash-card.wide{grid-column:1!important;}
+  body{overflow-x:hidden;}
+  .streak-bar{flex-wrap:wrap;gap:8px;}
+  .streak-msg{display:none;}
+  canvas{max-width:100%!important;height:auto!important;}
+}
+
+@media(max-width:700px){
+  .nav-right{gap:10px;}
+  .nav-link{display:none;}
+  .btn-support-nav{display:none;}
+  .nav-search-wrap{display:flex;}
+}
+
+html, body { overflow-x: hidden; max-width: 100vw; }
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div><span class="loader-dot"></span><span class="loader-dot"></span><span class="loader-dot"></span></div>
+</div>
+
+<nav>
+  <a href="index.html" class="logo">
+    <div class="logo-ico">
+      <svg viewBox="0 0 24 24" fill="none" width="14" height="14"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    <span class="logo-word">Zen<em>Ed</em></span>
+  </a>
+  <div class="nav-right">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="practice.html" class="nav-link">Practice</a>
+    <a href="resources.html" class="nav-link">Resources</a>
+    <a href="dashboard.html" class="nav-link active">Dashboard</a>
+    <a href="mission.html" class="nav-link">Mission</a>
+    <a href="https://ko-fi.com/zened" target="_blank" class="btn-support-nav">☕ Support</a>
+    <a href="app.html" class="nav-signin" id="navBtn">Account</a>
+  </div>
+</nav>
+
+<!-- GUEST STATE -->
+<div id="guestMsg">
+  <div style="font-size:64px;margin-bottom:16px;animation:mascotFloat 3s ease-in-out infinite">🎓</div>
+  <h2 style="font-family:'Fraunces',serif;font-size:28px;font-weight:900;letter-spacing:-1px;margin-bottom:8px;">Your dashboard is waiting</h2>
+  <p style="color:#6b7280;max-width:340px;line-height:1.6;margin-bottom:24px;">Create a free account to track your quiz scores, study plans, grades, and see your progress over time.</p>
+  <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+    <a href="app.html" class="btn-cta primary" style="font-size:14px;padding:11px 24px;">Create free account →</a>
+    <a href="index.html" class="btn-cta secondary" style="font-size:14px;padding:11px 24px;">Try without account</a>
+  </div>
+</div>
+
+<!-- MAIN DASHBOARD -->
+<div id="dashMain">
+
+  <!-- GREETING -->
+  <div class="dash-greeting">
+    <h1>Hey, <em id="userFirstName">student</em>! 👋</h1>
+    <p id="greetingSub">Here's where you left off — keep the momentum going.</p>
+  </div>
+
+  <!-- STREAK BANNER -->
+  <div class="streak-bar">
+    <div class="streak-glow"></div>
+    <div class="streak-fire">🔥</div>
+    <div>
+      <div class="streak-num" id="streakNum">0</div>
+      <div class="streak-label">day streak</div>
+    </div>
+    <div style="flex:1;margin-left:8px;">
+      <div style="font-size:13px;color:rgba(255,255,255,.8);font-weight:600;" id="streakMsg">Start a streak — study something today!</div>
+      <div style="display:flex;gap:6px;margin-top:8px;" id="streakDots">
+        <!-- dots injected by JS -->
+      </div>
+    </div>
+    <div class="streak-msg" id="streakQuote">"Every expert was once a beginner."</div>
+  </div>
+
+  <!-- STAT CARDS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-card-icon">📝</div>
+      <div class="stat-card-val" id="statQuizzes">0</div>
+      <div class="stat-card-lbl">Quizzes taken</div>
+      <div class="stat-card-bar" style="animation-delay:.1s;width:60%"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon">🎯</div>
+      <div class="stat-card-val" id="statAvgScore">—</div>
+      <div class="stat-card-lbl">Avg quiz score</div>
+      <div class="stat-card-bar" style="animation-delay:.2s;background:#FFDD00;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon">📚</div>
+      <div class="stat-card-val" id="statPlans">0</div>
+      <div class="stat-card-lbl">Study plans</div>
+      <div class="stat-card-bar" style="animation-delay:.3s;background:#6366f1;"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-card-icon">✅</div>
+      <div class="stat-card-val" id="statDone">0</div>
+      <div class="stat-card-lbl">Tasks completed</div>
+      <div class="stat-card-bar" style="animation-delay:.4s;background:#f59e0b;"></div>
+    </div>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="dash-grid">
+
+    <!-- SUBJECT READINESS -->
+    <div class="dash-card full">
+      <div class="dash-card-header">
+        <span style="font-size:20px">📊</span>
+        <div class="dash-card-title">Subject Readiness</div>
+        <span class="dash-card-badge" id="readinessBadge">Not yet scored</span>
+      </div>
+      <div class="subjects-grid" id="subjectsGrid">
+        <!-- Injected by JS -->
+      </div>
+      <div class="cta-row">
+        <a href="index.html" class="btn-cta primary">📝 Update grades →</a>
+        <a href="practice.html" class="btn-cta secondary">🎯 Take a quiz</a>
+      </div>
+    </div>
+
+    <!-- ACTIVITY FEED -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <span style="font-size:20px">⏱️</span>
+        <div class="dash-card-title">Recent Activity</div>
+      </div>
+      <div class="activity-list" id="activityList">
+        <div style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;">
+          <div style="font-size:32px;margin-bottom:8px;">📭</div>
+          No activity yet — take a quiz or get a study plan!
+        </div>
+      </div>
+      <div class="cta-row">
+        <a href="practice.html" class="btn-cta secondary" style="font-size:12px;">View all activity</a>
+      </div>
+    </div>
+
+    <!-- SCORE CHART + MASCOT -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <span style="font-size:20px">📈</span>
+        <div class="dash-card-title">Quiz Score Trend</div>
+      </div>
+      <div class="chart-wrap">
+        <div class="chart-bars" id="scoreChart">
+          <!-- injected by JS -->
+        </div>
+        <div class="chart-xlabels" id="chartLabels"></div>
+      </div>
+      <div class="mascot-wrap" style="margin-top:16px;">
+        <svg class="mascot-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Friendly owl mascot -->
+          <circle cx="50" cy="50" r="40" fill="#1a2a1a"/>
+          <circle cx="50" cy="50" r="36" fill="#0d3d29"/>
+          <!-- Eyes -->
+          <circle cx="37" cy="44" r="12" fill="#fff"/>
+          <circle cx="63" cy="44" r="12" fill="#fff"/>
+          <circle cx="39" cy="44" r="8" fill="#00a86b"/>
+          <circle cx="65" cy="44" r="8" fill="#00a86b"/>
+          <circle cx="41" cy="42" r="4" fill="#0d0d0d"/>
+          <circle cx="67" cy="42" r="4" fill="#0d0d0d"/>
+          <circle cx="42" cy="41" r="1.5" fill="#fff"/>
+          <circle cx="68" cy="41" r="1.5" fill="#fff"/>
+          <!-- Beak -->
+          <polygon points="50,52 44,58 56,58" fill="#FFDD00"/>
+          <!-- Graduation cap -->
+          <rect x="28" y="20" width="44" height="6" rx="2" fill="#FFDD00"/>
+          <rect x="47" y="14" width="6" height="8" rx="1" fill="#FFDD00"/>
+          <line x1="72" y1="23" x2="80" y2="33" stroke="#FFDD00" stroke-width="2"/>
+          <circle cx="80" cy="35" r="3" fill="#FFDD00"/>
+          <!-- Wings -->
+          <ellipse cx="18" cy="62" rx="10" ry="16" fill="#0d3d29" transform="rotate(-15 18 62)"/>
+          <ellipse cx="82" cy="62" rx="10" ry="16" fill="#0d3d29" transform="rotate(15 82 62)"/>
+          <!-- Feet -->
+          <ellipse cx="42" cy="88" rx="8" ry="4" fill="#FFDD00"/>
+          <ellipse cx="58" cy="88" rx="8" ry="4" fill="#FFDD00"/>
+        </svg>
+        <div class="mascot-quote" id="mascotQuote">"You've got this! 🦉"</div>
+      </div>
+    </div>
+
+    <!-- TODAY'S STUDY PLAN -->
+    <div class="dash-card full">
+      <div class="dash-card-header">
+        <span style="font-size:20px">📋</span>
+        <div class="dash-card-title">Today's Study Plan</div>
+        <span class="dash-card-badge" id="planProgress">0 of 5 done</span>
+      </div>
+      <div class="plan-list" id="planList">
+        <!-- injected by JS -->
+      </div>
+      <div class="cta-row" style="margin-top:12px;">
+        <a href="index.html" class="btn-cta primary">🔄 Generate new plan</a>
+        <a href="resources.html" class="btn-cta secondary">📚 Browse resources</a>
+      </div>
+    </div>
+
+    <!-- GRADE TRACKER -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <span style="font-size:20px">🏫</span>
+        <div class="dash-card-title">Grade Summary</div>
+        <a href="app.html" class="dash-card-badge" style="text-decoration:none;cursor:pointer;">Edit →</a>
+      </div>
+      <div class="grade-bars" id="gradeBars">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+    <!-- RESOURCES TO EXPLORE -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <span style="font-size:20px">🔗</span>
+        <div class="dash-card-title">Pinned Resources</div>
+        <a href="resources.html" class="dash-card-badge" style="text-decoration:none;">Browse all →</a>
+      </div>
+      <div class="activity-list" id="pinnedResources">
+        <!-- Static pinned resources -->
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SB_URL='https://spkqmhrogykcbrvujgub.supabase.co';
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3FtaHJvZ3lrY2JydnVqdWIiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTczMzUxNjQwNiwiZXhwIjoyMDQ5MDkyNDA2fQ.8UrqfnCKdg93VifVHJGYJH8cCeVFSHiQgj3tKKVSxSo';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+const QUOTES = [
+  '"Every expert was once a beginner." 🦉',
+  '"Progress, not perfection." ✨',
+  '"Small steps every day = big results." 🚀',
+  '"You studied today. That matters." 💪',
+  '"Keep going. The Regents is closer than it feels." 📚',
+  '"Consistency beats cramming — every time." ⏰',
+];
+
+const DEFAULT_PLAN = [
+  {id:'p1',text:'Review your weakest Regents unit (see readiness score)',link:'index.html',tag:'Regents'},
+  {id:'p2',text:'Take a 10-question practice quiz',link:'practice.html',tag:'Practice'},
+  {id:'p3',text:'Read one section of RegentsPrep for your subject',link:'https://www.regentsprep.org',tag:'Study'},
+  {id:'p4',text:'Watch one Khan Academy video on your weakest topic',link:'https://www.khanacademy.org',tag:'Video'},
+  {id:'p5',text:'Review yesterday\'s quiz explanations — don\'t skip this!',link:'practice.html',tag:'Review'},
+];
+
+const SUBJECTS = [
+  {key:'bio',  name:'Living Env', icon:'🧬', color:'#00a86b'},
+  {key:'alg',  name:'Algebra I',  icon:'📐', color:'#6366f1'},
+  {key:'ela',  name:'ELA',        icon:'📖', color:'#f59e0b'},
+  {key:'ush',  name:'US History', icon:'🗽', color:'#ef4444'},
+];
+
+const PINNED = [
+  {ico:'🟢',bg:'#f0fdf4',name:'Khan Academy — All Subjects',org:'Free',link:'https://www.khanacademy.org'},
+  {ico:'📖',bg:'#eff6ff',name:'RegentsPrep — Past Exams',org:'Free · NYSED',link:'https://www.regentsprep.org'},
+  {ico:'💻',bg:'#fdf4ff',name:'Bluebook — Digital SAT Practice',org:'Free · College Board',link:'https://bluebook.collegeboard.org'},
+  {ico:'🏛️',bg:'#fff7ed',name:'CUNY Excelsior — Free Tuition',org:'hesc.ny.gov',link:'https://www.hesc.ny.gov'},
+];
+
+// ── STATE ──
+let userData = null;
+let savedActivity = [];
+let savedScores = [];
+let planChecked = {};
+
+function getLocalData() {
+  try {
+    savedActivity = JSON.parse(localStorage.getItem('zened_activity')||'[]');
+    savedScores   = JSON.parse(localStorage.getItem('zened_scores')||'[]');
+    planChecked   = JSON.parse(localStorage.getItem('zened_plan_checked')||'{}');
+  } catch(e) {}
+}
+
+function saveLocalData() {
+  localStorage.setItem('zened_activity', JSON.stringify(savedActivity));
+  localStorage.setItem('zened_scores',   JSON.stringify(savedScores));
+  localStorage.setItem('zened_plan_checked', JSON.stringify(planChecked));
+}
+
+// ── INIT ──
+async function init() {
+  getLocalData();
+  
+  const loader = document.getElementById('loader');
+  
+  // Timeout fallback — if supabase doesn't respond in 4s, show guest state
+  const timeout = setTimeout(() => {
+    loader.classList.add('hide');
+    document.getElementById('guestMsg').style.display = 'flex';
+  }, 4000);
+  
+  let session = null;
+  try {
+    const { data } = await sb.auth.getSession();
+    session = data?.session;
+  } catch(e) {
+    console.log('Auth check failed (offline?):', e);
+  }
+  
+  clearTimeout(timeout);
+  
+  if (session) {
+    userData = session.user;
+    const name = userData.user_metadata?.full_name || userData.email?.split('@')[0] || 'student';
+    document.getElementById('userFirstName').textContent = name.split(' ')[0];
+    sessionStorage.setItem('zened_user_name', name);
+    document.getElementById('navBtn').textContent = name.split(' ')[0];
+    document.getElementById('navBtn').style.background = '#00a86b';
+    
+    loader.classList.add('hide');
+    document.getElementById('dashMain').style.display = 'block';
+    buildDashboard();
+  } else {
+    // Show guest with demo data
+    loader.classList.add('hide');
+    document.getElementById('guestMsg').style.display = 'flex';
+  }
+}
+
+function buildDashboard() {
+  buildStreak();
+  buildStats();
+  buildSubjectRadials();
+  buildActivity();
+  buildScoreChart();
+  buildPlan();
+  buildGrades();
+  buildPinned();
+  setMascotQuote();
+}
+
+// ── STREAK ──
+function buildStreak() {
+  const today = new Date().toDateString();
+  const lastVisit = localStorage.getItem('zened_last_visit');
+  let streak = parseInt(localStorage.getItem('zened_streak')||'0');
+  
+  if (lastVisit !== today) {
+    const yesterday = new Date(Date.now()-86400000).toDateString();
+    streak = (lastVisit === yesterday) ? streak+1 : 1;
+    localStorage.setItem('zened_streak', streak);
+    localStorage.setItem('zened_last_visit', today);
+  }
+  
+  document.getElementById('streakNum').textContent = streak;
+  
+  const msgs = ['Start a streak — study something today!','2 days! Keep it going 🔥','3 days strong! 🔥','On fire this week! 🔥🔥','5+ day streak — incredible! 🔥🔥🔥'];
+  document.getElementById('streakMsg').textContent = streak === 0 ? msgs[0] : streak < 3 ? msgs[Math.min(streak,2)] : streak < 5 ? msgs[3] : msgs[4];
+  
+  // Dots for last 7 days
+  const dots = document.getElementById('streakDots');
+  for (let i=6; i>=0; i--) {
+    const d = document.createElement('div');
+    const active = i < streak;
+    d.style.cssText = `width:10px;height:10px;border-radius:50%;background:${active?'#FFDD00':'rgba(255,255,255,.2)'};transition:all .3s;animation-delay:${(6-i)*.1}s`;
+    dots.appendChild(d);
+  }
+  
+  document.getElementById('streakQuote').textContent = QUOTES[Math.floor(Math.random()*QUOTES.length)];
+}
+
+// ── STATS ──
+function buildStats() {
+  const quizzes = savedScores.length;
+  const avg = quizzes ? Math.round(savedScores.reduce((a,b)=>a+b.score,0)/quizzes) : null;
+  const plans = parseInt(localStorage.getItem('zened_plans_count')||'0');
+  const done = Object.values(planChecked).filter(Boolean).length;
+  
+  animCount('statQuizzes', quizzes);
+  document.getElementById('statAvgScore').textContent = avg ? avg+'%' : '—';
+  animCount('statPlans', plans);
+  animCount('statDone', done);
+}
+
+function animCount(id, target) {
+  const el = document.getElementById(id);
+  if (!target) return;
+  let n=0;
+  const step = Math.max(1, Math.ceil(target/20));
+  const t = setInterval(()=>{
+    n=Math.min(n+step, target);
+    el.textContent=n;
+    if(n>=target) clearInterval(t);
+  },50);
+}
+
+// ── SUBJECT RADIALS ──
+function buildSubjectRadials() {
+  const readiness = JSON.parse(localStorage.getItem('zened_readiness')||'{}');
+  const grid = document.getElementById('subjectsGrid');
+  grid.innerHTML='';
+  
+  let anyScore = false;
+  SUBJECTS.forEach(s => {
+    const score = readiness[s.key] ?? null;
+    if(score!==null) anyScore=true;
+    const pct = score ?? 0;
+    const statusCls = pct>=75?'status-green':pct>=50?'status-yellow':'status-red';
+    const statusTxt = pct>=75?'On track':pct>=50?'Needs work':score===null?'No data':'At risk';
+    const circumference = 188;
+    const offset = circumference - (circumference * pct / 100);
+    
+    grid.innerHTML += `
+    <div class="subj-item">
+      <div class="subj-ring">
+        <svg width="70" height="70" viewBox="0 0 70 70">
+          <circle class="subj-ring-bg" cx="35" cy="35" r="30"/>
+          <circle class="subj-ring-fill" cx="35" cy="35" r="30"
+            stroke="${s.color}"
+            style="stroke-dashoffset:${offset}"
+            data-offset="${offset}"/>
+        </svg>
+        <div class="subj-ring-label">${score!==null?Math.round(pct)+'%':s.icon}</div>
+      </div>
+      <div class="subj-name">${s.name}</div>
+      <div class="subj-status ${statusCls}">${statusTxt}</div>
+    </div>`;
+  });
+  
+  document.getElementById('readinessBadge').textContent = anyScore ? 'Updated' : 'Take your first quiz →';
+  
+  // Animate rings after paint
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.subj-ring-fill').forEach(el=>{
+      const target = el.dataset.offset;
+      el.style.strokeDashoffset = 188; // start empty
+      setTimeout(()=>{ el.style.strokeDashoffset = target; }, 100);
+    });
+  });
+}
+
+// ── ACTIVITY ──
+function buildActivity() {
+  const list = document.getElementById('activityList');
+  
+  // Merge localStorage activity + any from today's session
+  const activities = [...savedActivity].slice(-5).reverse();
+  
+  if (!activities.length) {
+    list.innerHTML=`<div style="text-align:center;padding:24px;color:#9ca3af;font-size:13px;">
+      <div style="font-size:32px;margin-bottom:8px">📭</div>No activity yet — take a quiz!</div>`;
+    return;
+  }
+  
+  list.innerHTML = activities.map(a => {
+    const colors = {quiz:'#f0fdf4',plan:'#eff6ff',grade:'#fff7ed',resource:'#fdf4ff'};
+    const bg = colors[a.type]||'#f9f9f9';
+    const timeAgo = getTimeAgo(a.ts);
+    return `<div class="activity-item">
+      <div class="activity-ico" style="background:${bg}">${a.icon||'📝'}</div>
+      <div class="activity-txt">
+        <div class="activity-name">${a.name}</div>
+        <div class="activity-sub">${a.sub||''} · ${timeAgo}</div>
+      </div>
+      ${a.score!==undefined?`<div class="activity-score">${a.score}%</div>`:''}
+      ${a.link?`<a href="${a.link}" class="activity-action">Continue →</a>`:''}
+    </div>`;
+  }).join('');
+}
+
+// ── SCORE CHART ──
+function buildScoreChart() {
+  const chart = document.getElementById('scoreChart');
+  const xlabels = document.getElementById('chartLabels');
+  
+  // Use saved scores or generate placeholder
+  const scores = savedScores.length >= 3 ? savedScores.slice(-7) : generatePlaceholderScores();
+  const maxScore = 100;
+  
+  const colors = ['#00a86b','#6366f1','#f59e0b','#ef4444','#00a86b','#6366f1','#f59e0b'];
+  
+  chart.innerHTML = scores.map((s,i) => {
+    const h = Math.max(8, (s.score/maxScore)*110);
+    return `<div class="chart-bar-wrap">
+      <div class="chart-bar-val">${s.score}%</div>
+      <div class="chart-bar" style="height:${h}px;background:${colors[i%colors.length]};opacity:${savedScores.length?1:.35}"></div>
+    </div>`;
+  }).join('');
+  
+  xlabels.innerHTML = scores.map(s=>`<div class="chart-xlabel">${s.label||'Quiz'}</div>`).join('');
+}
+
+function generatePlaceholderScores() {
+  // Upward trending demo data
+  const subjects = ['Bio','Alg','ELA','Hist','Bio','Alg','Mock'];
+  return subjects.map((s,i)=>({score:Math.round(45+i*7+Math.random()*10), label:s}));
+}
+
+// ── PLAN ──
+function buildPlan() {
+  const list = document.getElementById('planList');
+  const savedPlan = JSON.parse(localStorage.getItem('zened_study_plan')||'null') || DEFAULT_PLAN;
+  const total = savedPlan.length;
+  const doneCount = savedPlan.filter(p=>planChecked[p.id]).length;
+  
+  document.getElementById('planProgress').textContent = `${doneCount} of ${total} done`;
+  
+  list.innerHTML = savedPlan.map(p => {
+    const done = !!planChecked[p.id];
+    return `<div class="plan-item ${done?'done':''}" onclick="togglePlan('${p.id}',this)">
+      <div class="plan-check">${done?'<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':''}</div>
+      <div class="plan-txt"><a href="${p.link}" target="${p.link.startsWith('http')?'_blank':'_self'}" onclick="event.stopPropagation()" style="color:inherit;text-decoration:none;">${p.text}</a></div>
+      <span class="plan-tag">${p.tag}</span>
+    </div>`;
+  }).join('');
+}
+
+function togglePlan(id, el) {
+  planChecked[id] = !planChecked[id];
+  saveLocalData();
+  buildPlan();
+}
+
+// ── GRADES ──
+function buildGrades() {
+  const grades = JSON.parse(localStorage.getItem('zened_grades')||'{}');
+  const bars = document.getElementById('gradeBars');
+  
+  const defaults = {bio:0,alg:0,ela:0,ush:0};
+  const data = {...defaults,...grades};
+  const labels = {bio:'Living Env',alg:'Algebra I',ela:'ELA',ush:'US History'};
+  const colors = {bio:'#00a86b',alg:'#6366f1',ela:'#f59e0b',ush:'#ef4444'};
+  
+  bars.innerHTML = Object.entries(data).map(([k,v]) => {
+    const pct = Math.round(v);
+    return `<div class="grade-bar-row">
+      <div class="grade-bar-subj">${labels[k]||k}</div>
+      <div class="grade-bar-track"><div class="grade-bar-fill" style="width:${pct}%;background:${colors[k]||'#00a86b'}"></div></div>
+      <div class="grade-bar-val" style="color:${colors[k]||'#00a86b'}">${pct?pct+'%':'—'}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── PINNED RESOURCES ──
+function buildPinned() {
+  const list = document.getElementById('pinnedResources');
+  list.innerHTML = PINNED.map(r=>`
+    <div class="activity-item" onclick="window.open('${r.link}','_blank')" style="cursor:pointer;">
+      <div class="activity-ico" style="background:${r.bg}">${r.ico}</div>
+      <div class="activity-txt">
+        <div class="activity-name">${r.name}</div>
+        <div class="activity-sub">${r.org}</div>
+      </div>
+      <span class="activity-action">Open →</span>
+    </div>`).join('');
+}
+
+// ── MASCOT ──
+function setMascotQuote() {
+  const scores = savedScores;
+  const avg = scores.length ? scores.reduce((a,b)=>a+b.score,0)/scores.length : 0;
+  const quotes = avg>=80 ? ['"You\'re crushing it! 🔥"','"Top scores — keep going! 🏆"'] 
+               : avg>=60 ? ['"Getting stronger every day 💪"','"Progress is happening! 📈"']
+               : ['"Every quiz teaches you something 🦉"','"Start simple. Build from there. 🌱"'];
+  document.getElementById('mascotQuote').textContent = quotes[Math.floor(Math.random()*quotes.length)];
+}
+
+// ── HELPERS ──
+function getTimeAgo(ts) {
+  if (!ts) return 'recently';
+  const diff = Date.now() - new Date(ts).getTime();
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return Math.round(diff/60000)+'m ago';
+  if (diff < 86400000) return Math.round(diff/3600000)+'h ago';
+  return Math.round(diff/86400000)+'d ago';
+}
+
+// ── EXPOSE API for other pages to save activity ──
+window.zemedTrack = function(type, icon, name, sub, score, link) {
+  getLocalData();
+  savedActivity.push({type,icon,name,sub,score,link,ts:new Date().toISOString()});
+  if(savedActivity.length>50) savedActivity.shift();
+  if(score!==undefined) savedScores.push({score,label:name.substring(0,6),ts:new Date().toISOString()});
+  if(score!==undefined && savedScores.length>20) savedScores.shift();
+  saveLocalData();
+};
+
+window.zemedSaveReadiness = function(data) {
+  localStorage.setItem('zened_readiness', JSON.stringify(data));
+};
+
+window.zemedSaveGrades = function(data) {
+  localStorage.setItem('zened_grades', JSON.stringify(data));
+};
+
+window.zemedSavePlan = function(tasks) {
+  localStorage.setItem('zened_study_plan', JSON.stringify(tasks));
+  const count = parseInt(localStorage.getItem('zened_plans_count')||'0')+1;
+  localStorage.setItem('zened_plans_count', count);
+};
+
+init();
+
+// ── NAV SEARCH ──
+const SEARCH_INDEX = [
+  // Resources
+  {ico:'💼',name:'SYEP — Paid Summer Jobs',desc:'NYC paid summer employment program for ages 14-24',url:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page'},
+  {ico:'❄️',name:'Snow.day — 500+ Free Programs',desc:'Search engine for free summer programs, STEM, arts, law',url:'https://snow.day'},
+  {ico:'🔧',name:'HK Maker Lab — Columbia',desc:'Free 5-week engineering program at Columbia University',url:'https://hkmakerlab.columbia.edu'},
+  {ico:'🔬',name:'NYAS Junior Academy',desc:'Virtual science mentorship from real researchers',url:'https://www.nyas.org/programs/global-stem-alliance/junior-academy/'},
+  {ico:'🧬',name:'NYC Science Research Mentoring',desc:'100+ hours at AMNH, Cold Spring Harbor, NY Botanical Garden',url:'https://scienceresearchmentoring.org'},
+  {ico:'🧠',name:'BrainYAC — Columbia Neuroscience',desc:'Free brain science program for high school students',url:'https://zuckermaninstitute.columbia.edu/brainyac'},
+  {ico:'🎓',name:'CUNY Excelsior — Free Tuition',desc:'Families under $125k may attend CUNY for free',url:'https://www.hesc.ny.gov'},
+  {ico:'📋',name:'FAFSA — Federal Student Aid',desc:'File for free federal financial aid — Pell Grants up to $7,395',url:'https://studentaid.gov'},
+  {ico:'🏆',name:'Fastweb — 1.5M Scholarships',desc:'Largest free scholarship database',url:'https://www.fastweb.com'},
+  {ico:'✨',name:'Bold.org — No-Essay Scholarships',desc:'Apply to scholarships with no essay required',url:'https://bold.org'},
+  {ico:'📈',name:'Raise.me — Earn Scholarships Now',desc:'Earn micro-scholarships starting in 9th grade',url:'https://www.raise.me'},
+  {ico:'📝',name:'Official SAT Prep — Khan Academy',desc:'Free personalized SAT prep linked to your PSAT results',url:'https://www.khanacademy.org/sat'},
+  {ico:'💻',name:'Bluebook — Digital SAT Practice',desc:'Full-length practice tests in exact exam format',url:'https://bluebook.collegeboard.org'},
+  {ico:'📊',name:'Free ACT Practice Tests',desc:'Official ACT prep: full tests, score reports',url:'https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html'},
+  {ico:'🏛️',name:'NYC College Access Centers',desc:'Free 1-on-1 college counseling across all 5 boroughs',url:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers'},
+  {ico:'📝',name:'Common App — 1,000+ Colleges',desc:'Apply to universities with one application',url:'https://www.commonapp.org'},
+  {ico:'🎓',name:'CUNY College Now — Free Credits',desc:'Take real CUNY college courses in high school, free',url:'https://www.cuny.edu/about/administration/offices/k16/college-now/'},
+  {ico:'💻',name:'P-TECH — Free Associate Degree',desc:'6-year program: diploma + CUNY degree + IBM mentorship',url:'https://www.ptech.org'},
+  {ico:'🟢',name:'Khan Academy — All Subjects',desc:'Free lessons for Algebra, ELA, Biology, History, SHSAT',url:'https://www.khanacademy.org'},
+  {ico:'🔬',name:'LabXchange — Harvard Science Labs',desc:'Virtual life science labs for grades 9-12, free',url:'https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12'},
+  {ico:'📖',name:'RegentsPrep — Past Exams',desc:'Free NY Regents practice for every subject',url:'https://www.regentsprep.org'},
+  {ico:'🧪',name:'New Visions Biology Curriculum',desc:'Full free Biology curriculum — all 6 units',url:'https://www.newvisions.org/curriculum/science/biology'},
+  {ico:'⚙️',name:'NYC CTE Programs',desc:'400+ career and technical programs at NYC high schools',url:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education'},
+  {ico:'🌆',name:'Growing Up NYC — CTE Guide',desc:'City-wide guide to CTE programs, searchable by interest',url:'https://growingupnyc.cityofnewyork.us/programs/career-technical-education/'},
+  {ico:'🏅',name:'Portrait of a Graduate',desc:"NY's new graduation framework replacing Regents by 2029",url:'https://www.nysed.gov/next-generation-learning-standards'},
+  // Pages
+  {ico:'🏠',name:'Home — Quick Check',desc:'Get your instant readiness score and study plan',url:'index.html'},
+  {ico:'📝',name:'Practice Tests',desc:'Official NYSED past exams and warm-up quizzes',url:'practice.html'},
+  {ico:'📚',name:'Resources',desc:'Browse all scholarships, internships, SAT prep, and more',url:'resources.html'},
+  {ico:'🎯',name:'Mission',desc:"Why we built ZenEd and what we're about",url:'mission.html'},
+];
+
+let navSearchOpen = false;
+
+function navSearchToggle() {
+  const input = document.getElementById('navSearchInput');
+  const wrap = document.getElementById('navSearchWrap');
+  navSearchOpen = !navSearchOpen;
+  input.classList.toggle('open', navSearchOpen);
+  if(navSearchOpen) { input.focus(); }
+  else { navSearchClose(); }
+}
+
+function navSearchClose() {
+  const input = document.getElementById('navSearchInput');
+  const results = document.getElementById('navSearchResults');
+  input.classList.remove('open');
+  results.classList.remove('show');
+  input.value = '';
+  navSearchOpen = false;
+}
+
+function navSearchRun(q) {
+  const results = document.getElementById('navSearchResults');
+  if(!q || q.length < 2) { results.classList.remove('show'); return; }
+  const lower = q.toLowerCase();
+  const matches = SEARCH_INDEX.filter(item =>
+    item.name.toLowerCase().includes(lower) ||
+    item.desc.toLowerCase().includes(lower)
+  ).slice(0, 6);
+  if(!matches.length) {
+    results.innerHTML = '<div class="nsr-empty">No results for "'+q+'"</div>';
+    results.classList.add('show');
+    return;
+  }
+  results.innerHTML = matches.map(m =>
+    `<a href="${m.url}" class="nsr-item" ${m.url.startsWith('http')?'target="_blank"':''}>
+      <div class="nsr-ico">${m.ico}</div>
+      <div><div class="nsr-name">${m.name}</div><div class="nsr-desc">${m.desc}</div></div>
+    </a>`
+  ).join('');
+  results.classList.add('show');
+}
+
+// Close search on outside click
+document.addEventListener('click', e => {
+  if(!document.getElementById('navSearchWrap')?.contains(e.target)) navSearchClose();
+});
+</script>
+</body>
+</html><div class="nav-search-wrap" id="navSearchWrap">
+      <button class="nav-search-btn" onclick="navSearchToggle()" aria-label="Search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </button>
+      <input class="nav-search-input" id="navSearchInput" type="text" placeholder="Search resources…" oninput="navSearchRun(this.value)" onkeydown="if(event.key==='Escape')navSearchClose()">
+      <div class="nav-search-results" id="navSearchResults"></div>
+    </div>
+      
