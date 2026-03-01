@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — Sign In</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+
+:root{--teal:#0ea87a;--teal-dark:#0b8f68;--teal-light:#e6f7f2;--black:#0d0d0d;--white:#fff;--cream:#f8fafc;--gray:#64748b;--gray-light:#f1f5f9;--border:#e2e8f0;--red:#ef4444;--yellow:#f59e0b;--green:#10b981;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:var(--cream);color:var(--black);min-height:100vh;-webkit-font-smoothing:antialiased;}
+#loader{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--black);display:flex;align-items:center;justify-content:center;z-index:9998;transition:opacity 0.4s;}
+#loader.hide{opacity:0;pointer-events:none;}
+.loader-inner{display:flex;align-items:center;gap:12px;color:white;font-size:24px;font-weight:800;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+.loader-dot{width:8px;height:8px;background:var(--teal);border-radius:50%;animation:pulse 1s infinite;}
+#toast{position:fixed;bottom:80px;right:20px;padding:12px 20px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;transform:translateY(20px);opacity:0;transition:all 0.3s;pointer-events:none;max-width:300px;}
+#toast.show{transform:translateY(0);opacity:1;}
+#toast.success{background:#15803d;color:white;}
+#toast.error{background:var(--red);color:white;}
+#toast.info{background:var(--black);color:white;}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+/* AUTH */
+#authScreen{min-height:100vh;display:none;align-items:center;justify-content:center;background:linear-gradient(135deg,#0a0a0a,#0f1f3d);}
+.auth-card{background:white;border-radius:24px;padding:44px 40px;width:420px;max-width:95vw;box-shadow:0 24px 64px rgba(0,0,0,0.35);animation:slideUp 0.4s ease;}
+.auth-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
+.auth-logo-ico{width:42px;height:42px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 12px rgba(14,168,122,0.4);}
+.auth-logo-word{font-size:28px;font-weight:800;letter-spacing:-1px;}
+.auth-logo-word em{color:var(--teal);font-style:normal;}
+.auth-sub{font-size:13px;color:var(--gray);margin-bottom:28px;}
+.tab-row{display:flex;background:var(--gray-light);border-radius:10px;padding:3px;margin-bottom:24px;}
+.tab-btn{flex:1;padding:9px;border:none;background:none;border-radius:8px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:var(--gray);transition:all 0.2s;}
+.tab-btn.on{background:white;color:var(--black);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+.fgroup{margin-bottom:14px;}
+.flbl{display:block;font-size:13px;font-weight:600;margin-bottom:5px;}
+.finp{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;color:var(--black);outline:none;transition:border-color 0.2s;background:white;}
+.finp:focus{border-color:var(--teal);}
+select.finp{cursor:pointer;}
+.role-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.role-btn{padding:12px 6px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;color:var(--gray);background:white;transition:all 0.2s;font-family:'Plus Jakarta Sans',sans-serif;}
+.role-btn:hover,.role-btn.on{border-color:var(--teal);background:var(--teal-light);color:var(--teal);}
+.role-emoji{font-size:22px;display:block;margin-bottom:4px;}
+.btn-main{width:100%;padding:13px;border:none;border-radius:10px;background:var(--black);color:white;font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all 0.2s;margin-top:6px;}
+.btn-main:hover{background:#1e1e1e;}
+.btn-main:disabled{opacity:0.5;cursor:not-allowed;}
+.auth-msg{padding:10px 13px;border-radius:8px;font-size:13px;margin-bottom:14px;display:none;}
+.auth-msg.err{background:#fff1f2;color:var(--red);border:1px solid #fecdd3;}
+.auth-msg.ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;}
+/* APP */
+#app{display:none;min-height:100vh;}
+.topbar{height:58px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:100;}
+.top-logo{display:flex;align-items:center;gap:9px;text-decoration:none;color:var(--black);}
+.top-logo-ico{width:30px;height:30px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.top-logo-word{font-weight:800;font-size:18px;letter-spacing:-0.4px;}
+.top-logo-word em{color:var(--teal);font-style:normal;}
+.topbar-right{display:flex;align-items:center;gap:10px;}
+.rbadge{font-size:11px;font-weight:700;padding:3px 11px;border-radius:20px;text-transform:capitalize;}
+.rbadge.student{background:#eff6ff;color:#2563eb;}
+.rbadge.teacher{background:#f0fdf4;color:#15803d;}
+.rbadge.parent{background:#fdf4ff;color:#9333ea;}
+.top-name{font-size:13px;color:var(--gray);}
+.top-name b{color:var(--black);}
+.btn-out{padding:7px 14px;background:none;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;}
+.btn-out:hover{background:var(--gray-light);}
+.app-body{display:flex;min-height:calc(100vh - 58px);}
+.sidebar{width:220px;background:white;border-right:1px solid var(--border);padding:16px 10px;flex-shrink:0;position:sticky;top:58px;height:calc(100vh - 58px);overflow-y:auto;}
+.nav-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);padding:0 8px;margin-bottom:8px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 11px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--gray);transition:all 0.15s;border:none;background:none;width:100%;text-align:left;font-family:'Plus Jakarta Sans',sans-serif;}
+.nav-item:hover{background:var(--gray-light);color:var(--black);}
+.nav-item.on{background:var(--teal-light);color:var(--teal);font-weight:700;}
+.nav-sep{border:none;border-top:1px solid var(--border);margin:12px 0;}
+.content{flex:1;padding:28px 32px;max-width:960px;}
+/* PAGE COMPONENTS */
+.page{animation:slideUp 0.2s ease;}
+.page-title{font-size:22px;font-weight:800;letter-spacing:-0.5px;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--gray);margin-bottom:24px;line-height:1.6;}
+.card{background:white;border-radius:16px;padding:22px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-bottom:16px;}
+.card-head{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:7px;}
+.section{background:white;border-radius:16px;padding:22px;border:1px solid var(--border);box-shadow:0 1px 4px rgba(0,0,0,0.05);margin-bottom:16px;}
+.sec-head{font-size:15px;font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px;}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:16px;}
+.r-circle{width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:20px;font-weight:800;}
+.r-circle.green{background:rgba(16,185,129,.1);color:#059669;}
+.r-circle.yellow{background:rgba(245,158,11,.1);color:#d97706;}
+.r-circle.red{background:rgba(239,68,68,.1);color:#dc2626;}
+.r-circle.empty{background:var(--gray-light);color:var(--gray);font-size:28px;}
+.r-label{font-size:13px;font-weight:700;text-align:center;margin-bottom:2px;}
+.r-label.green{color:#059669}.r-label.yellow{color:#d97706}.r-label.red{color:#dc2626}
+.r-sub{font-size:11px;color:var(--gray);text-align:center;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-black{padding:11px 22px;background:var(--black);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-black:hover{background:#1e1e1e;}
+.btn-black:disabled{opacity:0.45;cursor:not-allowed;}
+.btn-teal{padding:11px 22px;background:var(--teal);color:white;border:none;border-radius:9px;font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s;}
+.btn-teal:hover{background:var(--teal-dark);}
+.save-ok{background:#f0fdf4;color:#15803d;border:1px solid #bbf7d0;border-radius:8px;padding:9px 13px;font-size:13px;margin-top:10px;display:none;}
+.irow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.irow .finp{flex:1;min-width:140px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:9px 12px;background:var(--gray-light);font-weight:700;font-size:11px;color:var(--gray);text-transform:uppercase;letter-spacing:0.5px;}
+td{padding:11px 12px;border-bottom:1px solid var(--border);}
+tr:last-child td{border-bottom:none;}
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-weight:700;font-size:11px;}
+.badge.g{background:rgba(16,185,129,.1);color:#059669;}
+.badge.y{background:rgba(245,158,11,.1);color:#d97706;}
+.badge.r{background:rgba(239,68,68,.1);color:#dc2626;}
+.rec{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.rec:last-child{border-bottom:none;}
+.rec-dot{width:9px;height:9px;border-radius:50%;margin-top:4px;flex-shrink:0;}
+.rec-dot.high{background:var(--red)}.rec-dot.mid{background:var(--yellow)}.rec-dot.low{background:var(--green)}
+.rec-topic{font-size:14px;font-weight:700;margin-bottom:2px;}
+.rec-detail{font-size:12px;color:var(--gray);margin-bottom:4px;}
+.rec-link{font-size:12px;color:var(--teal);text-decoration:none;font-weight:600;}
+.rec-link:hover{text-decoration:underline;}
+.class-card{background:white;border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.class-name{font-size:14px;font-weight:700;margin-bottom:2px;}
+.class-meta{font-size:12px;color:var(--gray);}
+.code-pill{background:var(--black);color:white;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;letter-spacing:1.5px;}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.titem{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid var(--border);border-radius:12px;text-decoration:none;color:var(--black);transition:all 0.2s;}
+.titem:hover{border-color:var(--teal);background:var(--teal-light);transform:translateY(-1px);}
+.titem-ico{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.titem-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.titem-desc{font-size:11px;color:var(--gray);}
+.ftag{margin-left:auto;font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;flex-shrink:0;}
+.ftag.free{background:#e6f7f2;color:#0b8f68;}
+.ftag.paid{background:#fef3c7;color:#d97706;}
+.empty-box{text-align:center;padding:48px 20px;color:var(--gray);}
+.empty-box h3{font-size:17px;font-weight:700;color:var(--black);margin-bottom:8px;}
+.empty-box p{font-size:13px;line-height:1.6;}
+/* MOBILE BOTTOM NAV */
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:white;border-top:1px solid var(--border);z-index:200;padding:6px 0 env(safe-area-inset-bottom,6px);}
+.mob-inner{display:flex;justify-content:space-around;}
+.mb-btn{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 8px;border:none;background:none;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;font-weight:600;color:var(--gray);border-radius:8px;transition:color 0.15s;min-width:52px;}
+.mb-btn.on{color:var(--teal);}
+.mb-ico{font-size:20px;line-height:1;}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .mob-nav{display:block;}
+  .content{padding:16px 16px 80px;}
+  .g3,.g2{grid-template-columns:1fr;}
+  .frow{grid-template-columns:1fr;}
+  .tgrid{grid-template-columns:1fr;}
+  .top-name{display:none;}
+}
+
+/* ── NAV SEARCH ── */
+.nav-search-wrap{display:flex;align-items:center;gap:0;position:relative;}
+.nav-search-btn{background:none;border:none;cursor:pointer;padding:7px;color:var(--muted,#6b7280);border-radius:8px;display:flex;align-items:center;transition:color .15s;}
+.nav-search-btn:hover{color:#0d0d0d;}
+.nav-search-input{width:0;overflow:hidden;opacity:0;transition:width .25s ease,opacity .2s;border:none;outline:none;font-family:'Instrument Sans',sans-serif;font-size:13px;font-weight:500;background:transparent;}
+.nav-search-input.open{width:180px;opacity:1;border-bottom:1.5px solid #0d0d0d;padding:2px 4px;}
+.nav-search-results{position:absolute;top:calc(100% + 10px);right:0;width:320px;background:#fff;border:1.5px solid #e8e8e5;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,.1);z-index:500;display:none;max-height:400px;overflow-y:auto;}
+.nav-search-results.show{display:block;}
+.nsr-item{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;text-decoration:none;color:#0d0d0d;border-bottom:1px solid #f0f0ee;transition:background .12s;}
+.nsr-item:last-child{border-bottom:none;}
+.nsr-item:hover{background:#f6f6f4;}
+.nsr-ico{font-size:18px;flex-shrink:0;margin-top:1px;}
+.nsr-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.nsr-desc{font-size:11px;color:#6b7280;line-height:1.45;}
+.nsr-empty{padding:16px 14px;font-size:13px;color:#6b7280;text-align:center;}
+
+
+/* ── AUTH PAGE OVERRIDES ── */
+body { background: #0a0f1e; }
+#authScreen {
+  min-height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #0a0f1e 0%, #0f1f3d 50%, #071a12 100%);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+#authScreen::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(14,168,122,0.12) 0%, transparent 70%);
+  top: -100px; left: -100px;
+  pointer-events: none;
+}
+#authScreen::after {
+  content: '';
+  position: absolute;
+  width: 400px; height: 400px;
+  background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
+  bottom: -50px; right: -50px;
+  pointer-events: none;
+}
+.auth-wrap {
+  width: 100%;
+  max-width: 460px;
+  position: relative;
+  z-index: 10;
+}
+.auth-top-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+}
+.auth-logo-link {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  text-decoration: none;
+  color: white;
+}
+.auth-logo-ico {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, #0ea87a, #076b4f);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(14,168,122,0.4);
+}
+.auth-logo-word {
+  font-size: 22px; font-weight: 800; letter-spacing: -0.5px;
+  color: white;
+}
+.auth-logo-word em { color: #0ea87a; font-style: normal; }
+.auth-back {
+  font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.5);
+  text-decoration: none; transition: color .2s;
+}
+.auth-back:hover { color: white; }
+.auth-card {
+  background: white;
+  border-radius: 24px;
+  padding: 40px 40px 36px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05);
+  animation: slideUp 0.4s ease;
+}
+@media(max-width:500px) {
+  .auth-card { padding: 30px 24px 28px; }
+}
+.auth-headline {
+  font-size: 24px; font-weight: 800; letter-spacing: -0.5px;
+  margin-bottom: 4px; color: #0d0d0d;
+}
+.auth-sub {
+  font-size: 13px; color: #6b7280; margin-bottom: 28px; line-height: 1.5;
+}
+
+/* ── GOOGLE BUTTON ── */
+.btn-google {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid #e8e8e5;
+  border-radius: 12px;
+  background: white;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s;
+  color: #0d0d0d;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  margin-bottom: 20px;
+}
+.btn-google:hover {
+  border-color: #0ea87a;
+  background: #f0fdf9;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(14,168,122,0.15);
+}
+.btn-google:active { transform: translateY(0); }
+.btn-google svg { flex-shrink: 0; }
+
+/* ── OR DIVIDER ── */
+.or-divider {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px; color: #9ca3af; font-size: 12px; font-weight: 600;
+}
+.or-divider::before, .or-divider::after {
+  content: ''; flex: 1; height: 1px; background: #e8e8e5;
+}
+
+/* ── TABS ── */
+.tab-row {
+  display: flex; background: #f4f4f2;
+  border-radius: 10px; padding: 3px; margin-bottom: 20px;
+}
+.tab-btn {
+  flex: 1; padding: 9px;
+  border: none; background: none; border-radius: 8px;
+  cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 14px; font-weight: 600; color: #6b7280;
+  transition: all 0.2s;
+}
+.tab-btn.on {
+  background: white; color: #0d0d0d;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+}
+
+/* ── FORM ── */
+.fgroup { margin-bottom: 14px; }
+.flbl { display: block; font-size: 12px; font-weight: 700; margin-bottom: 5px; color: #374151; letter-spacing: 0.3px; }
+.finp {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid #e8e8e5; border-radius: 10px;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 14px; color: #0d0d0d;
+  outline: none; transition: border-color 0.2s; background: white;
+}
+.finp:focus { border-color: #0ea87a; box-shadow: 0 0 0 3px rgba(14,168,122,0.08); }
+.btn-main {
+  width: 100%; padding: 13px;
+  border: none; border-radius: 10px;
+  background: #0d0d0d; color: white;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 15px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s; margin-top: 4px;
+}
+.btn-main:hover { background: #1e1e1e; }
+.btn-main:disabled { opacity: 0.5; cursor: not-allowed; }
+.auth-msg {
+  padding: 10px 13px; border-radius: 8px;
+  font-size: 13px; margin-bottom: 14px; display: none;
+}
+.auth-msg.err { background: #fff1f2; color: #dc2626; border: 1px solid #fecdd3; }
+.auth-msg.ok { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+.auth-footer {
+  text-align: center; margin-top: 20px;
+  font-size: 12px; color: #9ca3af; line-height: 1.6;
+}
+.auth-footer a { color: #6b7280; text-decoration: underline; }
+
+/* ── LOADING SCREEN ── */
+#loader {
+  position: fixed; inset: 0;
+  background: #0a0f1e;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999; transition: opacity 0.5s;
+}
+#loader.hide { opacity: 0; pointer-events: none; }
+.loader-inner {
+  display: flex; flex-direction: column; align-items: center; gap: 20px;
+}
+.loader-logo {
+  width: 56px; height: 56px;
+  background: linear-gradient(135deg, #0ea87a, #076b4f);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 32px rgba(14,168,122,0.4);
+  animation: logoPulse 2s ease-in-out infinite;
+}
+@keyframes logoPulse {
+  0%,100% { transform: scale(1); box-shadow: 0 8px 32px rgba(14,168,122,0.4); }
+  50% { transform: scale(1.05); box-shadow: 0 12px 40px rgba(14,168,122,0.6); }
+}
+.loader-text {
+  font-size: 15px; font-weight: 700; color: rgba(255,255,255,0.6);
+  letter-spacing: 0.3px;
+}
+.loader-dots {
+  display: flex; gap: 6px;
+}
+.loader-dot {
+  width: 6px; height: 6px; background: #0ea87a;
+  border-radius: 50%; animation: dotPulse 1.4s ease-in-out infinite;
+}
+.loader-dot:nth-child(2) { animation-delay: 0.2s; }
+.loader-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotPulse {
+  0%,80%,100% { transform: scale(0.6); opacity: 0.4; }
+  40% { transform: scale(1); opacity: 1; }
+}
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOADER ══ -->
+<div id="loader">
+  <div class="loader-inner">
+    <div class="loader-logo">
+      <svg viewBox="0 0 24 24" fill="none" width="28" height="28">
+        <path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+        <path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M12 7V15" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+    </div>
+    <div class="loader-text">ZenEd</div>
+    <div class="loader-dots">
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+      <div class="loader-dot"></div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ══ AUTH SCREEN ══ -->
+<div id="authScreen">
+  <div class="auth-wrap">
+    <div class="auth-top-nav">
+      <a href="index.html" class="auth-logo-link">
+        <div class="auth-logo-ico">
+          <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
+            <path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 7V15" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="auth-logo-word">Zen<em>Ed</em></span>
+      </a>
+      <a href="index.html" class="auth-back">← Back to home</a>
+    </div>
+
+    <div class="auth-card">
+      <h1 class="auth-headline">Welcome to ZenEd</h1>
+      <p class="auth-sub">Free tools for Regents, SAT, and college — save your progress and study plans.</p>
+
+      <!-- ── GOOGLE SIGN IN (PRIMARY) ── -->
+      <button class="btn-google" id="googleBtn" onclick="doGoogleSignIn()">
+        <svg width="20" height="20" viewBox="0 0 24 24">
+          <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+          <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+          <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+          <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div class="or-divider">OR</div>
+
+      <!-- ── EMAIL TABS ── -->
+      <div class="tab-row">
+        <button class="tab-btn on" id="tabSignIn" onclick="switchTab('signin')">Sign In</button>
+        <button class="tab-btn" id="tabSignUp" onclick="switchTab('signup')">Create Account</button>
+      </div>
+
+      <div id="msgBox" class="auth-msg"></div>
+
+      <!-- ── SIGN IN FORM ── -->
+      <div id="formSignIn">
+        <div class="fgroup">
+          <label class="flbl">Email</label>
+          <input class="finp" id="liEmail" type="email" placeholder="you@email.com" autocomplete="email">
+        </div>
+        <div class="fgroup">
+          <label class="flbl">Password</label>
+          <input class="finp" id="liPass" type="password" placeholder="Your password" autocomplete="current-password">
+        </div>
+        <button class="btn-main" id="liBtn" onclick="doSignin()">Sign In →</button>
+      </div>
+
+      <!-- ── SIGN UP FORM ── -->
+      <div id="formSignUp" style="display:none">
+        <div class="fgroup">
+          <label class="flbl">Your Name</label>
+          <input class="finp" id="suName" type="text" placeholder="First Last" autocomplete="name">
+        </div>
+        <div class="fgroup">
+          <label class="flbl">Email</label>
+          <input class="finp" id="suEmail" type="email" placeholder="you@email.com" autocomplete="email">
+        </div>
+        <div class="fgroup">
+          <label class="flbl">Password</label>
+          <input class="finp" id="suPass" type="password" placeholder="At least 8 characters" autocomplete="new-password">
+        </div>
+        <button class="btn-main" id="suBtn" onclick="doSignup()">Create Free Account →</button>
+      </div>
+
+      <div class="auth-footer">
+        By continuing, you agree to our <a href="terms.html">Terms</a> &amp; <a href="privacy.html">Privacy Policy</a>.<br>
+        ZenEd is free for all students — always.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LOGGED-IN APP ══ -->
+<div id="app">
+  <div class="topbar">
+    <a href="index.html" class="top-logo">
+      <div class="top-logo-ico"><svg viewBox="0 0 24 24" fill="none" width="16" height="16"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+      <span class="top-logo-word">Zen<em>Ed</em></span>
+    </a>
+    <div class="topbar-right">
+      <span class="rbadge student" id="topRole">student</span>
+      <span class="top-name">Welcome, <b id="topName">User</b></span>
+      <button class="btn-out" onclick="doLogout()">Log out</button>
+    </div>
+  </div>
+  <div class="app-body">
+    <div class="sidebar" id="sidebar"></div>
+    <div class="content" id="content"></div>
+  </div>
+  <div class="mob-nav" id="mobNav" style="display:none">
+    <div class="mob-inner" id="mobNavInner"></div>
+  </div>
+</div>
+
+
+
+<script>
+
+let db;
+try {
+  db = supabase.createClient(
+    'https://spkqmhrogykcbrvujgub.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3FtaHJvZ3lrY2JydnVqZ3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTU0OTEsImV4cCI6MjA4NzM3MTQ5MX0.00fS4NTvcC4f-mD8gRSqD1huWIdHo8Xe6UMZn8UJeb0'
+  );
+} catch(e) {
+  console.warn('Supabase not loaded:', e);
+}
+let USER=null, PROFILE=null, ROLE='';
+
+// ── NY→M+ SCALE ──
+const NY_SCALE = [
+  {label:'NY',  min:0,  max:54,  num:45,  color:'red',    pass:false, msg:'Not Yet — needs significant work'},
+  {label:'NY+', min:55, max:59,  num:57,  color:'red',    pass:false, msg:'Not Yet+ — getting closer'},
+  {label:'L',   min:60, max:62,  num:61,  color:'yellow', pass:false, msg:'Limited — just below passing'},
+  {label:'L+',  min:63, max:64,  num:63,  color:'yellow', pass:false, msg:'Limited+ — almost there'},
+  {label:'D',   min:65, max:67,  num:66,  color:'yellow', pass:true,  msg:'Developing — just passing'},
+  {label:'D+',  min:68, max:69,  num:68,  color:'yellow', pass:true,  msg:'Developing+ — passing'},
+  {label:'P',   min:70, max:74,  num:72,  color:'green',  pass:true,  msg:'Proficient — solid pass'},
+  {label:'P+',  min:75, max:79,  num:77,  color:'green',  pass:true,  msg:'Proficient+ — strong'},
+  {label:'M',   min:80, max:89,  num:85,  color:'green',  pass:true,  msg:'Meeting — excellent'},
+  {label:'M+',  min:90, max:100, num:95,  color:'green',  pass:true,  msg:'Meeting+ — mastery!'},
+];
+function scaleFromLabel(lbl){ return NY_SCALE.find(s=>s.label===lbl)||null; }
+function scaleFromNum(n){ return NY_SCALE.slice().reverse().find(s=>n>=s.min)||NY_SCALE[0]; }
+function toNum(val){
+  const byLbl = scaleFromLabel(String(val).trim().toUpperCase());
+  if(byLbl) return byLbl.num;
+  const n = parseInt(val);
+  return isNaN(n)?null:Math.max(0,Math.min(100,n));
+}
+
+// ── SUBJECTS + NEW VISIONS BIOLOGY UNITS ──
+const SUBJ={
+  biology:{
+    name:'Biology / Living Environment',
+    units:[
+      {id:'u1', name:'Unit 1: Marathon Runner',          emoji:'🏃',
+       topics:['Cell Organization','Homeostasis','Cellular Respiration','Gas Exchange','Energy Transfer','Organ Systems','Muscle Fatigue'],
+       link:'https://www.newvisions.org/curriculum/science/biology',
+       khan:'https://www.khanacademy.org/science/ap-biology/cellular-energetics',
+       tip:'Focus on homeostasis and cellular respiration — these show up on every Living Environment Regents.'},
+      {id:'u2', name:'Unit 2: Humans vs. Bacteria',      emoji:'🦠',
+       topics:['Natural Selection','Evolution','Antibiotic Resistance','Microbiome','Disease Transmission','Immune Response'],
+       link:'https://www.newvisions.org/curriculum/science/biology',
+       khan:'https://www.khanacademy.org/science/ap-biology/natural-selection',
+       tip:'Natural selection and antibiotic resistance are tested heavily. Know the Rock Pocket Mice experiment.'},
+      {id:'u3', name:'Unit 3: Evolution of Sick Humans', emoji:'🧬',
+       topics:['DNA Structure','Protein Synthesis','Genetic Traits','Mutations','Common Ancestry','CER Writing'],
+       link:'https://www.newvisions.org/curriculum/science/biology',
+       khan:'https://www.khanacademy.org/science/ap-biology/gene-expression-and-regulation',
+       tip:'DNA → RNA → Protein is essential. Practice CER (Claim-Evidence-Reasoning) writing for the Regents essays.'},
+      {id:'u4', name:'Unit 4: Saving the Mountain Lion', emoji:'🦁',
+       topics:['Genetic Variation','Meiosis','Mitosis','Human Reproduction','Population Genetics','Heredity'],
+       link:'https://www.newvisions.org/curriculum/science/biology',
+       khan:'https://www.khanacademy.org/science/ap-biology/heredity',
+       tip:'Know the difference between mitosis and meiosis. Punnett squares appear on Regents every year.'},
+      {id:'u5', name:'Unit 5: Food for All',             emoji:'🌱',
+       topics:['Photosynthesis','Ecosystem Carrying Capacity','Carbon Cycle','Macromolecules','Food Webs','Energy Flow'],
+       link:'https://www.newvisions.org/curriculum/science/biology',
+       khan:'https://www.khanacademy.org/science/ap-biology/cellular-energetics/photosynthesis',
+       tip:'Photosynthesis and food webs are high-frequency Regents topics. Know the carbon cycle diagram.'},
+      {id:'u6', name:'Unit 6: Woolly Mammoth',           emoji:'🦣',
+       topics:['Biodiversity','Human Impact','Ecosystem Stability','Population Dynamics','Conservation','Extinction'],
+       link:'https://www.newvisions.org/curriculum/science/biology',
+       khan:'https://www.khanacademy.org/science/ap-biology/ecology',
+       tip:'Human impact on ecosystems and biodiversity are common in the last section of the Regents.'},
+    ]
+  },
+  algebra:{
+    name:'Algebra 1',
+    units:[
+      {id:'alg1', name:'Linear Equations & Inequalities', emoji:'📐',
+       topics:['Linear Equations','Inequalities','Systems of Equations','Word Problems'],
+       link:'https://www.khanacademy.org/math/algebra/x2f8bb11595b61c86:linear-equations-graphs',
+       khan:'https://www.khanacademy.org/math/algebra', tip:'Systems of equations appear every year on the Regents. Practice writing equations from word problems.'},
+      {id:'alg2', name:'Functions & Quadratics', emoji:'📈',
+       topics:['Functions','Quadratic Equations','Polynomials','Factoring'],
+       link:'https://www.khanacademy.org/math/algebra/x2f8bb11595b61c86:quadratic-functions-equations',
+       khan:'https://www.khanacademy.org/math/algebra', tip:'Know how to factor and use the quadratic formula. Function notation is tested every exam.'},
+      {id:'alg3', name:'Statistics & Probability', emoji:'📊',
+       topics:['Statistics','Data Analysis','Probability','Exponential Functions'],
+       link:'https://www.khanacademy.org/math/statistics-probability',
+       khan:'https://www.khanacademy.org/math/algebra', tip:'Statistics questions are worth a lot of points and students often skip them. Practice scatter plots and regression.'},
+    ]
+  },
+  ela:{
+    name:'English ELA',
+    units:[
+      {id:'ela1', name:'Reading & Text Analysis', emoji:'📖',
+       topics:['Reading Comprehension','Literary Analysis','Informational Text','Vocabulary in Context'],
+       link:'https://www.regentsprep.org/ela/', khan:'https://www.khanacademy.org/ela',
+       tip:'Read the questions BEFORE the passage — it saves time and focuses your reading.'},
+      {id:'ela2', name:'Writing & Argumentation', emoji:'✍️',
+       topics:['Argument Essay','Evidence & Reasoning','Narrative Writing','Research Skills'],
+       link:'https://www.regentsprep.org/ela/', khan:'https://www.khanacademy.org/ela',
+       tip:'Your argument essay needs a clear claim, 3 pieces of evidence, and a counterargument. Practice this structure.'},
+      {id:'ela3', name:'Grammar & Editing', emoji:'🔤',
+       topics:['Grammar & Usage','Revising & Editing','Sentence Structure'],
+       link:'https://www.regentsprep.org/ela/', khan:'https://www.khanacademy.org/ela',
+       tip:'Revising & Editing is the most coachable part of the ELA Regents. Practice eliminating redundancy.'},
+    ]
+  },
+  us_history:{
+    name:'US History',
+    units:[
+      {id:'ush1', name:'Foundations–Civil War', emoji:'🏛️',
+       topics:['Colonial Era','Constitution & Founding','Civil War','Reconstruction'],
+       link:'https://www.khanacademy.org/humanities/us-history', khan:'https://www.khanacademy.org/humanities/us-history',
+       tip:'Know the major turning points — Constitution, Civil War causes, and Reconstruction outcomes.'},
+      {id:'ush2', name:'Industrial Era–WWII', emoji:'🏭',
+       topics:['Progressive Era','WWI','Great Depression','WWII','New Deal'],
+       link:'https://www.khanacademy.org/humanities/us-history', khan:'https://www.khanacademy.org/humanities/us-history',
+       tip:'The Great Depression and New Deal appear on almost every Regents exam.'},
+      {id:'ush3', name:'Cold War–Modern', emoji:'🌎',
+       topics:['Cold War','Civil Rights Movement','Vietnam Era','Modern America','DBQ Skills'],
+       link:'https://www.khanacademy.org/humanities/us-history', khan:'https://www.khanacademy.org/humanities/us-history',
+       tip:'DBQ (Document-Based Questions) — always tie your answer back to the document AND historical context.'},
+    ]
+  },
+  shsat:{
+    name:'SHSAT Prep',
+    units:[
+      {id:'sh1', name:'English Language Arts', emoji:'📝',
+       topics:['Scrambled Paragraphs','Reading Comprehension','Revising & Editing','Logical Reasoning'],
+       link:'https://www.khanacademy.org/prep/shsat', khan:'https://www.khanacademy.org/prep/shsat',
+       tip:'Scrambled Paragraphs are unique to SHSAT — practice this daily. Most students underestimate it.'},
+      {id:'sh2', name:'Mathematics', emoji:'🔢',
+       topics:['Algebra','Geometry','Word Problems','Number Theory','Statistics','Probability'],
+       link:'https://www.khanacademy.org/prep/shsat', khan:'https://www.khanacademy.org/prep/shsat',
+       tip:'SHSAT math goes beyond Regents Algebra. Focus on word problems — they require multi-step thinking.'},
+    ]
+  }
+};
+
+// Assignment categories + weights (matches Jupiter/New Visions)
+const CATEGORIES = {
+  formative:   {label:'Formative',             weight:0.50, desc:'Classwork, labs, homework — 50% of grade'},
+  summative:   {label:'Summative',             weight:0.30, desc:'Tests, exams, CERs — 30% of grade'},
+  engagement:  {label:'Scholarship + Engagement', weight:0.20, desc:'Participation, meetings, collaboration — 20% of grade'},
+};
+
+function toast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='show '+type;setTimeout(()=>t.className='',3000);}
+function H(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function set(html){document.getElementById('content').innerHTML=html;}
+function showMsg(msg,type='err'){const e=document.getElementById('authMsg');e.textContent=msg;e.className='auth-msg '+type;e.style.display='block';}
+function clearMsg(){const e=document.getElementById('authMsg');if(e)e.style.display='none';}
+
+function authTab(t){
+  clearMsg();
+  document.getElementById('loginForm').style.display=t==='login'?'block':'none';
+  document.getElementById('signupForm').style.display=t==='signup'?'block':'none';
+  document.getElementById('tabLogin').classList.toggle('on',t==='login');
+  document.getElementById('tabSignup').classList.toggle('on',t==='signup');
+}
+function pickRole(r){
+  ROLE=r;
+  document.querySelectorAll('.role-btn').forEach(b=>b.classList.remove('on'));
+  document.getElementById('r-'+r).classList.add('on');
+  document.getElementById('gradeRow').style.display=r==='student'?'block':'none';
+}
+
+async function doLogin(){
+  const email=document.getElementById('liEmail').value.trim();
+  const pass=document.getElementById('liPass').value;
+  if(!email||!pass)return showMsg('Please enter your email and password.');
+  const btn=document.getElementById('liBtn');
+  btn.disabled=true;btn.textContent='Signing in...';
+  const{data,error}=await db.auth.signInWithPassword({email,password:pass});
+  btn.disabled=false;btn.textContent='Sign In →';
+  if(error)return showMsg(error.message);
+  await loadAndEnter(data.user);
+}
+async function doGoogleSignIn() {
+  try {
+    const { error } = await db.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/zened/app.html'
+      }
+    });
+    if (error) {
+      console.error('Google OAuth error:', error);
+      toast('Google sign-in failed. Try email instead.', 'error');
+    }
+  } catch(e) {
+    console.error(e);
+    toast('Google sign-in error. Try email instead.', 'error');
+  }
+}
+
+
+async function doSignup(){
+  const name=document.getElementById('suName').value.trim();
+  const email=document.getElementById('suEmail').value.trim();
+  const pass=document.getElementById('suPass').value;
+  const grade=document.getElementById('suGrade').value;
+  if(!name||!email||!pass)return showMsg('Please fill in all fields.');
+  if(pass.length<6)return showMsg('Password must be at least 6 characters.');
+  if(!ROLE)return showMsg('Please select your role.');
+  const btn=document.getElementById('suBtn');
+  btn.disabled=true;btn.textContent='Creating account...';
+  const{data,error}=await db.auth.signUp({email,password:pass});
+  if(error){btn.disabled=false;btn.textContent='Create Account →';return showMsg(error.message);}
+  if(data.user){
+    await db.from('profiles').insert({id:data.user.id,email,full_name:name,first_name:name.split(' ')[0],role:ROLE,grade_level:grade||null,parent_code:ROLE==='student'?Math.random().toString(36).substring(2,8).toUpperCase():null});
+    const{data:ld}=await db.auth.signInWithPassword({email,password:pass});
+    btn.disabled=false;btn.textContent='Create Account →';
+    if(ld?.user){
+      USER=ld.user;
+      let{data:p}=await db.from('profiles').select('*').eq('id',ld.user.id).single();
+      PROFILE=p||{id:ld.user.id,email,full_name:name,first_name:name.split(' ')[0],role:ROLE,grade_level:grade||null};
+      enterApp();
+    } else{showMsg('Account created! Please sign in.','ok');authTab('login');}
+  }
+}
+
+async function loadAndEnter(user){
+  USER=user;
+  const{data:p}=await db.from('profiles').select('*').eq('id',user.id).single();
+  PROFILE=p||{id:user.id,email:user.email,full_name:'User',first_name:'User',role:'student'};
+  enterApp();
+}
+
+function enterApp(){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('topName').textContent=PROFILE.first_name||'User';
+  const rb=document.getElementById('topRole');
+  rb.textContent=PROFILE.role||'student';
+  rb.className='rbadge '+(PROFILE.role||'student');
+  buildNav();
+  clearMsg();
+  // If coming from Quick Check, show a welcome message
+  const fromQC = new URLSearchParams(window.location.search).get('from') === 'quickcheck';
+  if(fromQC) toast('Welcome! Start entering grades to track your progress 🎯', 'success');
+}
+
+async function doLogout(){
+  await db.auth.signOut();
+  USER=null;PROFILE=null;ROLE='';
+  document.getElementById('app').style.display='none';
+  document.getElementById('mobNav').style.display='none';
+  document.getElementById('authScreen').style.display='flex';
+}
+
+const NAVS={
+  student:[
+    {id:'grades',    icon:'📝',label:'Enter Grades'},
+    {id:'readiness', icon:'📊',label:'My Readiness'},
+    {id:'studyplan', icon:'🎯',label:'Study Plan'},
+    {id:'history',   icon:'📋',label:'Grade History'},
+    {id:'myclass',   icon:'🏫',label:'My Classroom'},
+    {id:'tutors',    icon:'📚',label:'Tutors & Resources'},
+    {id:'resources', icon:'🗂', label:'NYC Resources'},
+  ],
+  teacher:[
+    {id:'overview',  icon:'📊',label:'Overview'},
+    {id:'classrooms',icon:'🏫',label:'My Classrooms'},
+    {id:'students',  icon:'👥',label:'Student Progress'},
+    {id:'resources', icon:'🗂', label:'NYC Resources'},
+  ],
+  parent:[
+    {id:'children',  icon:'👨‍👩‍👧',label:'My Children'},
+    {id:'resources', icon:'🗂', label:'NYC Resources'},
+  ]
+};
+
+function buildNav(){
+  const items=NAVS[PROFILE.role]||NAVS.student;
+  document.getElementById('sidebar').innerHTML=
+    `<div class="nav-lbl">Menu</div>`+
+    items.map(n=>`<button class="nav-item" id="n-${n.id}" onclick="showTab('${n.id}')">${n.icon} ${n.label}</button>`).join('')+
+    `<hr class="nav-sep"><a href="index.html" style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray);font-weight:600;text-decoration:none;padding:8px 11px;border-radius:8px;" onmouseover="this.style.background='var(--teal-light)'" onmouseout="this.style.background='none'">🏠 Home</a>
+    <a href="practice.html" style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--gray);font-weight:600;text-decoration:none;padding:8px 11px;border-radius:8px;" onmouseover="this.style.background='var(--teal-light)'" onmouseout="this.style.background='none'">📝 Practice Tests</a>
+    <hr class="nav-sep"><a href="resources.html" target="_blank" style="display:flex;align-items:center;gap:7px;font-size:12px;color:var(--teal);font-weight:600;text-decoration:none;padding:8px 11px;border-radius:8px;transition:background 0.15s" onmouseover="this.style.background='var(--teal-light)'" onmouseout="this.style.background=''">↗ Full Resource Hub</a>`;
+  const mob=document.getElementById('mobNavInner');
+  mob.innerHTML=items.slice(0,5).map(n=>`<button class="mb-btn" id="mn-${n.id}" onclick="showTab('${n.id}')"><span class="mb-ico">${n.icon}</span>${n.label.split(' ')[0]}</button>`).join('');
+  document.getElementById('mobNav').style.display='block';
+  showTab(items[0].id);
+}
+
+function showTab(id){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('on'));
+  document.querySelectorAll('.mb-btn').forEach(n=>n.classList.remove('on'));
+  const el=document.getElementById('n-'+id);if(el)el.classList.add('on');
+  const mel=document.getElementById('mn-'+id);if(mel)mel.classList.add('on');
+  ({grades:pgGrades,readiness:pgReadiness,studyplan:pgStudyPlan,history:pgHistory,myclass:pgMyClass,tutors:pgTutors,overview:pgOverview,classrooms:pgClassrooms,students:pgStudents,children:pgChildren,resources:pgResources}[id]||pgGrades)();
+}
+
+/* ═══════ STUDENT PAGES ═══════ */
+
+function pgGrades(){
+  set(`<div class="page">
+    <div class="page-title">📝 Enter Grades</div>
+    <div class="page-sub">Log grades from Jupiter or enter NY→M+ directly — we'll build your study plan</div>
+
+    <div class="card" style="max-width:560px">
+      <div class="card-head">Add a grade</div>
+
+      <div class="fgroup"><label class="flbl">Subject</label>
+        <select class="finp" id="sSubj" onchange="fillUnits()">
+          <option value="">Select subject...</option>
+          <option value="biology">🧬 Biology / Living Environment (Regents)</option>
+          <option value="algebra">📐 Algebra 1 (Regents)</option>
+          <option value="ela">📖 English ELA (Regents)</option>
+          <option value="us_history">🇺🇸 US History (Regents)</option>
+          <option value="shsat">🏫 SHSAT Prep</option>
+        </select>
+      </div>
+
+      <div class="fgroup"><label class="flbl">Unit</label>
+        <select class="finp" id="sUnit"><option value="">Select subject first...</option></select>
+      </div>
+
+      <div class="frow">
+        <div class="fgroup" style="flex:1">
+          <label class="flbl">Grade</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="text" class="finp" id="sGrade" placeholder="e.g. P+ or 78" style="flex:1" oninput="previewGrade()">
+            <div id="gradePreview" style="font-size:13px;font-weight:700;color:var(--gray);white-space:nowrap;min-width:80px"></div>
+          </div>
+          <div style="font-size:11px;color:var(--gray);margin-top:4px">Enter NY / NY+ / L / L+ / D / D+ / P / P+ / M / M+ <em>or</em> a number 0–100</div>
+        </div>
+        <div class="fgroup">
+          <label class="flbl">Category</label>
+          <select class="finp" id="sType">
+            <option value="formative">Formative (50%)</option>
+            <option value="summative">Summative (30%)</option>
+            <option value="engagement">Scholarship + Engagement (20%)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="fgroup"><label class="flbl">Assignment name (optional)</label>
+        <input type="text" class="finp" id="sAssign" placeholder="e.g. Gas Exchange Quiz, Mock Regents"></div>
+
+      <!-- NY scale quick tap -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Quick select:</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap" id="scaleButtons">
+          ${NY_SCALE.map(s=>`<button onclick="tapScale('${s.label}')" style="padding:5px 11px;border:1.5px solid var(--border);border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;background:white;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.15s;color:${s.color==='red'?'#dc2626':s.color==='yellow'?'#d97706':'#059669'}" class="scale-btn" data-lbl="${s.label}">${s.label}</button>`).join('')}
+        </div>
+      </div>
+
+      <button class="btn-black" id="saveBtn" onclick="saveGrade()">Save Grade ✓</button>
+      <div class="save-ok" id="gradeOk">✓ Saved! Check My Readiness to see your score update.</div>
+    </div>
+
+    <!-- Recent entries -->
+    <div id="recentGrades" style="max-width:560px"></div>
+  </div>`);
+  loadRecentGrades();
+}
+
+function fillUnits(){
+  const s=document.getElementById('sSubj').value;
+  const sel=document.getElementById('sUnit');
+  sel.innerHTML='<option value="">Select unit...</option>';
+  if(!s||!SUBJ[s])return;
+  const subj=SUBJ[s];
+  const units=subj.units||[];
+  units.forEach(u=>{
+    const o=document.createElement('option');
+    o.value=u.id;
+    o.textContent=u.emoji+' '+u.name;
+    sel.appendChild(o);
+  });
+}
+
+function tapScale(lbl){
+  document.getElementById('sGrade').value=lbl;
+  document.querySelectorAll('.scale-btn').forEach(b=>{
+    b.style.background = b.dataset.lbl===lbl ? 'var(--black)' : 'white';
+    b.style.color = b.dataset.lbl===lbl ? 'white' : (NY_SCALE.find(s=>s.label===b.dataset.lbl)?.color==='red'?'#dc2626':NY_SCALE.find(s=>s.label===b.dataset.lbl)?.color==='yellow'?'#d97706':'#059669');
+    b.style.borderColor = b.dataset.lbl===lbl ? 'var(--black)' : 'var(--border)';
+  });
+  previewGrade();
+}
+
+function previewGrade(){
+  const raw=document.getElementById('sGrade')?.value;
+  const prev=document.getElementById('gradePreview');
+  if(!prev)return;
+  if(!raw){prev.textContent='';return;}
+  const num=toNum(raw);
+  if(num===null){prev.textContent='❓ invalid';return;}
+  const sc=scaleFromNum(num);
+  const colors={red:'#dc2626',yellow:'#d97706',green:'#059669'};
+  prev.innerHTML=`<span style="color:${colors[sc.color]}">${sc.pass?'✓':'✗'} ${sc.label} · ${num}</span>`;
+}
+
+async function saveGrade(){
+  const subj=document.getElementById('sSubj').value;
+  const unit=document.getElementById('sUnit').value;
+  const raw=document.getElementById('sGrade').value.trim();
+  const type=document.getElementById('sType').value;
+  const assign=document.getElementById('sAssign')?.value.trim()||'';
+  if(!subj)return toast('Please select a subject','error');
+  if(!unit)return toast('Please select a unit','error');
+  if(!raw)return toast('Please enter a grade','error');
+  const num=toNum(raw);
+  if(num===null)return toast('Enter a valid grade (e.g. P+ or 78)','error');
+  const sc=scaleFromNum(num);
+  const btn=document.getElementById('saveBtn');btn.disabled=true;btn.textContent='Saving...';
+  const{error}=await db.from('grade_entries').insert({
+    student_id:USER.id, subject:subj, topic:unit,
+    grade:num, assignment_type:type,
+    exam_type:subj==='shsat'?'SHSAT':'Regents',
+    notes:assign||sc.label  // store label in notes
+  });
+  btn.disabled=false;btn.textContent='Save Grade ✓';
+  if(error)return toast('Error: '+error.message,'error');
+  document.getElementById('sGrade').value='';
+  document.getElementById('sAssign').value='';
+  document.querySelectorAll('.scale-btn').forEach(b=>{b.style.background='white';b.style.borderColor='var(--border)';});
+  document.getElementById('gradePreview').textContent='';
+  const ok=document.getElementById('gradeOk');ok.style.display='block';setTimeout(()=>ok.style.display='none',4000);
+  await calcReadiness(subj);
+  loadRecentGrades();
+  toast('Grade saved! ✓','success');
+}
+
+async function loadRecentGrades(){
+  const el=document.getElementById('recentGrades');if(!el)return;
+  const{data}=await db.from('grade_entries').select('*').eq('student_id',USER.id).order('created_at',{ascending:false}).limit(8);
+  if(!data?.length){el.innerHTML='';return;}
+  el.innerHTML=`<div class="card"><div class="card-head">📋 Recent entries</div>
+    <table style="width:100%;font-size:13px;border-collapse:collapse">
+      <tr style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px">
+        <th style="text-align:left;padding:4px 0">Subject</th>
+        <th style="text-align:left;padding:4px 0">Unit</th>
+        <th style="text-align:center;padding:4px 8px">Grade</th>
+        <th style="text-align:left;padding:4px 0">Category</th>
+      </tr>
+      ${data.map(g=>{
+        const sc=scaleFromNum(g.grade);
+        const colors={red:'#dc2626',yellow:'#d97706',green:'#059669'};
+        const subjName=SUBJ[g.subject]?.name||g.subject;
+        const unitName=(SUBJ[g.subject]?.units||[]).find(u=>u.id===g.topic)?.name||g.topic;
+        const catName=CATEGORIES[g.assignment_type]?.label||g.assignment_type;
+        return`<tr style="border-top:1px solid var(--border)">
+          <td style="padding:8px 0;font-weight:600">${subjName.split('/')[0].trim()}</td>
+          <td style="padding:8px 0;color:var(--gray);font-size:12px">${unitName.replace(/Unit \d+: /,'')}</td>
+          <td style="padding:8px;text-align:center;font-weight:800;color:${colors[sc.color]}">${g.notes||sc.label}</td>
+          <td style="padding:8px 0;font-size:11px;color:var(--gray)">${catName}</td>
+        </tr>`;
+      }).join('')}
+    </table>
+  </div>`;
+}
+
+async function calcReadiness(subj){
+  const{data}=await db.from('grade_entries').select('grade,assignment_type,topic').eq('student_id',USER.id).eq('subject',subj);
+  if(!data?.length)return;
+  // Weighted average by category
+  const byType={formative:[],summative:[],engagement:[]};
+  data.forEach(g=>{ if(byType[g.assignment_type]) byType[g.assignment_type].push(g.grade); });
+  let weighted=0, totalWeight=0;
+  Object.entries(CATEGORIES).forEach(([k,cat])=>{
+    const arr=byType[k];
+    if(arr.length){
+      const avg=arr.reduce((s,v)=>s+v,0)/arr.length;
+      weighted+=avg*cat.weight;
+      totalWeight+=cat.weight;
+    }
+  });
+  const avg=totalWeight>0?Math.round(weighted/totalWeight):Math.round(data.reduce((s,g)=>s+g.grade,0)/data.length);
+  const color=avg>=75?'green':avg>=65?'yellow':'red';
+  await db.from('readiness_scores').upsert({student_id:USER.id,subject:subj,readiness_percentage:avg,predicted_score:avg,color_status:color,last_updated:new Date().toISOString()},{onConflict:'student_id,subject'});
+}
+
+async function pgReadiness(){
+  set(`<div class="page"><div class="page-title">📊 My Readiness Score</div><div class="page-sub">Weighted by Formative (50%) · Summative (30%) · Scholarship+Engagement (20%)</div><div id="rCont"><div class="empty-box"><p>Loading...</p></div></div></div>`);
+  const{data:scores}=await db.from('readiness_scores').select('*').eq('student_id',USER.id);
+  const el=document.getElementById('rCont');if(!el)return;
+  if(!scores?.length){
+    el.innerHTML=`<div class="card"><div class="empty-box"><h3>No scores yet</h3><p>Go to <strong>Enter Grades</strong> and log a few grades first!</p></div></div>`;return;
+  }
+  const colors={red:'#dc2626',yellow:'#d97706',green:'#059669'};
+  el.innerHTML=`<div class="g3">${scores.map(s=>{
+    const sc=scaleFromNum(s.readiness_percentage);
+    const lbl=sc.pass?`🟢 ${sc.label} — ${sc.msg}`:`🔴 ${sc.label} — ${sc.msg}`;
+    const pct=s.readiness_percentage;
+    const passGap=pct<65?`Need ${65-pct} more points to reach D (passing)`:'';
+    return`<div class="card" style="text-align:center">
+      <div style="font-size:13px;font-weight:700;margin-bottom:6px">${SUBJ[s.subject]?.name?.split('/')[0]||s.subject}</div>
+      <div class="r-circle ${s.color_status}">${pct}%</div>
+      <div class="r-label ${s.color_status}" style="margin:8px 0 4px">${sc.label}</div>
+      <div style="font-size:12px;color:var(--gray);margin-bottom:6px">${sc.msg}</div>
+      ${passGap?`<div style="font-size:11px;font-weight:700;color:#dc2626;background:#fff1f2;border-radius:8px;padding:5px 10px">${passGap}</div>`:''}
+    </div>`;
+  }).join('')}</div>
+  <div class="card"><div class="card-head">📖 How the score is calculated</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px">
+      ${Object.entries(CATEGORIES).map(([k,c])=>`<div style="background:var(--bg);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-size:20px;font-weight:900;color:var(--teal)">${Math.round(c.weight*100)}%</div>
+        <div style="font-size:12px;font-weight:700">${c.label}</div>
+        <div style="font-size:11px;color:var(--gray);margin-top:3px">${c.desc}</div>
+      </div>`).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--gray);margin-top:14px;line-height:1.7">
+      <b>Passing the Regents = 65 (D on the scale).</b> Aim for P+ (75+) to have a safety margin.<br>
+      NY scale: NY→NY+→L→L+→D→D+→P→P+→M→M+ matches your Jupiter gradebook exactly.
+    </div>
+  </div>`;
+}
+
+async function pgStudyPlan(){
+  set(`<div class="page"><div class="page-title">🎯 My Study Plan</div><div class="page-sub">Unit-level focus areas based on your grades</div><div id="spCont"><div class="empty-box"><p>Loading...</p></div></div></div>`);
+  const{data:grades}=await db.from('grade_entries').select('*').eq('student_id',USER.id);
+  const el=document.getElementById('spCont');if(!el)return;
+  if(!grades?.length){
+    el.innerHTML=`<div class="section"><div class="empty-box"><h3>No grades yet</h3><p>Enter some grades first — your personalized unit study plan will appear here.</p></div></div>`;return;
+  }
+  // Group by subject → unit
+  const bySubj={};
+  grades.forEach(g=>{
+    if(!bySubj[g.subject])bySubj[g.subject]={};
+    if(!bySubj[g.subject][g.topic])bySubj[g.subject][g.topic]=[];
+    bySubj[g.subject][g.topic].push(g);
+  });
+  let html='';
+  Object.entries(bySubj).forEach(([subjId,byUnit])=>{
+    const subj=SUBJ[subjId];if(!subj)return;
+    html+=`<div class="section"><div class="sec-head">${subj.name}</div>`;
+    // Compute avg per unit, sort worst first
+    const unitScores=Object.entries(byUnit).map(([unitId,gs])=>{
+      const avg=gs.reduce((s,g)=>s+g.grade,0)/gs.length;
+      const unit=(subj.units||[]).find(u=>u.id===unitId)||{id:unitId,name:unitId,emoji:'📚',link:'#',khan:'#',tip:''};
+      return{unitId,unit,avg:Math.round(avg),count:gs.length};
+    }).sort((a,b)=>a.avg-b.avg);
+
+    unitScores.forEach(({unit,avg,count})=>{
+      const sc=scaleFromNum(avg);
+      const colors={red:'#dc2626',yellow:'#d97706',green:'#059669'};
+      const bg={red:'#fff1f2',yellow:'#fffbeb',green:'#f0fdf4'};
+      const priority=sc.color==='red'?'🔴 Focus here first':sc.color==='yellow'?'🟡 Needs practice':'🟢 On track';
+      const action=sc.color==='red'
+        ?`Start with the New Visions lesson for this unit tonight.`
+        :sc.color==='yellow'
+        ?`Review key concepts and do 1 past Regents question on this unit.`
+        :`Keep it up — do a quick review before the exam.`;
+      html+=`<div style="background:${bg[sc.color]};border-radius:14px;padding:18px;margin-bottom:12px;border-left:4px solid ${colors[sc.color]}">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px">
+          <div>
+            <div style="font-size:15px;font-weight:800">${unit.emoji||'📚'} ${unit.name}</div>
+            <div style="font-size:12px;color:var(--gray);margin-top:2px">${count} grade${count>1?'s':''} entered · Avg: <strong style="color:${colors[sc.color]}">${sc.label} (${avg}%)</strong></div>
+          </div>
+          <div style="font-size:20px;font-weight:900;color:${colors[sc.color]};flex-shrink:0">${avg}%</div>
+        </div>
+        <div style="font-size:13px;font-weight:700;color:${colors[sc.color]};margin-bottom:6px">${priority}</div>
+        <div style="font-size:13px;color:#374151;margin-bottom:10px">${action}${unit.tip?` <em style="color:var(--gray)">${unit.tip}</em>`:''}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <a href="${unit.link}" target="_blank" style="font-size:12px;font-weight:700;color:white;background:var(--black);padding:7px 14px;border-radius:8px;text-decoration:none">📖 New Visions lesson →</a>
+          <a href="${unit.khan}" target="_blank" style="font-size:12px;font-weight:700;color:var(--black);background:white;border:1.5px solid var(--border);padding:7px 14px;border-radius:8px;text-decoration:none">🟢 Khan Academy →</a>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+
+async function pgHistory(){
+  set(`<div class="page"><div class="page-title">📋 Grade History</div><div class="page-sub">All your entered grades</div><div id="hCont"><div class="empty-box"><p>Loading...</p></div></div></div>`);
+  const{data:grades}=await db.from('grade_entries').select('*').eq('student_id',USER.id).order('entry_date',{ascending:false});
+  const el=document.getElementById('hCont');if(!el)return;
+  if(!grades?.length){el.innerHTML=`<div class="section"><div class="empty-box"><h3>No grades yet</h3><p>Go to <strong>Enter Grades</strong> to get started!</p></div></div>`;return;}
+  el.innerHTML=`<div class="section"><div class="sec-head">All Grades <span style="font-size:13px;font-weight:400;color:var(--gray)">${grades.length} entries</span></div>
+    <table><thead><tr><th>Subject</th><th>Topic</th><th>Type</th><th>Grade</th><th>Date</th></tr></thead>
+    <tbody>${grades.map(g=>{const c=g.grade>=75?'g':g.grade>=55?'y':'r';const d=g.entry_date?new Date(g.entry_date).toLocaleDateString():'—';return`<tr><td>${SUBJ[g.subject]?.name||g.subject}</td><td>${H(g.topic)}</td><td style="text-transform:capitalize">${g.assignment_type||'—'}</td><td><span class="badge ${c}">${g.grade}%</span></td><td>${d}</td></tr>`;}).join('')}</tbody>
+    </table></div>`;
+}
+
+async function pgMyClass(){
+  set(`<div class="page"><div class="page-title">🏫 My Classroom</div><div class="page-sub">Join your teacher's class to share your readiness progress</div>
+    <div class="section"><div class="sec-head">Join a Class</div>
+      <div class="irow"><input class="finp" id="jCode" placeholder="Class code e.g. MATH101" style="max-width:220px;text-transform:uppercase"><button class="btn-black" onclick="joinClass()">Join →</button></div>
+      <p style="font-size:12px;color:var(--gray)">Ask your teacher for the class code.</p>
+    </div>
+    <div class="section"><div class="sec-head">My Classes</div><div id="myCList"><div class="empty-box"><p>Loading...</p></div></div></div>
+  </div>`);
+  const{data:cls}=await db.from('classroom_students').select('*, classrooms(*)').eq('student_id',USER.id);
+  const el=document.getElementById('myCList');if(!el)return;
+  if(!cls?.length){el.innerHTML=`<div class="empty-box"><h3>No classes yet</h3><p>Enter a class code above.</p></div>`;return;}
+  el.innerHTML=cls.map(c=>`<div class="class-card"><div><div class="class-name">${H(c.classrooms?.class_name||'Class')}</div><div class="class-meta">${c.classrooms?.subject||''}</div></div><span class="code-pill">${c.classrooms?.class_code||''}</span></div>`).join('');
+}
+
+async function joinClass(){
+  const code=(document.getElementById('jCode').value||'').trim().toUpperCase();
+  if(!code)return toast('Enter a class code','error');
+  const{data:room}=await db.from('classrooms').select('*').eq('class_code',code).single();
+  if(!room)return toast('Class code not found','error');
+  const{error}=await db.from('classroom_students').insert({classroom_id:room.id,student_id:USER.id});
+  if(error)return toast('Already in this class','info');
+  toast('Joined '+room.class_name+'! ✓','success');pgMyClass();
+}
+
+function pgTutors(){
+  set(`<div class="page">
+    <div class="page-title">📚 Tutors & Study Resources</div>
+    <div class="page-sub">Free tools and tutoring for every Regents subject — no login needed</div>
+
+    <div class="section">
+      <div class="sec-head">🆓 Free Study Tools</div>
+      <div class="tgrid">
+        <a href="https://www.khanacademy.org" target="_blank" class="titem"><div class="titem-ico" style="background:#f0fdf4">🟢</div><div><div class="titem-name">Khan Academy</div><div class="titem-desc">Videos + practice for every subject</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.regentsprep.org" target="_blank" class="titem"><div class="titem-ico" style="background:#eff6ff">📝</div><div><div class="titem-name">Regents Prep</div><div class="titem-desc">NY-specific practice and review</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.nysedregents.org" target="_blank" class="titem"><div class="titem-ico" style="background:#fdf4ff">📋</div><div><div class="titem-name">NYSED Past Exams</div><div class="titem-desc">Download real past Regents exams</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.newvisions.org/curriculum/science/biology" target="_blank" class="titem"><div class="titem-ico" style="background:#f0fdf4">🧬</div><div><div class="titem-name">New Visions Biology</div><div class="titem-desc">Full Living Environment curriculum</div></div><span class="ftag free">Free</span></a>
+        <a href="https://albert.io" target="_blank" class="titem"><div class="titem-ico" style="background:#fff7ed">🎯</div><div><div class="titem-name">Albert.io</div><div class="titem-desc">Adaptive Regents practice questions</div></div><span class="ftag free">Free tier</span></a>
+        <a href="https://quizlet.com" target="_blank" class="titem"><div class="titem-ico" style="background:#eff6ff">🃏</div><div><div class="titem-name">Quizlet</div><div class="titem-desc">Flashcards for vocab and definitions</div></div><span class="ftag free">Free</span></a>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">🏫 Free In-Person Tutoring in NYC</div>
+      <div class="tgrid">
+        <a href="https://www.nypl.org/node/69211" target="_blank" class="titem"><div class="titem-ico" style="background:#fef3c7">📚</div><div><div class="titem-name">NYC Public Library</div><div class="titem-desc">Free tutoring at branch locations</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.bklynlibrary.org/literacy" target="_blank" class="titem"><div class="titem-ico" style="background:#fef3c7">🏛️</div><div><div class="titem-name">Brooklyn Public Library</div><div class="titem-desc">Free homework help programs</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.schools.nyc.gov/learning/student-support/academic-support/after-school-programs" target="_blank" class="titem"><div class="titem-ico" style="background:#f0fdf4">🏫</div><div><div class="titem-name">NYC After-School Programs</div><div class="titem-desc">Free academic support via NYC DOE</div></div><span class="ftag free">Free</span></a>
+        <a href="https://www.wyzant.com" target="_blank" class="titem"><div class="titem-ico" style="background:#f0f9ff">👨‍🏫</div><div><div class="titem-name">Wyzant</div><div class="titem-desc">Find verified private tutors near you</div></div><span class="ftag paid">Paid</span></a>
+      </div>
+    </div>
+
+    <a href="resources.html" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:#0f1f3d;border-radius:16px;padding:24px 28px;color:white;text-decoration:none;transition:all 0.2s;gap:16px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div><div style="font-size:17px;font-weight:800;margin-bottom:5px">🗂 Full NYC Student Resource Hub</div><div style="font-size:13px;color:#94a3b8">Internships, scholarships, CTE, college prep — 18+ programs</div></div>
+      <span style="background:var(--teal);color:white;padding:10px 18px;border-radius:9px;font-weight:700;font-size:14px;white-space:nowrap">Explore →</span>
+    </a>
+  </div>`);
+}
+
+function pgResources(){
+  set(`<div class="page">
+    <div class="page-title">🗂 NYC Student Resources</div>
+    <div class="page-sub">Key opportunities for public high school students</div>
+    <a href="resources.html" target="_blank" style="display:flex;align-items:center;justify-content:space-between;background:#0f1f3d;border-radius:16px;padding:24px 28px;color:white;text-decoration:none;margin-bottom:20px;transition:all 0.2s;gap:16px" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">
+      <div><div style="font-size:18px;font-weight:800;margin-bottom:5px">Open Full Resource Hub →</div><div style="font-size:13px;color:#94a3b8">18+ programs · searchable · filterable</div></div>
+      <span style="font-size:32px">🚀</span>
+    </a>
+    <div class="g2">
+      <div class="card"><div class="card-head">💼 Summer Jobs & Internships</div><div style="font-size:13px;line-height:2.3">
+        <a href="https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page" target="_blank" style="color:var(--teal);font-weight:600;display:block">💼 SYEP — Paid jobs, ages 14-24</a>
+        <a href="https://snow.day" target="_blank" style="color:var(--teal);font-weight:600;display:block">❄️ Snow.day — 500+ free programs</a>
+        <a href="https://hkmakerlab.columbia.edu/" target="_blank" style="color:var(--teal);font-weight:600;display:block">🔧 Hk Maker Lab — Columbia (free)</a>
+        <a href="https://www.nyas.org/junior-academy/" target="_blank" style="color:var(--teal);font-weight:600;display:block">🔬 NYAS Junior Academy — STEM</a>
+      </div></div>
+      <div class="card"><div class="card-head">🎓 College & Scholarships</div><div style="font-size:13px;line-height:2.3">
+        <a href="https://www.hesc.ny.gov" target="_blank" style="color:var(--teal);font-weight:600;display:block">🎓 CUNY Excelsior — Free under $125K</a>
+        <a href="https://studentaid.gov" target="_blank" style="color:var(--teal);font-weight:600;display:block">📋 FAFSA — Opens December 1</a>
+        <a href="https://www.fastweb.com" target="_blank" style="color:var(--teal);font-weight:600;display:block">🏆 Fastweb — 1.5M+ scholarships</a>
+        <a href="https://www.schools.nyc.gov/enrollment/high-school/college-access-centers" target="_blank" style="color:var(--teal);font-weight:600;display:block">🏫 NYC College Access Centers</a>
+      </div></div>
+    </div>
+    <div class="card" style="background:#fffbeb;border-color:#fde68a">
+      <div class="card-head">🎓 NYC Graduation Is Changing</div>
+      <div style="font-size:13px;color:#374151;line-height:1.9"><strong>2027–28:</strong> New project-based pathways offered &nbsp;·&nbsp; <strong>2029–30:</strong> Regents become optional<br>Internships and CTE you do NOW will count toward the new graduation requirements!</div>
+    </div>
+  </div>`);
+}
+
+/* ═══════ TEACHER PAGES ═══════ */
+
+/* ═══════ TEACHER PAGES ═══════ */
+
+// Global teacher data cache
+let T_ROOMS=[], T_STUDENTS=[], T_READINESS={}, T_GRADES={}, T_QUIZZES={};
+
+async function loadTeacherData(){
+  // Get classrooms
+  const{data:rooms}=await db.from('classrooms').select('*, classroom_students(student_id)').eq('teacher_id',USER.id);
+  T_ROOMS=rooms||[];
+  if(!T_ROOMS.length) return;
+
+  const studentIds=[...new Set(T_ROOMS.flatMap(r=>r.classroom_students.map(s=>s.student_id)))];
+  if(!studentIds.length) return;
+
+  // Profiles
+  const{data:profiles}=await db.from('profiles').select('id,full_name,email,created_at').in('id',studentIds);
+  T_STUDENTS=profiles||[];
+
+  // Readiness scores
+  const{data:readiness}=await db.from('readiness_scores').select('user_id,subject,score,level,updated_at').in('user_id',studentIds);
+  T_READINESS={};
+  (readiness||[]).forEach(r=>{
+    if(!T_READINESS[r.user_id]) T_READINESS[r.user_id]={};
+    T_READINESS[r.user_id][r.subject]=r;
+  });
+
+  // Grade entries
+  const{data:grades}=await db.from('grade_entries').select('user_id,subject,unit_name,grade_letter,grade_num,readiness,created_at').in('user_id',studentIds).order('created_at',{ascending:false});
+  T_GRADES={};
+  (grades||[]).forEach(g=>{
+    if(!T_GRADES[g.user_id]) T_GRADES[g.user_id]=[];
+    T_GRADES[g.user_id].push(g);
+  });
+
+  // Quiz attempts
+  const{data:quizzes}=await db.from('quiz_attempts').select('user_id,subject,score,total,pct,created_at').in('user_id',studentIds).order('created_at',{ascending:false});
+  T_QUIZZES={};
+  (quizzes||[]).forEach(q=>{
+    if(!T_QUIZZES[q.user_id]) T_QUIZZES[q.user_id]=[];
+    T_QUIZZES[q.user_id].push(q);
+  });
+}
+
+function tOverallLevel(uid){
+  const r=T_READINESS[uid];
+  if(!r||!Object.keys(r).length) return 'none';
+  const lvls=Object.values(r).map(v=>v.level);
+  if(lvls.some(l=>l==='red')) return 'red';
+  if(lvls.every(l=>l==='green')) return 'green';
+  return 'yellow';
+}
+
+function tLevelPill(level, score=null){
+  const map={green:'🟢 On track',yellow:'⚠️ Needs work',red:'🔴 At risk',none:'— No data'};
+  const cls={green:'badge g',yellow:'badge y',red:'badge r',none:'badge'};
+  return `<span class="${cls[level]||'badge'}">${map[level]||'—'}${score!==null&&level!=='none'?' · '+score+'%':''}</span>`;
+}
+
+async function pgOverview(){
+  await loadTeacherData();
+  const total=T_STUDENTS.length;
+  const green=T_STUDENTS.filter(s=>tOverallLevel(s.id)==='green').length;
+  const yellow=T_STUDENTS.filter(s=>tOverallLevel(s.id)==='yellow').length;
+  const red=T_STUDENTS.filter(s=>tOverallLevel(s.id)==='red').length;
+  const noData=T_STUDENTS.filter(s=>tOverallLevel(s.id)==='none').length;
+  const allQ=Object.values(T_QUIZZES).flat();
+  const avgQ=allQ.length?Math.round(allQ.reduce((s,q)=>s+(q.pct||0),0)/allQ.length):null;
+  const atRiskStudents=T_STUDENTS.filter(s=>tOverallLevel(s.id)==='red');
+
+  const subjKeys=['biology','algebra','ela','history'];
+  const subjLabels={biology:'Living Env.',algebra:'Algebra I',ela:'ELA',history:'US History'};
+  const subjBars=subjKeys.map(subj=>{
+    const entries=T_STUDENTS.map(s=>T_READINESS[s.id]?.[subj]).filter(Boolean);
+    if(!entries.length) return `<div class="rec"><div class="rec-dot low" style="background:var(--gray)"></div><div><div class="rec-topic">${subjLabels[subj]}</div><div class="rec-detail">No data yet</div></div></div>`;
+    const g=entries.filter(e=>e.level==='green').length;
+    const y=entries.filter(e=>e.level==='yellow').length;
+    const r=entries.filter(e=>e.level==='red').length;
+    const avg=Math.round(entries.reduce((s,e)=>s+e.score,0)/entries.length);
+    return `<div style="margin-bottom:14px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;"><span style="font-weight:700;">${subjLabels[subj]}</span><span style="color:var(--gray);">${avg}% avg · ${entries.length} students</span></div>
+      <div style="height:8px;background:var(--gray-light);border-radius:4px;overflow:hidden;display:flex;">
+        <div style="flex:${g};background:var(--green);"></div>
+        <div style="flex:${y};background:var(--yellow);"></div>
+        <div style="flex:${r};background:var(--red);"></div>
+      </div>
+      <div style="display:flex;gap:12px;margin-top:4px;font-size:11px;color:var(--gray);">
+        <span>🟢 ${g}</span><span>⚠️ ${y}</span><span>🔴 ${r}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  set(`<div class="page">
+    <div class="page-title">📊 Class Overview</div>
+    <div class="page-sub">${T_ROOMS[0]?.name||'My Class'} · ${total} student${total!==1?'s':''} enrolled</div>
+
+    <div class="g3" style="margin-bottom:20px;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:32px;font-weight:800;color:var(--green);">${green}</div>
+        <div style="font-size:12px;color:var(--gray);font-weight:600;">On track</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:32px;font-weight:800;color:var(--yellow);">${yellow}</div>
+        <div style="font-size:12px;color:var(--gray);font-weight:600;">Needs work</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:32px;font-weight:800;color:var(--red);">${red}</div>
+        <div style="font-size:12px;color:var(--gray);font-weight:600;">At risk</div>
+      </div>
+    </div>
+
+    ${red>0?`<div class="card" style="border-color:#fecdd3;background:#fff1f2;margin-bottom:16px;">
+      <div class="card-head" style="color:#dc2626;">🚨 ${red} student${red>1?'s':''} need your attention</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${atRiskStudents.map(s=>`<button onclick="tOpenStudent('${s.id}')" style="padding:6px 14px;background:white;border:1.5px solid #fecdd3;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;color:#dc2626;">${H(s.full_name||s.email)}</button>`).join('')}
+      </div>
+    </div>`:''}
+
+    <div class="g2">
+      <div class="card">
+        <div class="card-head">Readiness by subject</div>
+        ${total===0?'<div class="empty-box"><p>No students enrolled yet</p></div>':subjBars}
+      </div>
+      <div class="card">
+        <div class="card-head">Class stats</div>
+        <div class="rec"><div class="rec-dot low" style="background:var(--teal)"></div><div><div class="rec-topic">Total students</div><div class="rec-detail" style="font-size:18px;font-weight:800;">${total}</div></div></div>
+        <div class="rec"><div class="rec-dot low" style="background:var(--teal)"></div><div><div class="rec-topic">Avg quiz score</div><div class="rec-detail" style="font-size:18px;font-weight:800;color:${avgQ===null?'var(--gray)':avgQ>=80?'var(--green)':avgQ>=60?'var(--yellow)':'var(--red)'};">${avgQ!==null?avgQ+'%':'No quizzes yet'}</div></div></div>
+        <div class="rec"><div class="rec-dot low" style="background:var(--teal)"></div><div><div class="rec-topic">No data yet</div><div class="rec-detail" style="font-size:18px;font-weight:800;color:var(--gray);">${noData} students</div></div></div>
+        ${T_ROOMS[0]?`<div style="margin-top:16px;padding:12px 14px;background:var(--gray-light);border-radius:10px;">
+          <div style="font-size:11px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Class code</div>
+          <div style="font-size:24px;font-weight:800;letter-spacing:4px;font-family:monospace;">${T_ROOMS[0].code||'——'}</div>
+          <div style="font-size:11px;color:var(--gray);margin-top:2px;">Share with students → they join at /join.html</div>
+        </div>`:''}
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="sec-head">All students <span style="font-size:12px;font-weight:500;color:var(--gray);">(click to expand)</span></div>
+      ${total===0?'<div class="empty-box"><p>No students enrolled. Share your class code.</p></div>':`
+      <table>
+        <thead><tr><th>Student</th><th>Overall</th><th>Living Env.</th><th>Algebra I</th><th>ELA</th><th>US History</th><th>Quiz avg</th><th></th></tr></thead>
+        <tbody>
+          ${T_STUDENTS.map(s=>{
+            const lvl=tOverallLevel(s.id);
+            const subjs=['biology','algebra','ela','history'];
+            const quizzes=T_QUIZZES[s.id]||[];
+            const avgQ2=quizzes.length?Math.round(quizzes.reduce((a,q)=>a+(q.pct||0),0)/quizzes.length):null;
+            return `<tr>
+              <td><b>${H(s.full_name||'—')}</b><div style="font-size:11px;color:var(--gray);">${H(s.email||'')}</div></td>
+              <td>${tLevelPill(lvl)}</td>
+              ${subjs.map(subj=>{
+                const r=T_READINESS[s.id]?.[subj];
+                return `<td>${r?tLevelPill(r.level,r.score):'<span style="color:var(--gray);font-size:12px;">—</span>'}</td>`;
+              }).join('')}
+              <td style="font-weight:700;color:${avgQ2===null?'var(--gray)':avgQ2>=80?'var(--green)':avgQ2>=60?'var(--yellow)':'var(--red)'};">${avgQ2!==null?avgQ2+'%':'—'}</td>
+              <td><button class="btn-teal" style="padding:5px 12px;font-size:12px;" onclick="tOpenStudent('${s.id}')">Details</button></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`}
+    </div>
+
+    <div id="tStudentDetail"></div>
+  </div>`);
+}
+
+function tOpenStudent(uid){
+  const s=T_STUDENTS.find(x=>x.id===uid);
+  if(!s) return;
+  const grades=T_GRADES[uid]||[];
+  const quizzes=T_QUIZZES[uid]||[];
+  const readiness=T_READINESS[uid]||{};
+  const subjLabels={biology:'Living Environment',algebra:'Algebra I',ela:'ELA',history:'US History'};
+  const quizSubjLabels={bio:'Biology',alg:'Algebra',ela:'ELA',ush:'US History',sat:'SAT',mock:'Mock'};
+  const avgQ=quizzes.length?Math.round(quizzes.reduce((a,q)=>a+(q.pct||0),0)/quizzes.length):null;
+
+  document.getElementById('tStudentDetail').innerHTML=`
+    <div class="card" style="border:2px solid var(--teal);margin-top:16px;" id="tDetail_${uid}">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div><div style="font-size:17px;font-weight:800;">${H(s.full_name||'Student')}</div><div style="font-size:12px;color:var(--gray);">${H(s.email||'')}</div></div>
+        <button onclick="document.getElementById('tStudentDetail').innerHTML=''" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;background:none;font-family:inherit;font-size:12px;cursor:pointer;">✕ Close</button>
+      </div>
+
+      <div class="g2" style="margin-bottom:0;">
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:10px;">Readiness by subject</div>
+          ${Object.keys(readiness).length===0?'<div class="empty-box" style="padding:20px;"><p>No grades entered yet</p></div>':
+            Object.entries(readiness).map(([subj,r])=>`
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;margin-bottom:6px;background:${r.level==='green'?'#f0fdf4':r.level==='yellow'?'#fffbeb':'#fff1f2'};border:1px solid ${r.level==='green'?'#bbf7d0':r.level==='yellow'?'#fde68a':'#fecdd3'};">
+                <div style="font-weight:700;font-size:13px;">${subjLabels[subj]||subj}</div>
+                <div style="display:flex;align-items:center;gap:10px;">${tLevelPill(r.level)}<span style="font-weight:800;font-size:15px;">${r.score}%</span></div>
+              </div>
+            `).join('')
+          }
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:10px;">Recent grade entries (${grades.length})</div>
+          ${grades.length===0?'<div class="empty-box" style="padding:20px;"><p>No grades entered</p></div>':
+            grades.slice(0,8).map(g=>`
+              <div style="display:flex;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;">
+                <div><span style="font-weight:700;">${H(g.unit_name||'—')}</span><span style="color:var(--gray);font-size:11px;margin-left:6px;">${H(g.subject||'')}</span></div>
+                <span style="font-weight:800;color:${g.readiness==='green'?'var(--green)':g.readiness==='yellow'?'var(--yellow)':'var(--red)'};">${H(g.grade_letter||String(g.grade_num)||'—')}</span>
+              </div>
+            `).join('')
+          }
+        </div>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:10px;">Quiz history (${quizzes.length} attempts${avgQ!==null?' · avg '+avgQ+'%':''})</div>
+        ${quizzes.length===0?'<div class="empty-box" style="padding:16px;"><p>No quizzes taken yet</p></div>':`
+          <table><thead><tr><th>Subject</th><th>Score</th><th>%</th><th>Date</th></tr></thead>
+          <tbody>
+            ${quizzes.slice(0,8).map(q=>`<tr>
+              <td>${quizSubjLabels[q.subject]||q.subject}</td>
+              <td>${q.score}/${q.total}</td>
+              <td><span style="font-weight:800;color:${(q.pct||0)>=80?'var(--green)':(q.pct||0)>=60?'var(--yellow)':'var(--red)'};">${q.pct||Math.round(q.score/q.total*100)}%</span></td>
+              <td style="color:var(--gray);font-size:12px;">${new Date(q.created_at).toLocaleDateString()}</td>
+            </tr>`).join('')}
+          </tbody></table>
+        `}
+      </div>
+    </div>`;
+  document.getElementById('tStudentDetail').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function pgStudents(){
+  await loadTeacherData();
+  const subjKeys=['biology','algebra','ela','history'];
+  const subjLabels={biology:'Living Env.',algebra:'Algebra I',ela:'ELA',history:'US History'};
+  const atRisk=T_STUDENTS.filter(s=>tOverallLevel(s.id)==='red');
+
+  set(`<div class="page">
+    <div class="page-title">👥 Student Progress</div>
+    <div class="page-sub">Readiness, grades, and quiz scores for all ${T_STUDENTS.length} enrolled students</div>
+
+    ${atRisk.length>0?`<div class="card" style="border-color:#fecdd3;background:#fff1f2;margin-bottom:16px;">
+      <div class="card-head" style="color:#dc2626;">🚨 ${atRisk.length} student${atRisk.length>1?'s':''} at risk — click to see details</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        ${atRisk.map(s=>`<button onclick="tOpenStudent('${s.id}')" style="padding:6px 14px;background:white;border:1.5px solid #fecdd3;border-radius:8px;font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;color:#dc2626;">${H(s.full_name||s.email)}</button>`).join('')}
+      </div>
+    </div>`:''}
+
+    <div class="section">
+      <div class="sec-head">All students</div>
+      ${T_STUDENTS.length===0?'<div class="empty-box"><h3>No students yet</h3><p>Share your class code from the Classrooms tab.</p></div>':`
+      <table>
+        <thead><tr><th>Student</th><th>Overall</th>${subjKeys.map(s=>`<th>${subjLabels[s]}</th>`).join('')}<th>Quiz avg</th><th></th></tr></thead>
+        <tbody>
+          ${T_STUDENTS.map(s=>{
+            const lvl=tOverallLevel(s.id);
+            const quizzes=T_QUIZZES[s.id]||[];
+            const avgQ=quizzes.length?Math.round(quizzes.reduce((a,q)=>a+(q.pct||0),0)/quizzes.length):null;
+            return `<tr>
+              <td><b>${H(s.full_name||'—')}</b><div style="font-size:11px;color:var(--gray);">${H(s.email||'')}</div></td>
+              <td>${tLevelPill(lvl)}</td>
+              ${subjKeys.map(subj=>{const r=T_READINESS[s.id]?.[subj];return `<td>${r?tLevelPill(r.level,r.score):'<span style="color:var(--gray);font-size:12px;">—</span>'}</td>`;}).join('')}
+              <td style="font-weight:700;color:${avgQ===null?'var(--gray)':avgQ>=80?'var(--green)':avgQ>=60?'var(--yellow)':'var(--red)'};">${avgQ!==null?avgQ+'%':'—'}</td>
+              <td><button class="btn-teal" style="padding:5px 12px;font-size:12px;" onclick="tOpenStudentStudents('${s.id}')">Details</button></td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`}
+    </div>
+    <div id="tStudentDetailStudents"></div>
+  </div>`);
+}
+
+function tOpenStudentStudents(uid){
+  // Same as tOpenStudent but targets the pgStudents container
+  const s=T_STUDENTS.find(x=>x.id===uid);
+  if(!s) return;
+  const grades=T_GRADES[uid]||[];
+  const quizzes=T_QUIZZES[uid]||[];
+  const readiness=T_READINESS[uid]||{};
+  const subjLabels={biology:'Living Environment',algebra:'Algebra I',ela:'ELA',history:'US History'};
+  const quizSubjLabels={bio:'Biology',alg:'Algebra',ela:'ELA',ush:'US History',sat:'SAT',mock:'Mock'};
+  const avgQ=quizzes.length?Math.round(quizzes.reduce((a,q)=>a+(q.pct||0),0)/quizzes.length):null;
+
+  document.getElementById('tStudentDetailStudents').innerHTML=`
+    <div class="card" style="border:2px solid var(--teal);margin-top:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div><div style="font-size:17px;font-weight:800;">${H(s.full_name||'Student')}</div><div style="font-size:12px;color:var(--gray);">${H(s.email||'')}</div></div>
+        <button onclick="document.getElementById('tStudentDetailStudents').innerHTML=''" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;background:none;font-family:inherit;font-size:12px;cursor:pointer;">✕ Close</button>
+      </div>
+      <div class="g2" style="margin-bottom:0;">
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:10px;">Readiness</div>
+          ${Object.keys(readiness).length===0?'<div class="empty-box" style="padding:20px;"><p>No grades entered yet</p></div>':
+            Object.entries(readiness).map(([subj,r])=>`
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:10px;margin-bottom:6px;background:${r.level==='green'?'#f0fdf4':r.level==='yellow'?'#fffbeb':'#fff1f2'};border:1px solid ${r.level==='green'?'#bbf7d0':r.level==='yellow'?'#fde68a':'#fecdd3'};">
+                <div style="font-weight:700;font-size:13px;">${subjLabels[subj]||subj}</div>
+                <div style="display:flex;align-items:center;gap:10px;">${tLevelPill(r.level)}<span style="font-weight:800;">${r.score}%</span></div>
+              </div>
+            `).join('')}
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:10px;">Grade entries</div>
+          ${grades.length===0?'<div class="empty-box" style="padding:20px;"><p>No grades entered</p></div>':
+            grades.slice(0,8).map(g=>`<div style="display:flex;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--border);font-size:13px;"><div><span style="font-weight:700;">${H(g.unit_name||'—')}</span><span style="color:var(--gray);font-size:11px;margin-left:6px;">${H(g.subject||'')}</span></div><span style="font-weight:800;color:${g.readiness==='green'?'var(--green)':g.readiness==='yellow'?'var(--yellow)':'var(--red)'};">${H(g.grade_letter||String(g.grade_num)||'—')}</span></div>`).join('')}
+        </div>
+      </div>
+      <div style="margin-top:16px;">
+        <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:10px;">Quiz history (${quizzes.length}${avgQ!==null?' · avg '+avgQ+'%':''})</div>
+        ${quizzes.length===0?'<div class="empty-box" style="padding:16px;"><p>No quizzes yet</p></div>':`<table><thead><tr><th>Subject</th><th>Score</th><th>%</th><th>Date</th></tr></thead><tbody>${quizzes.slice(0,8).map(q=>`<tr><td>${quizSubjLabels[q.subject]||q.subject}</td><td>${q.score}/${q.total}</td><td><span style="font-weight:800;color:${(q.pct||0)>=80?'var(--green)':(q.pct||0)>=60?'var(--yellow)':'var(--red)'};">${q.pct||Math.round(q.score/q.total*100)}%</span></td><td style="color:var(--gray);font-size:12px;">${new Date(q.created_at).toLocaleDateString()}</td></tr>`).join('')}</tbody></table>`}
+      </div>
+    </div>`;
+  document.getElementById('tStudentDetailStudents').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+async function pgClassrooms(){
+  const{data:rooms}=await db.from('classrooms').select('*, classroom_students(student_id)').eq('teacher_id',USER.id);
+  const roomList=rooms||[];
+
+  set(`<div class="page">
+    <div class="page-title">🏫 My Classrooms</div>
+    <div class="page-sub">Create classes and share the code with your students</div>
+
+    <div class="section">
+      <div class="sec-head">Create New Class</div>
+      <div class="irow">
+        <input class="finp" id="cName" placeholder="Class name e.g. Period 3 — Living Environment" style="max-width:300px">
+        <select class="finp" id="cSubj" style="max-width:180px">
+          <option value="">All subjects</option>
+          <option value="biology">Living Environment</option>
+          <option value="algebra">Algebra I</option>
+          <option value="ela">ELA</option>
+          <option value="history">US History</option>
+        </select>
+        <button class="btn-black" onclick="tCreateClass()">Create Class →</button>
+      </div>
+    </div>
+
+    <div id="roomListWrap">
+      ${roomList.length===0?'<div class="section"><div class="empty-box"><h3>No classrooms yet</h3><p>Create your first class above.</p></div></div>':
+        roomList.map(r=>`
+          <div class="section">
+            <div class="sec-head">${H(r.name)} <span style="font-weight:500;color:var(--gray);font-size:13px;">${H(r.subject||'All subjects')}</span></div>
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+              <div style="background:var(--black);color:white;padding:10px 20px;border-radius:10px;font-size:22px;font-weight:800;letter-spacing:5px;font-family:monospace;">${r.code||'——'}</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;margin-bottom:2px;">${r.classroom_students?.length||0} students enrolled</div>
+                <div style="font-size:12px;color:var(--gray);">Share this code → students join at <strong>/join.html</strong></div>
+              </div>
+              <button onclick="navigator.clipboard.writeText('${r.code}').then(()=>toast('Code copied! ✓','success'))" class="btn-teal" style="padding:8px 16px;font-size:13px;">📋 Copy code</button>
+            </div>
+          </div>
+        `).join('')
+      }
+    </div>
+  </div>`);
+}
+
+async function tCreateClass(){
+  const name=document.getElementById('cName')?.value?.trim();
+  const subj=document.getElementById('cSubj')?.value;
+  if(!name) return toast('Enter a class name','error');
+  const{error}=await db.from('classrooms').insert({teacher_id:USER.id,name,subject:subj||null});
+  if(error) return toast('Error: '+error.message,'error');
+  toast('Class created! ✓','success');
+  pgClassrooms();
+}
+
+/* ═══════ PARENT PAGES ═══════ */
+
+async function pgChildren(){
+  set(`<div class="page"><div class="page-title">👨‍👩‍👧 My Children</div><div class="page-sub">Link your child's account to monitor their readiness</div>
+    <div class="section"><div class="sec-head">Link a Child</div>
+      <div class="irow"><input class="finp" id="cEmail" type="email" placeholder="Child's email address" style="max-width:280px"><button class="btn-black" onclick="linkChild()">Link Account →</button></div>
+      <p style="font-size:12px;color:var(--gray)">Enter your child's ZenEd email to connect accounts.</p>
+    </div>
+    <div id="childList"><div class="empty-box"><p>Loading...</p></div></div>
+  </div>`);
+  const{data:links}=await db.from('parent_child_links').select('*, profiles!parent_child_links_student_id_fkey(full_name,grade_level)').eq('parent_id',USER.id);
+  const el=document.getElementById('childList');if(!el)return;
+  if(!links?.length){el.innerHTML=`<div class="section"><div class="empty-box"><h3>No children linked</h3><p>Enter your child's email above.</p></div></div>`;return;}
+  el.innerHTML=`<div class="section"><div class="sec-head">Linked Children</div>${links.map(l=>`<div class="class-card"><div><div class="class-name">${H(l.profiles?.full_name||'Child')}</div><div class="class-meta">Grade ${l.profiles?.grade_level||'—'}</div></div></div>`).join('')}</div>`;
+}
+
+async function linkChild(){
+  const email=(document.getElementById('cEmail').value||'').trim();
+  if(!email)return toast('Enter your child\'s email','error');
+  const{data:child,error}=await db.from('profiles').select('*').eq('email',email).eq('role','student').single();
+  if(error||!child)return toast('Student not found with that email','error');
+  const{error:e2}=await db.from('parent_child_links').insert({parent_id:USER.id,student_id:child.id});
+  if(e2)return toast('Already linked','info');
+  toast('Linked to '+child.full_name+'! ✓','success');pgChildren();
+}
+
+/* ═══════ INIT ═══════ */
+
+function switchTab(t){
+  document.getElementById('tabSignIn').classList.toggle('on', t==='signin');
+  document.getElementById('tabSignUp').classList.toggle('on', t==='signup');
+  document.getElementById('formSignIn').style.display = t==='signin' ? 'block' : 'none';
+  document.getElementById('formSignUp').style.display = t==='signup' ? 'block' : 'none';
+  document.getElementById('msgBox').style.display = 'none';
+}
+
+function showMsg(msg, type='err'){
+  const el = document.getElementById('msgBox');
+  el.textContent = msg;
+  el.className = 'auth-msg ' + type;
+  el.style.display = 'block';
+}
+
+function toast(msg, type='info'){
+  const el = document.getElementById('toast');
+  if(!el) return;
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  setTimeout(()=>el.className='', 3500);
+}
+
+window.onload=async()=>{
+  function showAuth(){
+    document.getElementById('loader').classList.add('hide');
+    document.getElementById('authScreen').style.display='flex';
+  }
+  // If Supabase CDN didn't load, show auth immediately
+  if(typeof supabase==='undefined'||typeof db==='undefined'){
+    return showAuth();
+  }
+  // Timeout: show auth if Supabase takes >4s
+  const t=setTimeout(showAuth,4000);
+  try{
+    const{data}=await db.auth.getSession();
+    clearTimeout(t);
+    document.getElementById('loader').classList.add('hide');
+    if(data?.session?.user){await loadAndEnter(data.session.user);}
+    else{document.getElementById('authScreen').style.display='flex';}
+  }catch(e){
+    clearTimeout(t);
+    showAuth();
+  }
+  try{
+    db.auth.onAuthStateChange((event,session)=>{
+      if(event==='SIGNED_OUT'){
+        document.getElementById('app').style.display='none';
+        try{document.getElementById('mobNav').style.display='none';}catch(e2){}
+        document.getElementById('authScreen').style.display='flex';
+      }
+      if(event==='SIGNED_IN'&&session?.user){
+        document.getElementById('authScreen').style.display='none';
+        loadAndEnter(session.user);
+      }
+    });
+  }catch(e){}
+};
+
+// ── NAV SEARCH ──
+const SEARCH_INDEX = [
+  // Resources
+  {ico:'💼',name:'SYEP — Paid Summer Jobs',desc:'NYC paid summer employment program for ages 14-24',url:'https://www.nyc.gov/site/dycd/services/jobs-internships/summer-youth-employment-program-syep.page'},
+  {ico:'❄️',name:'Snow.day — 500+ Free Programs',desc:'Search engine for free summer programs, STEM, arts, law',url:'https://snow.day'},
+  {ico:'🔧',name:'HK Maker Lab — Columbia',desc:'Free 5-week engineering program at Columbia University',url:'https://hkmakerlab.columbia.edu'},
+  {ico:'🔬',name:'NYAS Junior Academy',desc:'Virtual science mentorship from real researchers',url:'https://www.nyas.org/programs/global-stem-alliance/junior-academy/'},
+  {ico:'🧬',name:'NYC Science Research Mentoring',desc:'100+ hours at AMNH, Cold Spring Harbor, NY Botanical Garden',url:'https://scienceresearchmentoring.org'},
+  {ico:'🧠',name:'BrainYAC — Columbia Neuroscience',desc:'Free brain science program for high school students',url:'https://zuckermaninstitute.columbia.edu/brainyac'},
+  {ico:'🎓',name:'CUNY Excelsior — Free Tuition',desc:'Families under $125k may attend CUNY for free',url:'https://www.hesc.ny.gov'},
+  {ico:'📋',name:'FAFSA — Federal Student Aid',desc:'File for free federal financial aid — Pell Grants up to $7,395',url:'https://studentaid.gov'},
+  {ico:'🏆',name:'Fastweb — 1.5M Scholarships',desc:'Largest free scholarship database',url:'https://www.fastweb.com'},
+  {ico:'✨',name:'Bold.org — No-Essay Scholarships',desc:'Apply to scholarships with no essay required',url:'https://bold.org'},
+  {ico:'📈',name:'Raise.me — Earn Scholarships Now',desc:'Earn micro-scholarships starting in 9th grade',url:'https://www.raise.me'},
+  {ico:'📝',name:'Official SAT Prep — Khan Academy',desc:'Free personalized SAT prep linked to your PSAT results',url:'https://www.khanacademy.org/sat'},
+  {ico:'💻',name:'Bluebook — Digital SAT Practice',desc:'Full-length practice tests in exact exam format',url:'https://bluebook.collegeboard.org'},
+  {ico:'📊',name:'Free ACT Practice Tests',desc:'Official ACT prep: full tests, score reports',url:'https://www.act.org/content/act/en/products-and-services/the-act/test-preparation/free-act-test-prep.html'},
+  {ico:'🏛️',name:'NYC College Access Centers',desc:'Free 1-on-1 college counseling across all 5 boroughs',url:'https://www.schools.nyc.gov/enrollment/high-school/college-access-centers'},
+  {ico:'📝',name:'Common App — 1,000+ Colleges',desc:'Apply to universities with one application',url:'https://www.commonapp.org'},
+  {ico:'🎓',name:'CUNY College Now — Free Credits',desc:'Take real CUNY college courses in high school, free',url:'https://www.cuny.edu/about/administration/offices/k16/college-now/'},
+  {ico:'💻',name:'P-TECH — Free Associate Degree',desc:'6-year program: diploma + CUNY degree + IBM mentorship',url:'https://www.ptech.org'},
+  {ico:'🟢',name:'Khan Academy — All Subjects',desc:'Free lessons for Algebra, ELA, Biology, History, SHSAT',url:'https://www.khanacademy.org'},
+  {ico:'🔬',name:'LabXchange — Harvard Science Labs',desc:'Virtual life science labs for grades 9-12, free',url:'https://www.labxchange.org/c/ngss?subject=life-sciences&grade=grades-9-12'},
+  {ico:'📖',name:'RegentsPrep — Past Exams',desc:'Free NY Regents practice for every subject',url:'https://www.regentsprep.org'},
+  {ico:'🧪',name:'New Visions Biology Curriculum',desc:'Full free Biology curriculum — all 6 units',url:'https://www.newvisions.org/curriculum/science/biology'},
+  {ico:'⚙️',name:'NYC CTE Programs',desc:'400+ career and technical programs at NYC high schools',url:'https://www.schools.nyc.gov/learning/programs/career-and-technical-education'},
+  {ico:'🌆',name:'Growing Up NYC — CTE Guide',desc:'City-wide guide to CTE programs, searchable by interest',url:'https://growingupnyc.cityofnewyork.us/programs/career-technical-education/'},
+  {ico:'🏅',name:'Portrait of a Graduate',desc:"NY's new graduation framework replacing Regents by 2029",url:'https://www.nysed.gov/next-generation-learning-standards'},
+  // Pages
+  {ico:'🏠',name:'Home — Quick Check',desc:'Get your instant readiness score and study plan',url:'index.html'},
+  {ico:'📝',name:'Practice Tests',desc:'Official NYSED past exams and warm-up quizzes',url:'practice.html'},
+  {ico:'📚',name:'Resources',desc:'Browse all scholarships, internships, SAT prep, and more',url:'resources.html'},
+  {ico:'🎯',name:'Mission',desc:"Why we built ZenEd and what we're about",url:'mission.html'},
+];
+
+let navSearchOpen = false;
+
+function navSearchToggle() {
+  const input = document.getElementById('navSearchInput');
+  const wrap = document.getElementById('navSearchWrap');
+  navSearchOpen = !navSearchOpen;
+  input.classList.toggle('open', navSearchOpen);
+  if(navSearchOpen) { input.focus(); }
+  else { navSearchClose(); }
+}
+
+function navSearchClose() {
+  const input = document.getElementById('navSearchInput');
+  const results = document.getElementById('navSearchResults');
+  input.classList.remove('open');
+  results.classList.remove('show');
+  input.value = '';
+  navSearchOpen = false;
+}
+
+function navSearchRun(q) {
+  const results = document.getElementById('navSearchResults');
+  if(!q || q.length < 2) { results.classList.remove('show'); return; }
+  const lower = q.toLowerCase();
+  const matches = SEARCH_INDEX.filter(item =>
+    item.name.toLowerCase().includes(lower) ||
+    item.desc.toLowerCase().includes(lower)
+  ).slice(0, 6);
+  if(!matches.length) {
+    results.innerHTML = '<div class="nsr-empty">No results for "'+q+'"</div>';
+    results.classList.add('show');
+    return;
+  }
+  results.innerHTML = matches.map(m =>
+    `<a href="${m.url}" class="nsr-item" ${m.url.startsWith('http')?'target="_blank"':''}>
+      <div class="nsr-ico">${m.ico}</div>
+      <div><div class="nsr-name">${m.name}</div><div class="nsr-desc">${m.desc}</div></div>
+    </a>`
+  ).join('');
+  results.classList.add('show');
+}
+
+// Close search on outside click
+document.addEventListener('click', e => {
+  if(!document.getElementById('navSearchWrap')?.contains(e.target)) navSearchClose();
+});
+
+</script>
+</body>
+</html>
