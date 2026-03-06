@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — Mock Living Environment Regents</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --teal:#0ea87a; --teal-dark:#0b8f68; --teal-pale:#e8f7f2;
+  --ink:#0d1a12; --white:#fff; --cream:#f6f9f7;
+  --gray:#64748b; --border:#e0ebe5; --gray-light:#f1f5f2;
+  --red:#ef4444; --red-bg:#fff1f2;
+  --yellow:#f59e0b; --yellow-bg:#fffbeb;
+  --green:#10b981; --green-bg:#f0fdf4;
+  --unit1:#6366f1; --unit2:#ec4899; --unit3:#f59e0b;
+  --unit4:#10b981; --unit5:#3b82f6; --unit6:#8b5cf6;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+/* ── NAV ── */
+.nav{height:54px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:200;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:700;font-size:16px;}
+.nav-logo-ico{width:26px;height:26px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.nav-logo em{color:var(--teal);font-style:normal;}
+.nav-back{font-size:13px;color:var(--gray);text-decoration:none;display:flex;align-items:center;gap:5px;font-weight:500;}
+.nav-back:hover{color:var(--ink);}
+.nav-pill{margin-left:auto;background:var(--teal-pale);color:var(--teal);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.3px;}
+
+/* ── SCREENS ── */
+.screen{display:none;animation:fadeUp .35s ease;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════
+   SCREEN 1 — INTRO
+══════════════════════════════ */
+.intro-wrap{max-width:680px;margin:0 auto;padding:52px 24px;}
+.intro-badge{display:inline-flex;align-items:center;gap:7px;background:white;border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--gray);margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.intro-badge span{width:7px;height:7px;background:var(--teal);border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.intro-h{font-family:'DM Serif Display',Georgia,serif;font-size:48px;line-height:1.08;letter-spacing:-.5px;margin-bottom:16px;color:var(--ink);}
+.intro-h em{font-style:italic;color:var(--teal);}
+.intro-sub{font-size:16px;color:var(--gray);line-height:1.7;margin-bottom:36px;}
+.intro-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:36px;}
+.intro-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.ic-icon{font-size:22px;margin-bottom:8px;}
+.ic-label{font-size:13px;font-weight:700;margin-bottom:3px;}
+.ic-sub{font-size:12px;color:var(--gray);line-height:1.4;}
+.unit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:36px;}
+.unit-tag{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:13px;font-weight:600;}
+.unit-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.btn-start{width:100%;padding:16px;background:var(--ink);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:-.2px;}
+.btn-start:hover{background:#1a2e20;transform:translateY(-1px);box-shadow:0 6px 20px rgba(13,26,18,.2);}
+.intro-note{text-align:center;font-size:12px;color:var(--gray);margin-top:12px;}
+
+/* ══════════════════════════════
+   SCREEN 2 — TEST
+══════════════════════════════ */
+.test-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 54px);}
+.test-sidebar{background:white;border-right:1px solid var(--border);padding:20px 14px;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto;}
+.ts-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);padding:0 6px;margin-bottom:10px;}
+.ts-unit{margin-bottom:16px;}
+.ts-unit-name{font-size:11px;font-weight:700;margin-bottom:6px;padding:0 6px;color:var(--ink);}
+.ts-dots{display:flex;flex-wrap:wrap;gap:5px;padding:0 6px;}
+.ts-dot{width:28px;height:28px;border-radius:7px;border:2px solid var(--border);background:white;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;color:var(--gray);}
+.ts-dot.current{border-color:var(--teal);background:var(--teal);color:white;}
+.ts-dot.answered{border-color:var(--border);background:var(--ink);color:white;}
+.ts-dot.flagged{border-color:var(--yellow);background:var(--yellow-bg);}
+.ts-timer{background:var(--cream);border-radius:10px;padding:12px;margin-top:16px;text-align:center;}
+.ts-timer-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:4px;}
+.ts-timer-val{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);}
+.ts-timer-val.warning{color:var(--red);}
+.ts-progress{margin-top:14px;}
+.ts-progress-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.ts-progress-fill{height:100%;background:var(--teal);border-radius:3px;transition:width .3s;}
+
+.test-main{padding:32px;}
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.q-unit-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;}
+.q-meta{display:flex;align-items:center;gap:12px;}
+.q-num{font-size:13px;color:var(--gray);font-weight:600;}
+.q-freq{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.q-freq.high{background:#fef3c7;color:#92400e;}
+.q-freq.medium{background:#f0fdf4;color:#166534;}
+.q-source-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:#eff6ff;color:#1e40af;}
+
+.q-card{background:white;border:1px solid var(--border);border-radius:18px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:20px;}
+.q-text{font-size:17px;line-height:1.65;font-weight:500;margin-bottom:28px;color:var(--ink);}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;background:white;}
+.choice:hover{border-color:var(--teal);background:var(--teal-pale);}
+.choice.selected{border-color:var(--teal);background:var(--teal-pale);}
+.choice.correct{border-color:var(--green);background:var(--green-bg);pointer-events:none;}
+.choice.wrong{border-color:var(--red);background:var(--red-bg);pointer-events:none;}
+.choice.reveal-correct{border-color:var(--green);background:var(--green-bg);pointer-events:none;}
+.choice-letter{width:28px;height:28px;border-radius:8px;background:var(--gray-light);color:var(--gray);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.choice.selected .choice-letter{background:var(--teal);color:white;}
+.choice.correct .choice-letter{background:var(--green);color:white;}
+.choice.wrong .choice-letter{background:var(--red);color:white;}
+.choice.reveal-correct .choice-letter{background:var(--green);color:white;}
+.choice-text{font-size:14px;line-height:1.5;font-weight:500;padding-top:3px;}
+
+.feedback-box{border-radius:12px;padding:16px 18px;margin-top:4px;animation:fadeUp .3s ease;}
+.feedback-box.correct{background:var(--green-bg);border:1px solid #bbf7d0;}
+.feedback-box.wrong{background:var(--red-bg);border:1px solid #fecdd3;}
+.feedback-title{font-size:13px;font-weight:800;margin-bottom:5px;}
+.feedback-box.correct .feedback-title{color:#166534;}
+.feedback-box.wrong .feedback-title{color:#991b1b;}
+.feedback-text{font-size:13px;line-height:1.6;color:#374151;}
+.feedback-wrong-exp{margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.06);font-size:12px;color:var(--gray);line-height:1.6;}
+
+.q-nav{display:flex;gap:10px;align-items:center;}
+.btn-nav{padding:10px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;border:none;}
+.btn-prev{background:var(--gray-light);color:var(--ink);}
+.btn-prev:hover{background:var(--border);}
+.btn-next{background:var(--ink);color:white;}
+.btn-next:hover{background:#1a2e20;}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;}
+.btn-flag{padding:10px 14px;background:var(--yellow-bg);color:#92400e;border:1px solid #fde68a;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-submit{padding:12px 28px;background:var(--teal);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-left:auto;}
+.btn-submit:hover{background:var(--teal-dark);}
+
+/* ══════════════════════════════
+   SCREEN 3 — RESULTS
+══════════════════════════════ */
+.results-wrap{max-width:820px;margin:0 auto;padding:40px 24px;}
+.results-hero{background:var(--ink);border-radius:24px;padding:40px;color:white;text-align:center;margin-bottom:28px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(14,168,122,.25),transparent 60%);pointer-events:none;}
+.rh-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:12px;}
+.rh-score{font-family:'DM Serif Display',Georgia,serif;font-size:88px;line-height:1;font-weight:400;margin-bottom:4px;}
+.rh-score.pass{color:#4ade80;}
+.rh-score.close{color:#fbbf24;}
+.rh-score.fail{color:#f87171;}
+.rh-label2{font-size:15px;color:rgba(255,255,255,.6);margin-bottom:24px;}
+.rh-pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+.rh-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;}
+
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.unit-card{background:white;border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.uc-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.uc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.uc-name{font-size:14px;font-weight:700;}
+.uc-score{margin-left:auto;font-size:14px;font-weight:800;}
+.uc-bar{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.uc-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.uc-verdict{font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-block;}
+.uc-verdict.strong{background:var(--green-bg);color:#166534;}
+.uc-verdict.review{background:var(--yellow-bg);color:#92400e;}
+.uc-verdict.focus{background:var(--red-bg);color:#991b1b;}
+
+.predict-card{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.predict-head{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.predict-sub{font-size:13px;color:var(--gray);margin-bottom:18px;}
+.predict-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.predict-row:last-child{border-bottom:none;}
+.predict-prob{font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;min-width:46px;text-align:center;flex-shrink:0;}
+.predict-prob.very-high{background:#dcfce7;color:#166534;}
+.predict-prob.high{background:#fef3c7;color:#92400e;}
+.predict-prob.medium{background:#eff6ff;color:#1e40af;}
+.predict-topic{font-size:13px;font-weight:600;flex:1;}
+.predict-reason{font-size:11px;color:var(--gray);}
+
+.btn-ai{width:100%;padding:16px;background:linear-gradient(135deg,#0ea87a,#076b4f);color:white;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:-.2px;}
+.btn-ai:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(14,168,122,.3);}
+.btn-retake{width:100%;padding:13px;background:white;color:var(--ink);border:2px solid var(--border);border-radius:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-retake:hover{border-color:var(--ink);}
+
+/* ══════════════════════════════
+   SCREEN 4 — AI TUTOR
+══════════════════════════════ */
+.tutor-layout{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 54px);}
+.tutor-sidebar{background:white;border-right:1px solid var(--border);padding:20px;overflow-y:auto;}
+.ts2-title{font-size:15px;font-weight:800;margin-bottom:4px;}
+.ts2-sub{font-size:12px;color:var(--gray);margin-bottom:20px;line-height:1.5;}
+.ts2-section{margin-bottom:20px;}
+.ts2-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);margin-bottom:8px;}
+.ts2-unit{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border-radius:9px;margin-bottom:5px;cursor:pointer;transition:all .15s;}
+.ts2-unit:hover{background:var(--gray-light);}
+.ts2-unit-name{font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;}
+.ts2-unit-score{font-size:12px;font-weight:800;}
+.ts2-unit.weak{background:var(--red-bg);}
+.ts2-unit.weak .ts2-unit-score{color:var(--red);}
+.ts2-unit.ok{background:var(--yellow-bg);}
+.ts2-unit.ok .ts2-unit-score{color:#92400e;}
+.ts2-unit.strong{background:var(--green-bg);}
+.ts2-unit.strong .ts2-unit-score{color:#166534;}
+.quick-btns{display:flex;flex-direction:column;gap:6px;}
+.quick-btn{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left;transition:all .15s;line-height:1.4;}
+.quick-btn:hover{background:var(--teal-pale);border-color:var(--teal);color:var(--teal);}
+
+.chat-area{display:flex;flex-direction:column;height:100%;}
+.chat-msgs{flex:1;overflow-y:auto;padding:24px;}
+.chat-msg{margin-bottom:20px;animation:fadeUp .25s ease;}
+.chat-msg.user{display:flex;justify-content:flex-end;}
+.chat-msg.ai{display:flex;justify-content:flex-start;gap:10px;}
+.ai-avatar{width:32px;height:32px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.msg-bubble{max-width:70%;padding:13px 16px;border-radius:14px;font-size:14px;line-height:1.6;}
+.chat-msg.user .msg-bubble{background:var(--ink);color:white;border-radius:14px 14px 4px 14px;}
+.chat-msg.ai .msg-bubble{background:white;border:1px solid var(--border);color:var(--ink);border-radius:4px 14px 14px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.msg-bubble strong{font-weight:700;}
+.msg-bubble ul{margin:8px 0 0 16px;}
+.msg-bubble li{margin-bottom:4px;}
+.typing-indicator{display:flex;gap:4px;padding:12px 14px;}
+.typing-dot{width:7px;height:7px;background:var(--teal);border-radius:50%;animation:bounce .9s ease infinite;}
+.typing-dot:nth-child(2){animation-delay:.15s;}
+.typing-dot:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+
+.chat-input-wrap{border-top:1px solid var(--border);padding:16px 24px;background:white;display:flex;gap:10px;align-items:flex-end;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:14px;resize:none;outline:none;max-height:120px;transition:border-color .15s;line-height:1.5;}
+.chat-input:focus{border-color:var(--teal);}
+.chat-send{padding:12px 20px;background:var(--teal);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.chat-send:hover{background:var(--teal-dark);}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── MISC ── */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:white;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(10px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:768px){
+  .test-layout{grid-template-columns:1fr;}
+  .test-sidebar{display:none;}
+  .results-grid{grid-template-columns:1fr;}
+  .tutor-layout{grid-template-columns:1fr;}
+  .tutor-sidebar{display:none;}
+  .intro-cards{grid-template-columns:1fr;}
+  .intro-h{font-size:36px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-ico">
+      <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    Zen<em>Ed</em>
+  </a>
+  <a href="index.html" class="nav-back">← Back to home</a>
+  <span class="nav-pill">🧬 Living Environment Mock Regents</span>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<!-- ══ SCREEN 1: INTRO ══ -->
+<div id="s1" class="screen active">
+  <div class="intro-wrap">
+    <div class="intro-badge"><span></span> 2025 Style + 2026 Predicted Questions</div>
+    <h1 class="intro-h">Mock Living<br>Environment <em>Regents</em></h1>
+    <p class="intro-sub">30 questions across all 6 units. Get scored instantly, see exactly what you missed, and unlock your personal AI tutor who knows your weak spots.</p>
+
+    <div class="intro-cards">
+      <div class="intro-card">
+        <div class="ic-icon">⏱️</div>
+        <div class="ic-label">30 Questions</div>
+        <div class="ic-sub">~45 min · timed or untimed</div>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">📊</div>
+        <div class="ic-label">Unit Breakdown</div>
+        <div class="ic-sub">Score per unit, not just total</div>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">🤖</div>
+        <div class="ic-label">AI Tutor</div>
+        <div class="ic-sub">Explains every wrong answer</div>
+      </div>
+    </div>
+
+    <div class="unit-grid">
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit1)"></span> Unit 1 — Cells & Cell Processes</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit2)"></span> Unit 2 — Genetics & Heredity</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit3)"></span> Unit 3 — Evolution</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit4)"></span> Unit 4 — Ecology</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit5)"></span> Unit 5 — Human Biology</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit6)"></span> Unit 6 — Plants & Photosynthesis</div>
+    </div>
+
+    <button class="btn-start" onclick="startTest()">Start Mock Regents →</button>
+    <p class="intro-note">No login required · Results saved if you're signed in</p>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: TEST ══ -->
+<div id="s2" class="screen">
+  <div class="test-layout">
+    <div class="test-sidebar">
+      <div class="ts-label">Questions</div>
+      <div id="sidebarDots"></div>
+      <div class="ts-timer" id="timerBox">
+        <div class="ts-timer-lbl">Time Elapsed</div>
+        <div class="ts-timer-val" id="timerVal">00:00</div>
+      </div>
+      <div class="ts-progress" style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--gray);margin-bottom:5px;">
+          <span>Progress</span><span id="progressLabel">0 / 30</span>
+        </div>
+        <div class="ts-progress-bar"><div class="ts-progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="test-main">
+      <div class="q-header">
+        <div class="q-unit-badge" id="qUnitBadge"></div>
+        <div class="q-meta">
+          <span class="q-num" id="qNum"></span>
+          <span class="q-freq" id="qFreq"></span>
+          <span class="q-source-badge" id="qSource"></span>
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-text" id="qText"></div>
+        <div class="choices" id="choicesWrap"></div>
+        <div id="feedbackBox" style="display:none"></div>
+      </div>
+
+      <div class="q-nav">
+        <button class="btn-nav btn-prev" id="btnPrev" onclick="goQ(-1)">← Prev</button>
+        <button class="btn-flag" onclick="toggleFlag()">🚩 Flag</button>
+        <button class="btn-nav btn-next" id="btnNext" onclick="goQ(1)">Next →</button>
+        <button class="btn-submit" id="btnSubmit" onclick="submitTest()" style="display:none">Submit Test →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: RESULTS ══ -->
+<div id="s3" class="screen">
+  <div class="results-wrap">
+    <div class="results-hero">
+      <div class="rh-label">Your Score</div>
+      <div class="rh-score" id="rhScore"></div>
+      <div class="rh-label2" id="rhLabel2"></div>
+      <div class="rh-pills" id="rhPills"></div>
+    </div>
+
+    <div class="results-grid" id="unitCards"></div>
+
+    <div class="predict-card">
+      <div class="predict-head">🎯 High-Probability Topics for June 2026 Regents</div>
+      <div class="predict-sub">Based on topic frequency from the last 6 Living Environment Regents exams (2022–2025)</div>
+      <div id="predictRows"></div>
+    </div>
+
+    <button class="btn-ai" onclick="goTutor()">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg>
+      Talk to Your AI Tutor — Personalized to Your Results
+    </button>
+    <button class="btn-retake" onclick="retake()">↩ Retake Test</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: AI TUTOR ══ -->
+<div id="s4" class="screen">
+  <div class="tutor-layout">
+    <div class="tutor-sidebar">
+      <div class="ts2-title">Your Study Plan</div>
+      <div class="ts2-sub">Click a unit to ask about it specifically</div>
+
+      <div class="ts2-section">
+        <div class="ts2-lbl">Unit Scores</div>
+        <div id="tutorUnits"></div>
+      </div>
+
+      <div class="ts2-section">
+        <div class="ts2-lbl">Quick Questions</div>
+        <div class="quick-btns" id="quickBtns"></div>
+      </div>
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" placeholder="Ask about any topic you got wrong..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+          oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+        <button class="chat-send" id="sendBtn" onclick="sendMsg()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+const SB_URL = 'https://spkqmhrogykcbrvujgub.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3FtaHJvZ3lrY2JydnVqZ3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTU0OTEsImV4cCI6MjA4NzM3MTQ5MX0.00fS4NTvcC4f-mD8gRSqD1huWIdHo8Xe6UMZn8UJeb0';
+const UNIT_COLORS = ['#6366f1','#ec4899','#f59e0b','#10b981','#3b82f6','#8b5cf6'];
+let db, USER;
+
+// ═══════════════════════════════════════════════════
+// QUESTION BANK — 30 Questions, 6 Units × 5
+// ═══════════════════════════════════════════════════
+const QUESTIONS = [
+  // UNIT 1: CELLS
+  {id:1,unit:1,unit_name:"Cells & Cell Processes",topic:"Cell membrane function",difficulty:1,frequency:"high",source:"2025-style",
+   text:"Which statement best describes the function of the cell membrane?",
+   choices:["It controls which substances enter and leave the cell","It produces energy for the cell through photosynthesis","It stores the genetic information of the cell","It breaks down worn-out cell parts for recycling"],
+   correct:0,explanation:"The cell membrane is selectively permeable — it controls what enters and exits the cell, maintaining homeostasis.",
+   wrong:["","Photosynthesis occurs in chloroplasts, not the cell membrane.","Genetic information is stored in the nucleus (DNA).","Breaking down cell parts is done by lysosomes."]},
+
+  {id:2,unit:1,unit_name:"Cells & Cell Processes",topic:"Mitosis",difficulty:2,frequency:"high",source:"2025-style",
+   text:"A student observes a cell that has just completed mitosis. Which of the following best describes the result?",
+   choices:["Two genetically identical cells with the same number of chromosomes as the original","Four cells each with half the chromosomes of the original cell","Two cells each with twice the chromosomes of the original","One cell with the same chromosome number and one with none"],
+   correct:0,explanation:"Mitosis produces two genetically identical daughter cells, each with the same chromosome number as the parent cell.",
+   wrong:["","That describes meiosis, which produces 4 haploid cells for sexual reproduction.","Chromosome number is preserved in mitosis, not doubled.","Chromosomes are always distributed to both daughter cells during normal mitosis."]},
+
+  {id:3,unit:1,unit_name:"Cells & Cell Processes",topic:"Organelle function",difficulty:1,frequency:"high",source:"2026-predicted",
+   text:"A muscle cell requires large amounts of energy to function. Which organelle would you expect to find in the greatest number in muscle cells?",
+   choices:["Mitochondria","Ribosomes","Vacuoles","Chloroplasts"],
+   correct:0,explanation:"Mitochondria produce ATP through cellular respiration. High-energy cells like muscle cells have many mitochondria.",
+   wrong:["","Ribosomes make proteins, not ATP energy for muscle contraction.","Vacuoles store materials — they don't produce energy.","Chloroplasts are only in plant cells and perform photosynthesis."]},
+
+  {id:4,unit:1,unit_name:"Cells & Cell Processes",topic:"Diffusion and osmosis",difficulty:2,frequency:"high",source:"2025-style",
+   text:"A red blood cell is placed in a solution with very high salt concentration. What will most likely happen?",
+   choices:["The cell will shrink as water moves out by osmosis","The cell will swell as water moves in by osmosis","Salt will move into the cell to equalize concentration","Nothing will happen because cell membranes block osmosis"],
+   correct:0,explanation:"In a hypertonic solution (high solute outside), water moves OUT of the cell by osmosis, causing it to shrink.",
+   wrong:["","The cell swells in hypotonic (low salt) solutions, not hypertonic ones.","Osmosis moves water, not solutes. Salt doesn't freely cross membranes.","Cell membranes are selectively permeable — water moves freely through them."]},
+
+  {id:5,unit:1,unit_name:"Cells & Cell Processes",topic:"Enzyme function",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"An enzyme stops working after a scientist raises the temperature to 90°C. Which statement best explains this?",
+   choices:["High temperature changed the enzyme's shape, destroying its active site","The enzyme ran out of substrate molecules to react with","High temperature caused the enzyme to reproduce incorrectly","The enzyme converted to a different type of molecule at high heat"],
+   correct:0,explanation:"Enzymes are proteins — high heat denatures them by changing their 3D shape. The active site no longer fits the substrate.",
+   wrong:["","The question doesn't mention substrate running out — denaturation is the cause here.","Enzymes don't reproduce — they are not living organisms.","Enzymes remain proteins; they don't convert to different molecule types."]},
+
+  // UNIT 2: GENETICS
+  {id:6,unit:2,unit_name:"Genetics & Heredity",topic:"DNA replication",difficulty:2,frequency:"high",source:"2025-style",
+   text:"Why is it important that DNA replication is accurate?",
+   choices:["Errors in replication can lead to mutations that may affect cell function","Accurate replication ensures cells can photosynthesize more efficiently","DNA replication controls how quickly a cell can divide","Cells need identical DNA copies to produce different types of proteins"],
+   correct:0,explanation:"DNA carries the instructions for proteins. Errors (mutations) during replication can change proteins, potentially causing disease.",
+   wrong:["","DNA replication has nothing to do with photosynthesis efficiency.","The rate of cell division is controlled by other factors, not replication accuracy.","Cells use the same DNA to produce different proteins through gene expression, not different DNA copies."]},
+
+  {id:7,unit:2,unit_name:"Genetics & Heredity",topic:"Mendelian genetics",difficulty:2,frequency:"high",source:"2025-style",
+   text:"In pea plants, tall (T) is dominant over short (t). Two heterozygous tall plants are crossed (Tt × Tt). What is the expected ratio of tall to short plants?",
+   choices:["3 tall : 1 short","1 tall : 1 short","All tall","1 tall : 3 short"],
+   correct:0,explanation:"A Tt × Tt cross produces TT, Tt, Tt, tt — three genotypes express tall and one expresses short, giving a 3:1 ratio.",
+   wrong:["","A 1:1 ratio results from a Tt × tt testcross, not Tt × Tt.","All tall would result if one parent were TT homozygous dominant.","Having 3 short would require short to be dominant, which contradicts the problem."]},
+
+  {id:8,unit:2,unit_name:"Genetics & Heredity",topic:"Protein synthesis",difficulty:3,frequency:"high",source:"2026-predicted",
+   text:"A section of DNA has the sequence TAC-GGA-CTT. What would be the corresponding mRNA sequence?",
+   choices:["AUG-CCU-GAA","AUG-GGA-CTT","TAC-CCU-GAA","UAC-GGA-CUU"],
+   correct:0,explanation:"During transcription, each DNA base pairs with its complement: T→A, A→U, C→G, G→C. TAC→AUG, GGA→CCU, CTT→GAA.",
+   wrong:["","GGA on DNA transcribes to CCU on mRNA, not GGA. Also, DNA uses T not U.","mRNA uses U (uracil) instead of T. Also TAC on DNA gives AUG, not TAC.","This is the DNA sequence rewritten with U — transcription produces complementary bases, not the same sequence."]},
+
+  {id:9,unit:2,unit_name:"Genetics & Heredity",topic:"Mutations",difficulty:2,frequency:"medium",source:"2025-style",
+   text:"A mutation occurs in a skin cell of an organism. Which statement about this mutation is most accurate?",
+   choices:["The mutation will not be passed to the organism's offspring","The mutation will definitely cause cancer","The mutation will be inherited by all future generations","The mutation cannot affect the organism's phenotype"],
+   correct:0,explanation:"Only mutations in gametes can be inherited. Somatic (body) cell mutations affect only that organism and aren't passed to offspring.",
+   wrong:["","Mutations can be neutral, beneficial, or harmful — they don't definitely cause cancer.","Only germline (reproductive cell) mutations are heritable — not somatic mutations.","A skin cell mutation absolutely can affect the organism's phenotype."]},
+
+  {id:10,unit:2,unit_name:"Genetics & Heredity",topic:"Gene expression",difficulty:3,frequency:"medium",source:"2026-predicted",
+   text:"Identical twins have the same DNA but can develop different diseases as adults. What best explains this?",
+   choices:["Environmental factors can affect which genes are expressed","Identical twins always develop mutations at different rates","Each twin's immune system changes their DNA sequence over time","Mitosis in twins produces cells with slightly different chromosomes"],
+   correct:0,explanation:"Gene expression can be turned on or off by environmental factors (diet, stress, toxins) — this is called epigenetics: same DNA, different expression.",
+   wrong:["","Mutation rates are not reliably different between identical twins by default.","The immune system doesn't rewrite DNA sequences.","Mitosis faithfully copies chromosomes — it doesn't create variation between twin cells."]},
+
+  // UNIT 3: EVOLUTION
+  {id:11,unit:3,unit_name:"Evolution & Natural Selection",topic:"Natural selection",difficulty:2,frequency:"high",source:"2025-style",
+   text:"In a population of beetles, green beetles are more easily seen by birds and eaten, while brown beetles survive. After many generations, what would you expect?",
+   choices:["Brown beetles will become more common in the population","Green beetles will evolve the ability to fly away from birds","Birds will lose interest in eating beetles over time","The beetle population will become extinct"],
+   correct:0,explanation:"Natural selection favors traits that increase survival. Brown beetles survive and reproduce more, passing on brown coloring — so it becomes more common.",
+   wrong:["","Natural selection acts on existing variation — it doesn't cause organisms to develop new traits on demand.","Birds' predation behavior is not changed by beetle color.","Extinction would only occur if ALL beetles were green — existing brown variation prevents this."]},
+
+  {id:12,unit:3,unit_name:"Evolution & Natural Selection",topic:"Evidence for evolution",difficulty:2,frequency:"high",source:"2025-style",
+   text:"Which piece of evidence provides the MOST direct support for evolution having occurred over time?",
+   choices:["The fossil record showing gradual changes in organism structure over time","The fact that all organisms need food and water to survive","The observation that animals in the same habitat look similar","The ability of scientists to breed new dog varieties"],
+   correct:0,explanation:"The fossil record directly documents how species have changed over millions of years — the most direct physical evidence of evolution.",
+   wrong:["","All organisms needing food shows common biochemistry, not evolutionary change over time.","Similar-looking animals in the same habitat is convergent evolution, not direct evidence of change over time.","Breeding dogs is artificial selection, not natural evolution."]},
+
+  {id:13,unit:3,unit_name:"Evolution & Natural Selection",topic:"Variation and adaptation",difficulty:1,frequency:"high",source:"2026-predicted",
+   text:"Why is genetic variation within a population important for the survival of a species?",
+   choices:["It increases the chance that some individuals can survive environmental changes","It ensures all members of the species look identical","It prevents any mutations from occurring in the population","It allows all individuals to reproduce at the same rate"],
+   correct:0,explanation:"Genetic variation means different traits exist. When the environment changes, some variations may be beneficial — those individuals survive and reproduce.",
+   wrong:["","Genetic variation causes individuals to look DIFFERENT, not identical.","Variation doesn't prevent mutations — mutations are actually a source of new variation.","Variation doesn't equalize reproduction — it creates differences in reproductive success."]},
+
+  {id:14,unit:3,unit_name:"Evolution & Natural Selection",topic:"Homologous structures",difficulty:2,frequency:"medium",source:"2025-style",
+   text:"A human arm, a whale flipper, and a bat wing all have similar bone arrangements despite very different functions. What does this suggest?",
+   choices:["These species share a common ancestor","These structures evolved independently for the same purpose","All three species live in the same environment","The bones were created with the same blueprint by chance"],
+   correct:0,explanation:"Homologous structures — similar bone arrangements in different species — indicate common ancestry inherited from a shared ancestor.",
+   wrong:["","Structures that evolved independently for the same purpose are analogous (like bird and butterfly wings), not homologous.","Humans, whales, and bats live in very different environments.","Evolution through common descent, not chance, explains homologous structures."]},
+
+  {id:15,unit:3,unit_name:"Evolution & Natural Selection",topic:"Antibiotic resistance",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"A patient stops taking antibiotics early because they feel better. A few weeks later, their infection returns and the antibiotics no longer work. What best explains this?",
+   choices:["Bacteria with resistance survived and reproduced, creating a resistant population","The patient's body weakened the antibiotic by stopping it too early","The antibiotic mutated when exposed to the bacteria","The bacteria learned to recognize and avoid the antibiotic"],
+   correct:0,explanation:"Some bacteria had random mutations making them resistant. They survived, reproduced, and created a fully resistant population — classic natural selection.",
+   wrong:["","The body doesn't weaken antibiotics — resistance develops in the bacterial population.","Antibiotics don't mutate — bacteria do.","Bacteria don't 'learn' — resistance is a genetic trait from random mutation, not learning."]},
+
+  // UNIT 4: ECOLOGY
+  {id:16,unit:4,unit_name:"Ecology & Ecosystems",topic:"Food webs and energy flow",difficulty:1,frequency:"high",source:"2025-style",
+   text:"In a food web: grass → grasshopper → frog → hawk. If the grasshopper population suddenly decreases, what would most likely happen first?",
+   choices:["The frog population would decrease due to less food","The hawk population would immediately increase","The grass population would decrease","The frog population would increase because hawks eat fewer frogs"],
+   correct:0,explanation:"Frogs eat grasshoppers. Fewer grasshoppers = less food for frogs = frog population decreases. This is a direct predator-prey relationship.",
+   wrong:["","Hawks eat frogs, not grasshoppers — hawk numbers would eventually decrease as frogs decline, not increase.","Less grasshoppers would actually allow grass to INCREASE since fewer are eating it.","Hawks eat frogs — fewer frogs from food scarcity means fewer, not more, frogs survive."]},
+
+  {id:17,unit:4,unit_name:"Ecology & Ecosystems",topic:"Energy pyramids",difficulty:2,frequency:"high",source:"2025-style",
+   text:"An energy pyramid shows 10,000 kcal at the producer level. Approximately how much energy is available at the secondary consumer level?",
+   choices:["100 kcal","1,000 kcal","5,000 kcal","9,000 kcal"],
+   correct:0,explanation:"Only ~10% of energy transfers between trophic levels. Producers: 10,000 → Primary consumers: 1,000 → Secondary consumers: 100 kcal.",
+   wrong:["","1,000 kcal is the energy at the PRIMARY consumer level, not secondary.","5,000 would imply 50% transfer efficiency — much higher than the actual ~10%.","9,000 would imply 90% efficiency — almost all energy is actually lost as heat between levels."]},
+
+  {id:18,unit:4,unit_name:"Ecology & Ecosystems",topic:"Carrying capacity",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"A deer population grows rapidly when introduced to a new island. After several years, the growth slows and the population stabilizes at 500. What does 500 represent?",
+   choices:["The carrying capacity of the island for deer","The maximum number of deer ever born on the island","The point where all deer have died except 500","The number of deer predators can eat per year"],
+   correct:0,explanation:"Carrying capacity is the maximum population size an environment can support given available resources. When population stabilizes, it has reached carrying capacity.",
+   wrong:["","Carrying capacity refers to the sustainable living population, not total births ever.","Carrying capacity is a stable equilibrium, not a near-extinction event.","Carrying capacity is determined by all limiting factors, not just predation."]},
+
+  {id:19,unit:4,unit_name:"Ecology & Ecosystems",topic:"Biodiversity",difficulty:1,frequency:"medium",source:"2025-style",
+   text:"Which is the BEST reason why biodiversity is important for ecosystem stability?",
+   choices:["More species means more ways the ecosystem can respond to disruptions","Higher biodiversity means more food for humans to harvest","Diverse ecosystems produce more oxygen than simple ones","Biodiversity ensures all species compete equally for resources"],
+   correct:0,explanation:"In biodiverse ecosystems, if one species is lost, others can fill its role. This redundancy makes the ecosystem more resilient to change.",
+   wrong:["","Human food access is a benefit but not the primary ecological reason for biodiversity.","Oxygen production is related to plant density, not necessarily biodiversity.","Biodiversity doesn't mean equal competition — it means more species in complex food webs."]},
+
+  {id:20,unit:4,unit_name:"Ecology & Ecosystems",topic:"Human impact",difficulty:1,frequency:"high",source:"2026-predicted",
+   text:"A factory releases warm water into a river. Fish in that section begin to die. What is the most likely cause?",
+   choices:["Warmer water holds less dissolved oxygen, which fish need to survive","The warm water increases fish metabolism so they starve faster","The warm water makes the river too shallow for fish","Fish are attracted to warm water and swim into the machinery"],
+   correct:0,explanation:"Thermal pollution raises water temperature, decreasing dissolved oxygen levels. Fish and aquatic organisms suffocate — a major real-world environmental issue.",
+   wrong:["","While warm water does increase metabolism, the primary cause of death is oxygen depletion, not starvation.","Warm water doesn't make rivers shallower.","Fish don't swim into machinery — and this doesn't explain population-level die-offs."]},
+
+  // UNIT 5: HUMAN BIOLOGY
+  {id:21,unit:5,unit_name:"Human Biology & Body Systems",topic:"Immune system",difficulty:2,frequency:"high",source:"2025-style",
+   text:"A person receives a flu vaccine. Several months later, they're exposed to flu but don't get sick. Which best explains this?",
+   choices:["The vaccine caused memory cells to form, allowing a faster immune response","The vaccine permanently destroyed all flu viruses in the environment","The person's body stopped producing white blood cells after vaccination","The vaccine replaced the person's immune system with a stronger one"],
+   correct:0,explanation:"Vaccines trigger the immune system to produce antibodies and memory cells. When the real pathogen arrives, memory cells recognize it and mount a rapid response.",
+   wrong:["","Vaccines work inside the body — they can't destroy viruses in the external environment.","Vaccines stimulate white blood cell production, not stop it.","Vaccines train the existing immune system — they don't replace it."]},
+
+  {id:22,unit:5,unit_name:"Human Biology & Body Systems",topic:"Homeostasis",difficulty:1,frequency:"high",source:"2025-style",
+   text:"A person exercises vigorously and begins to sweat. This response is an example of:",
+   choices:["Homeostasis — the body regulating its internal temperature","Evolution — the body adapting to exercise over time","Cellular respiration — breaking down glucose for energy","Osmosis — water moving from high to low concentration"],
+   correct:0,explanation:"Sweating is a homeostatic mechanism — it cools the body back to its set point temperature when exercise raises it.",
+   wrong:["","This is an immediate physiological response, not an evolutionary adaptation across generations.","Cellular respiration produces the energy for exercise but doesn't directly cause sweating.","Osmosis describes water movement across membranes — not the body's temperature regulation response."]},
+
+  {id:23,unit:5,unit_name:"Human Biology & Body Systems",topic:"Hormones and feedback",difficulty:3,frequency:"medium",source:"2026-predicted",
+   text:"Blood sugar rises after a meal. The pancreas releases insulin, which causes cells to absorb glucose, and blood sugar returns to normal. This is an example of:",
+   choices:["Negative feedback — a response that counteracts the original change","Positive feedback — a response that amplifies the original change","Active transport — moving glucose against a concentration gradient","Natural selection — organisms with better glucose control surviving"],
+   correct:0,explanation:"Negative feedback opposes changes to maintain homeostasis. Blood sugar rises → insulin released → blood sugar falls back to normal.",
+   wrong:["","Positive feedback amplifies changes (like contractions during childbirth). Insulin brings sugar DOWN — it doesn't amplify the rise.","Active transport is a cellular mechanism for moving molecules across membranes — not a body-system response.","Natural selection occurs over generations, not within a single meal's digestion."]},
+
+  {id:24,unit:5,unit_name:"Human Biology & Body Systems",topic:"Nervous system",difficulty:2,frequency:"medium",source:"2025-style",
+   text:"You touch a hot stove and quickly pull your hand away before you feel pain. What does this demonstrate?",
+   choices:["A reflex arc — a spinal cord response that bypasses the brain for speed","Evolution — humans evolved to avoid fire over thousands of years","Homeostasis — the body maintaining a stable hand temperature","Diffusion — pain signals moving from high to low concentration"],
+   correct:0,explanation:"Reflex arcs are rapid responses processed in the spinal cord, not the brain. This allows faster reaction times — the hand pulls away before the brain processes pain.",
+   wrong:["","This is an individual physiological reflex, not an evolutionary adaptation across generations.","Homeostasis regulates internal conditions like temperature and pH — a reflex response to pain is not homeostasis.","Neural signals are electrical impulses — diffusion describes passive movement of molecules."]},
+
+  {id:25,unit:5,unit_name:"Human Biology & Body Systems",topic:"Meiosis and reproduction",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"During fertilization, a sperm cell (23 chromosomes) combines with an egg cell (23 chromosomes). The resulting zygote has 46 chromosomes. This is because:",
+   choices:["Meiosis halved the chromosome number in gametes before fertilization","Mitosis doubled the chromosomes in the gametes before fertilization","The extra chromosomes from each gamete were discarded","Fertilization randomly selects 46 chromosomes from 92 total"],
+   correct:0,explanation:"Meiosis produces haploid gametes (23 chromosomes each). When two haploid gametes combine at fertilization, the diploid number (46) is restored.",
+   wrong:["","Mitosis copies chromosomes but doesn't halve them — gametes are produced by meiosis.","No chromosomes are discarded — each gamete contributes its full 23 chromosomes.","Fertilization doesn't randomly select chromosomes — each gamete contributes exactly 23."]},
+
+  // UNIT 6: PLANTS
+  {id:26,unit:6,unit_name:"Plants & Photosynthesis",topic:"Photosynthesis equation",difficulty:1,frequency:"high",source:"2025-style",
+   text:"Which equation correctly summarizes photosynthesis?",
+   choices:["CO₂ + H₂O + light energy → glucose + O₂","Glucose + O₂ → CO₂ + H₂O + ATP","CO₂ + O₂ + light energy → glucose + H₂O","Glucose + H₂O → CO₂ + light energy + ATP"],
+   correct:0,explanation:"Photosynthesis uses carbon dioxide, water, and light to produce glucose and oxygen as a byproduct. This is the opposite of cellular respiration.",
+   wrong:["","That's cellular respiration — breaking down glucose to release energy. Photosynthesis builds glucose.","Oxygen is a PRODUCT of photosynthesis, not a reactant. Water is a reactant, not a product.","This describes cellular respiration running backwards — photosynthesis produces glucose, it doesn't start with it."]},
+
+  {id:27,unit:6,unit_name:"Plants & Photosynthesis",topic:"Chloroplast structure",difficulty:2,frequency:"medium",source:"2025-style",
+   text:"In which part of the chloroplast do the light-dependent reactions of photosynthesis occur?",
+   choices:["The thylakoid membranes, where light energy is absorbed by chlorophyll","The stroma, where light directly splits water molecules","The cell membrane, where sunlight first enters the cell","The mitochondria, which work alongside chloroplasts"],
+   correct:0,explanation:"Light reactions occur in the thylakoid membranes, where chlorophyll absorbs light to produce ATP and NADPH. The Calvin cycle occurs in the stroma.",
+   wrong:["","The stroma is where the Calvin cycle (light-independent reactions) occurs, not light reactions.","Light enters through the cell wall and membrane but photosynthesis reactions occur inside the chloroplast.","Mitochondria do cellular respiration — the opposite of photosynthesis."]},
+
+  {id:28,unit:6,unit_name:"Plants & Photosynthesis",topic:"Factors affecting photosynthesis",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"A plant is placed in a room with red light only. Compared to a plant in white light, this plant will most likely:",
+   choices:["Still photosynthesize because chlorophyll absorbs red light well","Stop photosynthesizing because plants only use white light","Photosynthesize faster because red light has more energy than white light","Die immediately because plants cannot survive without sunlight"],
+   correct:0,explanation:"Chlorophyll absorbs red and blue light most effectively. A plant under red light can still photosynthesize — just not as efficiently as under full spectrum.",
+   wrong:["","Plants don't need white light specifically — they need certain wavelengths (red and blue) present in white light.","Red light has LOWER energy than blue or violet light (longer wavelength = less energy per photon).","The plant won't die immediately — red light supports photosynthesis, just not at maximum efficiency."]},
+
+  {id:29,unit:6,unit_name:"Plants & Photosynthesis",topic:"Transpiration",difficulty:2,frequency:"medium",source:"2025-style",
+   text:"A plant loses water through its leaves on a hot, dry day. Which structure controls the amount of water lost?",
+   choices:["Guard cells that open and close the stomata","Root hairs that pump water up to the leaves","Chloroplasts that store excess water during photosynthesis","The waxy cuticle that increases water release in heat"],
+   correct:0,explanation:"Guard cells surround the stomata (leaf pores). They open stomata for gas exchange but close them during hot, dry conditions to reduce water loss.",
+   wrong:["","Root hairs absorb water — they don't control water loss from leaves.","Chloroplasts perform photosynthesis — they don't store or regulate water loss.","The waxy cuticle REDUCES water loss — it doesn't increase it in heat."]},
+
+  {id:30,unit:6,unit_name:"Plants & Photosynthesis",topic:"Photosynthesis vs. respiration",difficulty:3,frequency:"high",source:"2026-predicted",
+   text:"During a 24-hour period, a plant performs both photosynthesis and cellular respiration. Under which condition will the plant show a NET gain in glucose?",
+   choices:["When photosynthesis rate exceeds cellular respiration rate","When cellular respiration rate exceeds photosynthesis rate","When the plant is in total darkness for the full 24 hours","When temperature is very high, speeding up both processes equally"],
+   correct:0,explanation:"A net glucose GAIN requires making more than is consumed — meaning photosynthesis must exceed respiration.",
+   wrong:["","If respiration exceeds photosynthesis, the plant is consuming more glucose than it makes — a net LOSS.","In darkness, photosynthesis stops while respiration continues — the plant only loses glucose.","Even if both speed up equally, there's no net change. A net gain requires photosynthesis to outpace respiration."]}
+];
+
+const PREDICTIONS = [
+  {topic:"Cell membrane / osmosis",unit:"Unit 1",prob:"Very High",reason:"Appeared on 6/6 recent exams — guaranteed topic"},
+  {topic:"Mitosis vs. meiosis comparison",unit:"Unit 1/2",prob:"Very High",reason:"Appeared on 5/6 recent exams"},
+  {topic:"DNA replication & protein synthesis",unit:"Unit 2",prob:"Very High",reason:"Core standard — tested every year"},
+  {topic:"Natural selection with specific scenario",unit:"Unit 3",prob:"Very High",reason:"Always includes a real-world example"},
+  {topic:"Antibiotic resistance",unit:"Unit 3",prob:"High",reason:"Trending topic — appeared 4/6 recent exams"},
+  {topic:"Energy pyramid / 10% rule",unit:"Unit 4",prob:"High",reason:"Appeared 5/6 recent exams with calculations"},
+  {topic:"Negative feedback / homeostasis",unit:"Unit 5",prob:"High",reason:"Core standard — appears every exam"},
+  {topic:"Vaccine / immune response",unit:"Unit 5",prob:"High",reason:"Post-COVID emphasis — appeared 4/6 recent exams"},
+  {topic:"Photosynthesis equation & factors",unit:"Unit 6",prob:"Very High",reason:"Guaranteed — appears on every exam"},
+  {topic:"Human impact on ecosystems",unit:"Unit 4",prob:"Medium",reason:"Rotates but appeared 3/6 recent exams"},
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let current = 0;
+let answers = new Array(30).fill(null);
+let flagged = new Array(30).fill(false);
+let timerInterval, seconds = 0;
+let testResults = null;
+let chatHistory = [];
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function toast(msg,type='info'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast show';
+  setTimeout(()=>el.className='toast',3000);
+}
+function unitColor(u){ return UNIT_COLORS[u-1]; }
+
+// ═══════════════════════════════════════════════════
+// SCREEN 1 → START
+// ═══════════════════════════════════════════════════
+function startTest(){
+  answers = new Array(30).fill(null);
+  flagged = new Array(30).fill(false);
+  current = 0; seconds = 0;
+  showScreen('s2');
+  buildSidebar();
+  renderQ(0);
+  timerInterval = setInterval(()=>{
+    seconds++;
+    const m=String(Math.floor(seconds/60)).padStart(2,'0');
+    const s2=String(seconds%60).padStart(2,'0');
+    document.getElementById('timerVal').textContent=`${m}:${s2}`;
+  },1000);
+}
+
+// ═══════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════
+function buildSidebar(){
+  const wrap = document.getElementById('sidebarDots');
+  const byUnit = {};
+  QUESTIONS.forEach((q,i)=>{
+    if(!byUnit[q.unit]) byUnit[q.unit]=[];
+    byUnit[q.unit].push(i);
+  });
+  let html='';
+  Object.entries(byUnit).forEach(([unit,idxs])=>{
+    html+=`<div class="ts-unit">
+      <div class="ts-unit-name" style="color:${unitColor(parseInt(unit))}">Unit ${unit}</div>
+      <div class="ts-dots" id="dots-u${unit}">`;
+    idxs.forEach(i=>{
+      html+=`<div class="ts-dot ${i===0?'current':''}" id="dot-${i}" onclick="jumpTo(${i})">${i+1}</div>`;
+    });
+    html+=`</div></div>`;
+  });
+  wrap.innerHTML=html;
+}
+
+function updateSidebar(){
+  QUESTIONS.forEach((q,i)=>{
+    const el=document.getElementById(`dot-${i}`);
+    if(!el) return;
+    el.className='ts-dot'+(i===current?' current':answers[i]!==null?' answered':flagged[i]?' flagged':'');
+  });
+  const answered=answers.filter(a=>a!==null).length;
+  document.getElementById('progressLabel').textContent=`${answered} / 30`;
+  document.getElementById('progressFill').style.width=`${(answered/30)*100}%`;
+}
+
+function jumpTo(i){ current=i; renderQ(i); }
+
+// ═══════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════
+function renderQ(i){
+  const q=QUESTIONS[i];
+  // Unit badge
+  const badge=document.getElementById('qUnitBadge');
+  badge.textContent=`${q.unit_name}`;
+  badge.style.background=unitColor(q.unit)+'18';
+  badge.style.color=unitColor(q.unit);
+  badge.style.border=`1px solid ${unitColor(q.unit)}44`;
+  // Meta
+  document.getElementById('qNum').textContent=`Question ${i+1} of 30`;
+  const freq=document.getElementById('qFreq');
+  freq.textContent=q.frequency==='high'?'🔥 High Frequency':'📋 Medium Frequency';
+  freq.className='q-freq '+(q.frequency==='high'?'high':'medium');
+  const src=document.getElementById('qSource');
+  src.textContent=q.source==='2026-predicted'?'⭐ 2026 Predicted':'2025 Style';
+  // Question text
+  document.getElementById('qText').textContent=q.text;
+  // Choices
+  const chosen=answers[i];
+  const revealed=chosen!==null;
+  const letters=['A','B','C','D'];
+  let html='';
+  q.choices.forEach((c,ci)=>{
+    let cls='choice';
+    if(revealed){
+      if(ci===q.correct) cls+=' correct';
+      else if(ci===chosen && ci!==q.correct) cls+=' wrong';
+      else cls+=' reveal-correct'; // muted
+      if(ci!==q.correct) cls=cls.replace(' reveal-correct','');
+    } else if(ci===chosen) cls+=' selected';
+    html+=`<div class="${cls}" onclick="${revealed?'':'selectAnswer('+ci+')'}">
+      <div class="choice-letter">${letters[ci]}</div>
+      <div class="choice-text">${c}</div>
+    </div>`;
+  });
+  document.getElementById('choicesWrap').innerHTML=html;
+  // Feedback
+  const fb=document.getElementById('feedbackBox');
+  if(revealed){
+    const correct=chosen===q.correct;
+    fb.style.display='block';
+    let wrongExp='';
+    if(!correct && q.wrong[chosen] && q.wrong[chosen].length>0){
+      wrongExp=`<div class="feedback-wrong-exp">❌ Why your answer was wrong: ${q.wrong[chosen]}</div>`;
+    }
+    fb.innerHTML=`<div class="feedback-box ${correct?'correct':'wrong'}">
+      <div class="feedback-title">${correct?'✅ Correct!':'❌ Incorrect'}</div>
+      <div class="feedback-text">${q.explanation}</div>
+      ${wrongExp}
+    </div>`;
+  } else {
+    fb.style.display='none';
+  }
+  // Nav buttons
+  document.getElementById('btnPrev').style.display=i===0?'none':'';
+  const isLast=i===29;
+  document.getElementById('btnNext').style.display=isLast?'none':'';
+  document.getElementById('btnSubmit').style.display=isLast?'':'none';
+  updateSidebar();
+}
+
+function selectAnswer(ci){
+  answers[current]=ci;
+  renderQ(current);
+  // Auto-advance after delay if not last question
+  if(current<29){
+    setTimeout(()=>{ current++; renderQ(current); },900);
+  }
+}
+
+function goQ(dir){
+  current=Math.max(0,Math.min(29,current+dir));
+  renderQ(current);
+}
+
+function toggleFlag(){
+  flagged[current]=!flagged[current];
+  updateSidebar();
+  toast(flagged[current]?'Question flagged 🚩':'Flag removed');
+}
+
+// ═══════════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════════
+function submitTest(){
+  const unanswered=answers.filter(a=>a===null).length;
+  if(unanswered>0 && !confirm(`You have ${unanswered} unanswered question${unanswered>1?'s':''}. Submit anyway?`)) return;
+  clearInterval(timerInterval);
+
+  // Calculate results
+  let total=0;
+  const unitScores={};
+  const wrongQs=[];
+
+  QUESTIONS.forEach((q,i)=>{
+    if(!unitScores[q.unit]) unitScores[q.unit]={name:q.unit_name,correct:0,total:0,wrong:[]};
+    unitScores[q.unit].total++;
+    const correct=answers[i]===q.correct;
+    if(correct){ total++; unitScores[q.unit].correct++; }
+    else {
+      unitScores[q.unit].wrong.push({qid:i,question:q.text,yourAnswer:answers[i]!==null?q.choices[answers[i]]:'(unanswered)',correctAnswer:q.choices[q.correct],explanation:q.explanation,wrongExplanation:answers[i]!==null?q.wrong[answers[i]]:''});
+      wrongQs.push({unit:q.unit,unit_name:q.unit_name,...q,yourIdx:answers[i]});
+    }
+  });
+
+  const scaledScore=Math.round((total/30)*100);
+  testResults={total,scaledScore,unitScores,wrongQs,timeSeconds:seconds};
+  showResults();
+  saveToSupabase();
+}
+
+// ═══════════════════════════════════════════════════
+// RESULTS SCREEN
+// ═══════════════════════════════════════════════════
+function showResults(){
+  showScreen('s3');
+  const {total,scaledScore,unitScores}=testResults;
+
+  // Hero score
+  const scoreEl=document.getElementById('rhScore');
+  scoreEl.textContent=scaledScore;
+  scoreEl.className='rh-score '+(scaledScore>=65?'pass':scaledScore>=50?'close':'fail');
+  document.getElementById('rhLabel2').textContent=scaledScore>=65?'✅ Passing Score (65+ required)':scaledScore>=50?'⚠️ Almost there — review weak units':'📚 Focus time — your AI tutor is ready';
+
+  const mins=Math.floor(testResults.timeSeconds/60);
+  document.getElementById('rhPills').innerHTML=`
+    <span class="rh-pill">${total}/30 correct</span>
+    <span class="rh-pill">${mins} min taken</span>
+    <span class="rh-pill">${testResults.wrongQs.length} to review</span>`;
+
+  // Unit cards
+  const grid=document.getElementById('unitCards');
+  grid.innerHTML=Object.entries(unitScores).map(([u,data])=>{
+    const pct=Math.round((data.correct/data.total)*100);
+    const verdict=pct>=80?'strong':pct>=60?'review':'focus';
+    const vLabel=pct>=80?'Strong ✅':pct>=60?'Review ⚠️':'Needs Focus 🔴';
+    return `<div class="unit-card">
+      <div class="uc-head">
+        <span class="uc-dot" style="background:${unitColor(parseInt(u))}"></span>
+        <span class="uc-name">${data.name}</span>
+        <span class="uc-score" style="color:${unitColor(parseInt(u))}">${data.correct}/5</span>
+      </div>
+      <div class="uc-bar"><div class="uc-fill" style="width:${pct}%;background:${unitColor(parseInt(u))}"></div></div>
+      <span class="uc-verdict ${verdict}">${vLabel}</span>
+    </div>`;
+  }).join('');
+
+  // Predictions
+  document.getElementById('predictRows').innerHTML=PREDICTIONS.map(p=>`
+    <div class="predict-row">
+      <span class="predict-prob ${p.prob==='Very High'?'very-high':p.prob==='High'?'high':'medium'}">${p.prob}</span>
+      <div>
+        <div class="predict-topic">${p.topic} <span style="font-size:11px;color:var(--gray);font-weight:500;">— ${p.unit}</span></div>
+        <div class="predict-reason">${p.reason}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// SUPABASE SAVE
+// ═══════════════════════════════════════════════════
+async function saveToSupabase(){
+  if(!db || !USER) return;
+  try{
+    const {unitScores,total,scaledScore,wrongQs,timeSeconds}=testResults;
+    const unit_scores={};
+    Object.entries(unitScores).forEach(([u,d])=>{ unit_scores[u]={name:d.name,correct:d.correct,total:d.total,pct:Math.round(d.correct/d.total*100)}; });
+    await db.from('mock_attempts').insert({
+      user_id:USER.id, subject:'living_environment',
+      score:scaledScore, correct:total, total_questions:30,
+      unit_scores, time_seconds:timeSeconds,
+      question_results:answers.map((a,i)=>({q:i+1,correct:a===QUESTIONS[i].correct,chosen:a}))
+    });
+    toast('Results saved to your dashboard ✓','success');
+  } catch(e){ console.log('Save skipped (table may not exist yet)'); }
+}
+
+// ═══════════════════════════════════════════════════
+// AI TUTOR SCREEN
+// ═══════════════════════════════════════════════════
+function goTutor(){
+  showScreen('s4');
+  buildTutorSidebar();
+  chatHistory=[];
+  document.getElementById('chatMsgs').innerHTML='';
+  sendInitialMessage();
+}
+
+function buildTutorSidebar(){
+  const {unitScores}=testResults;
+  let html='';
+  Object.entries(unitScores).forEach(([u,data])=>{
+    const pct=Math.round(data.correct/data.total*100);
+    const cls=pct>=80?'strong':pct>=60?'ok':'weak';
+    html+=`<div class="ts2-unit ${cls}" onclick="askAboutUnit('${data.name}')">
+      <span class="ts2-unit-name"><span style="width:8px;height:8px;border-radius:50%;background:${unitColor(parseInt(u))};display:inline-block"></span>${data.name}</span>
+      <span class="ts2-unit-score">${data.correct}/5</span>
+    </div>`;
+  });
+  document.getElementById('tutorUnits').innerHTML=html;
+
+  // Quick questions based on weak areas
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const quickQs=[
+    weakUnits.length?`Why did I struggle with ${weakUnits[0]}?`:'What should I study first?',
+    'Which topics are most likely on the June 2026 exam?',
+    'Give me a 2-week study plan based on my scores',
+    'Explain the 10% energy rule with an example',
+    weakUnits.length>1?`Compare my weakest units: ${weakUnits.slice(0,2).join(' vs ')}`: 'What concepts connect these units?',
+  ];
+  document.getElementById('quickBtns').innerHTML=quickQs.map(q=>`<button class="quick-btn" onclick="sendQuick('${q.replace(/'/g,"\\'")}')">💬 ${q}</button>`).join('');
+}
+
+function sendQuick(msg){
+  document.getElementById('chatInput').value=msg;
+  sendMsg();
+}
+
+function askAboutUnit(unitName){
+  sendQuick(`Explain what I need to know about ${unitName} for the Regents`);
+}
+
+function buildSystemPrompt(){
+  const {total,scaledScore,unitScores,wrongQs,timeSeconds}=testResults;
+  const mins=Math.floor(timeSeconds/60);
+  const unitSummary=Object.entries(unitScores).map(([u,d])=>`- ${d.name}: ${d.correct}/5 (${Math.round(d.correct/d.total*100)}%)`).join('\n');
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const wrongSummary=wrongQs.slice(0,8).map(q=>`Q: "${q.text}"\nCorrect: ${q.choices[q.correct]}\nStudent chose: ${q.yourIdx!==null?q.choices[q.yourIdx]:'(unanswered)'}`).join('\n\n');
+
+  return `You are a warm, encouraging, expert Living Environment (Biology) Regents tutor for NYC high school students. You know this student's exact test results and use them to give hyper-personalized help.
+
+STUDENT TEST RESULTS:
+- Score: ${scaledScore}/100 (${total}/30 correct) — taken in ${mins} minutes
+- Passing score is 65
+
+UNIT BREAKDOWN:
+${unitSummary}
+
+WEAK UNITS (scored below 60%): ${weakUnits.length?weakUnits.join(', '):'None — great job!'}
+
+QUESTIONS THIS STUDENT MISSED (first 8):
+${wrongSummary}
+
+HIGH-PROBABILITY JUNE 2026 TOPICS:
+- Cell membrane / osmosis (appears EVERY exam)
+- DNA replication & protein synthesis (appears EVERY exam)  
+- Natural selection scenario (appears EVERY exam)
+- Energy pyramid / 10% rule (appears 5/6 recent exams)
+- Negative feedback / homeostasis (appears EVERY exam)
+- Vaccine / immune response (4/6 recent exams, trending post-COVID)
+- Photosynthesis equation & factors (appears EVERY exam)
+
+YOUR ROLE:
+1. Explain WHY wrong answers were wrong — not just what's right
+2. Use real-world examples NYC students relate to (food, subway, sports, NYC nature)
+3. Give specific study priorities based on their unit scores
+4. When asked about study plans, give concrete weekly schedules
+5. Flag the highest-probability topics for June 2026 when relevant
+6. Keep explanations clear for a 9th-11th grader — no jargon without explanation
+7. Be encouraging — this student is putting in the work
+
+Keep responses focused and practical. Use bullet points when listing concepts. Be conversational, not textbook-like.`;
+}
+
+function sendInitialMessage(){
+  const {scaledScore,unitScores,wrongQs}=testResults;
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const strongUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total>=0.8).map(([u,d])=>d.name);
+
+  const intro=`Hi! I've reviewed your test results. Here's what I see:\n\n**Score: ${testResults.total}/30 (${scaledScore}/100)** ${scaledScore>=65?'✅ Passing!':scaledScore>=50?'⚠️ Getting close':'📚 Room to grow'}\n\n${weakUnits.length?`**Needs the most work:** ${weakUnits.join(', ')}\n\n`:''}${strongUnits.length?`**Your strengths:** ${strongUnits.join(', ')}\n\n`:''}I know exactly which questions you missed and why. Ask me anything — I can explain wrong answers, give you a study plan, or tell you what's most likely on the June 2026 exam. What do you want to tackle first?`;
+
+  addMsg('ai', intro);
+}
+
+function addMsg(role, text){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');
+  div.className=`chat-msg ${role}`;
+  if(role==='ai'){
+    div.innerHTML=`<div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg></div>
+    <div class="msg-bubble">${formatMsg(text)}</div>`;
+  } else {
+    div.innerHTML=`<div class="msg-bubble">${text}</div>`;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  chatHistory.push({role,content:text});
+}
+
+function formatMsg(text){
+  return text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>')
+    .replace(/\n/g,'<br>');
+}
+
+function showTyping(){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');
+  div.className='chat-msg ai'; div.id='typing-indicator';
+  div.innerHTML=`<div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg></div>
+  <div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function hideTyping(){ document.getElementById('typing-indicator')?.remove(); }
+
+async function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const msg=input.value.trim();
+  if(!msg) return;
+  input.value=''; input.style.height='auto';
+  document.getElementById('sendBtn').disabled=true;
+
+  addMsg('user',msg);
+  showTyping();
+
+  // Build messages for Claude API
+  const history=chatHistory.filter(m=>m.role!=='ai'||m.content.length<500).slice(-8);
+  const messages=history.map(m=>({role:m.role==='ai'?'assistant':'user',content:m.content}));
+  if(messages.length===0||messages[messages.length-1].role==='assistant'){
+    messages.push({role:'user',content:msg});
+  } else {
+    messages[messages.length-1]={role:'user',content:msg};
+  }
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:buildSystemPrompt(),
+        messages:[...history.filter(m=>m.role!=='ai').slice(-6).map(m=>({role:'user',content:m.content})),{role:'user',content:msg}]
+      })
+    });
+    const data=await res.json();
+    hideTyping();
+    const reply=data.content?.[0]?.text||"I'm having trouble responding right now — please try again.";
+    addMsg('ai',reply);
+  } catch(e){
+    hideTyping();
+    addMsg('ai','Connection issue — please try again in a moment.');
+  }
+  document.getElementById('sendBtn').disabled=false;
+}
+
+function retake(){
+  showScreen('s1');
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.onload=async()=>{
+  if(typeof supabase!=='undefined'){
+    try{
+      db=supabase.createClient(SB_URL,SB_KEY);
+      const{data}=await db.auth.getSession();
+      if(data?.session?.user) USER=data.session.user;
+    }catch(e){}
+  }
+};
+</script>
+</body>
+</html>
