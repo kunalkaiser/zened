@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — Scan to Try It</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,700;0,900;1,700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #e8e4dc;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+
+  /* ── POSTER ── */
+  .poster {
+    width: 600px;
+    background: #0a0f1e;
+    border-radius: 28px;
+    overflow: hidden;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.4);
+    position: relative;
+  }
+
+  /* Subtle grid texture */
+  .poster::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(14,168,122,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(14,168,122,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+  }
+
+  /* Green glow top-right */
+  .poster::after {
+    content: '';
+    position: absolute;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(14,168,122,0.18) 0%, transparent 65%);
+    top: -120px; right: -120px;
+    pointer-events: none;
+  }
+
+  /* ── TOP SECTION ── */
+  .top {
+    padding: 44px 48px 36px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .logo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .logo-ico {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, #0ea87a, #076b4f);
+    border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(14,168,122,0.4);
+  }
+  .logo-word {
+    font-size: 24px; font-weight: 800;
+    color: white; letter-spacing: -0.5px;
+  }
+  .logo-word em { color: #0ea87a; font-style: normal; }
+  .logo-badge {
+    margin-left: auto;
+    font-size: 11px; font-weight: 700;
+    background: rgba(14,168,122,0.15);
+    color: #0ea87a;
+    padding: 5px 12px; border-radius: 20px;
+    border: 1px solid rgba(14,168,122,0.3);
+    letter-spacing: 0.5px; text-transform: uppercase;
+  }
+
+  .headline {
+    font-family: 'Fraunces', Georgia, serif;
+    font-size: 52px; font-weight: 900;
+    color: white; line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 16px;
+  }
+  .headline em {
+    font-style: italic;
+    color: #0ea87a;
+  }
+
+  .subline {
+    font-size: 15px; color: rgba(255,255,255,0.55);
+    line-height: 1.6; max-width: 360px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, rgba(14,168,122,0.4), rgba(255,255,255,0.06), transparent);
+    margin: 0 48px;
+  }
+
+  /* ── MIDDLE: QR + STEPS ── */
+  .middle {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    padding: 40px 48px;
+    position: relative; z-index: 10;
+  }
+
+  /* QR Box */
+  .qr-box {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    width: 180px; height: 180px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  #qrcode canvas, #qrcode img { border-radius: 4px; }
+
+  /* Steps */
+  .steps {
+    flex: 1;
+    padding-left: 36px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 16px;
+  }
+  .steps-title {
+    font-size: 11px; font-weight: 700;
+    color: rgba(255,255,255,0.35);
+    text-transform: uppercase; letter-spacing: 1.5px;
+    margin-bottom: 4px;
+  }
+  .step {
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .step-num {
+    width: 24px; height: 24px; flex-shrink: 0;
+    background: linear-gradient(135deg,#0ea87a,#076b4f);
+    border-radius: 7px;
+    font-size: 12px; font-weight: 800; color: white;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .step-text { font-size: 13px; line-height: 1.4; }
+  .step-text strong { color: white; font-weight: 700; display: block; }
+  .step-text span { color: rgba(255,255,255,0.45); font-size: 12px; }
+
+  /* ── FEATURES STRIP ── */
+  .features {
+    display: flex;
+    gap: 0;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    position: relative; z-index: 10;
+  }
+  .feat {
+    flex: 1;
+    padding: 20px 20px;
+    text-align: center;
+    border-right: 1px solid rgba(255,255,255,0.07);
+  }
+  .feat:last-child { border-right: none; }
+  .feat-ico { font-size: 20px; margin-bottom: 6px; }
+  .feat-label {
+    font-size: 11px; font-weight: 700; color: white;
+    line-height: 1.3;
+  }
+  .feat-sub { font-size: 10px; color: rgba(255,255,255,0.35); margin-top: 2px; }
+
+  /* ── BOTTOM BAR ── */
+  .bottom {
+    background: rgba(14,168,122,0.1);
+    border-top: 1px solid rgba(14,168,122,0.2);
+    padding: 16px 48px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: relative; z-index: 10;
+  }
+  .bottom-url {
+    font-size: 13px; font-weight: 700; color: #0ea87a;
+    letter-spacing: 0.3px;
+  }
+  .bottom-tag {
+    font-size: 11px; color: rgba(255,255,255,0.3);
+    font-weight: 600;
+  }
+
+  /* ── PRINT BUTTON (hidden on print) ── */
+  .print-btn {
+    display: block;
+    margin: 28px auto 0;
+    padding: 12px 28px;
+    background: #0ea87a;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-size: 15px; font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .print-btn:hover { background: #0b8f68; transform: translateY(-1px); }
+  .print-hint {
+    text-align: center;
+    font-size: 12px;
+    color: #888;
+    margin-top: 10px;
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .poster { box-shadow: none; border-radius: 0; width: 100%; }
+    .print-btn, .print-hint { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="poster" id="poster">
+
+    <!-- TOP -->
+    <div class="top">
+      <div class="logo-row">
+        <div class="logo-ico">
+          <svg viewBox="0 0 24 24" fill="none" width="20" height="20">
+            <path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+            <path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 7V15" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <span class="logo-word">Zen<em>Ed</em></span>
+        <span class="logo-badge">Free forever</span>
+      </div>
+
+      <div class="headline">Know what to<br><em>study tonight.</em></div>
+      <div class="subline">Enter your Regents grades → get a personalized study plan in 30 seconds. No login needed.</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- MIDDLE -->
+    <div class="middle">
+      <div class="qr-box">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200"><rect width="200" height="200" fill="white"/><g fill="#0a0f1e"><rect x="24.24" y="24.24" width="6.061" height="6.061"/><rect x="30.30" y="24.24" width="6.061" height="6.061"/><rect x="36.36" y="24.24" width="6.061" height="6.061"/><rect x="42.42" y="24.24" width="6.061" height="6.061"/><rect x="48.48" y="24.24" width="6.061" height="6.061"/><rect x="54.55" y="24.24" width="6.061" height="6.061"/><rect x="60.61" y="24.24" width="6.061" height="6.061"/><rect x="78.79" y="24.24" width="6.061" height="6.061"/><rect x="90.91" y="24.24" width="6.061" height="6.061"/><rect x="115.15" y="24.24" width="6.061" height="6.061"/><rect x="127.27" y="24.24" width="6.061" height="6.061"/><rect x="133.33" y="24.24" width="6.061" height="6.061"/><rect x="139.39" y="24.24" width="6.061" height="6.061"/><rect x="145.45" y="24.24" width="6.061" height="6.061"/><rect x="151.52" y="24.24" width="6.061" height="6.061"/><rect x="157.58" y="24.24" width="6.061" height="6.061"/><rect x="163.64" y="24.24" width="6.061" height="6.061"/><rect x="169.70" y="24.24" width="6.061" height="6.061"/><rect x="24.24" y="30.30" width="6.061" height="6.061"/><rect x="30.30" y="30.30" width="6.061" height="6.061"/><rect x="36.36" y="30.30" width="6.061" height="6.061"/><rect x="42.42" y="30.30" width="6.061" height="6.061"/><rect x="48.48" y="30.30" width="6.061" height="6.061"/><rect x="54.55" y="30.30" width="6.061" height="6.061"/><rect x="60.61" y="30.30" width="6.061" height="6.061"/><rect x="90.91" y="30.30" width="6.061" height="6.061"/><rect x="96.97" y="30.30" width="6.061" height="6.061"/><rect x="115.15" y="30.30" width="6.061" height="6.061"/><rect x="121.21" y="30.30" width="6.061" height="6.061"/><rect x="133.33" y="30.30" width="6.061" height="6.061"/><rect x="139.39" y="30.30" width="6.061" height="6.061"/><rect x="145.45" y="30.30" width="6.061" height="6.061"/><rect x="151.52" y="30.30" width="6.061" height="6.061"/><rect x="157.58" y="30.30" width="6.061" height="6.061"/><rect x="163.64" y="30.30" width="6.061" height="6.061"/><rect x="169.70" y="30.30" width="6.061" height="6.061"/><rect x="24.24" y="36.36" width="6.061" height="6.061"/><rect x="30.30" y="36.36" width="6.061" height="6.061"/><rect x="54.55" y="36.36" width="6.061" height="6.061"/><rect x="60.61" y="36.36" width="6.061" height="6.061"/><rect x="84.85" y="36.36" width="6.061" height="6.061"/><rect x="90.91" y="36.36" width="6.061" height="6.061"/><rect x="109.09" y="36.36" width="6.061" height="6.061"/><rect x="133.33" y="36.36" width="6.061" height="6.061"/><rect x="139.39" y="36.36" width="6.061" height="6.061"/><rect x="163.64" y="36.36" width="6.061" height="6.061"/><rect x="169.70" y="36.36" width="6.061" height="6.061"/><rect x="24.24" y="42.42" width="6.061" height="6.061"/><rect x="30.30" y="42.42" width="6.061" height="6.061"/><rect x="54.55" y="42.42" width="6.061" height="6.061"/><rect x="60.61" y="42.42" width="6.061" height="6.061"/><rect x="84.85" y="42.42" width="6.061" height="6.061"/><rect x="115.15" y="42.42" width="6.061" height="6.061"/><rect x="133.33" y="42.42" width="6.061" height="6.061"/><rect x="139.39" y="42.42" width="6.061" height="6.061"/><rect x="163.64" y="42.42" width="6.061" height="6.061"/><rect x="169.70" y="42.42" width="6.061" height="6.061"/><rect x="24.24" y="48.48" width="6.061" height="6.061"/><rect x="30.30" y="48.48" width="6.061" height="6.061"/><rect x="54.55" y="48.48" width="6.061" height="6.061"/><rect x="60.61" y="48.48" width="6.061" height="6.061"/><rect x="84.85" y="48.48" width="6.061" height="6.061"/><rect x="90.91" y="48.48" width="6.061" height="6.061"/><rect x="96.97" y="48.48" width="6.061" height="6.061"/><rect x="103.03" y="48.48" width="6.061" height="6.061"/><rect x="109.09" y="48.48" width="6.061" height="6.061"/><rect x="115.15" y="48.48" width="6.061" height="6.061"/><rect x="133.33" y="48.48" width="6.061" height="6.061"/><rect x="139.39" y="48.48" width="6.061" height="6.061"/><rect x="163.64" y="48.48" width="6.061" height="6.061"/><rect x="169.70" y="48.48" width="6.061" height="6.061"/><rect x="24.24" y="54.55" width="6.061" height="6.061"/><rect x="30.30" y="54.55" width="6.061" height="6.061"/><rect x="36.36" y="54.55" width="6.061" height="6.061"/><rect x="42.42" y="54.55" width="6.061" height="6.061"/><rect x="48.48" y="54.55" width="6.061" height="6.061"/><rect x="54.55" y="54.55" width="6.061" height="6.061"/><rect x="60.61" y="54.55" width="6.061" height="6.061"/><rect x="78.79" y="54.55" width="6.061" height="6.061"/><rect x="84.85" y="54.55" width="6.061" height="6.061"/><rect x="90.91" y="54.55" width="6.061" height="6.061"/><rect x="96.97" y="54.55" width="6.061" height="6.061"/><rect x="109.09" y="54.55" width="6.061" height="6.061"/><rect x="115.15" y="54.55" width="6.061" height="6.061"/><rect x="121.21" y="54.55" width="6.061" height="6.061"/><rect x="133.33" y="54.55" width="6.061" height="6.061"/><rect x="139.39" y="54.55" width="6.061" height="6.061"/><rect x="145.45" y="54.55" width="6.061" height="6.061"/><rect x="151.52" y="54.55" width="6.061" height="6.061"/><rect x="157.58" y="54.55" width="6.061" height="6.061"/><rect x="163.64" y="54.55" width="6.061" height="6.061"/><rect x="169.70" y="54.55" width="6.061" height="6.061"/><rect x="24.24" y="60.61" width="6.061" height="6.061"/><rect x="30.30" y="60.61" width="6.061" height="6.061"/><rect x="36.36" y="60.61" width="6.061" height="6.061"/><rect x="42.42" y="60.61" width="6.061" height="6.061"/><rect x="48.48" y="60.61" width="6.061" height="6.061"/><rect x="54.55" y="60.61" width="6.061" height="6.061"/><rect x="60.61" y="60.61" width="6.061" height="6.061"/><rect x="84.85" y="60.61" width="6.061" height="6.061"/><rect x="96.97" y="60.61" width="6.061" height="6.061"/><rect x="109.09" y="60.61" width="6.061" height="6.061"/><rect x="121.21" y="60.61" width="6.061" height="6.061"/><rect x="133.33" y="60.61" width="6.061" height="6.061"/><rect x="139.39" y="60.61" width="6.061" height="6.061"/><rect x="145.45" y="60.61" width="6.061" height="6.061"/><rect x="151.52" y="60.61" width="6.061" height="6.061"/><rect x="157.58" y="60.61" width="6.061" height="6.061"/><rect x="163.64" y="60.61" width="6.061" height="6.061"/><rect x="169.70" y="60.61" width="6.061" height="6.061"/><rect x="78.79" y="66.67" width="6.061" height="6.061"/><rect x="84.85" y="66.67" width="6.061" height="6.061"/><rect x="96.97" y="66.67" width="6.061" height="6.061"/><rect x="103.03" y="66.67" width="6.061" height="6.061"/><rect x="24.24" y="72.73" width="6.061" height="6.061"/><rect x="30.30" y="72.73" width="6.061" height="6.061"/><rect x="36.36" y="72.73" width="6.061" height="6.061"/><rect x="42.42" y="72.73" width="6.061" height="6.061"/><rect x="54.55" y="72.73" width="6.061" height="6.061"/><rect x="72.73" y="72.73" width="6.061" height="6.061"/><rect x="78.79" y="72.73" width="6.061" height="6.061"/><rect x="90.91" y="72.73" width="6.061" height="6.061"/><rect x="96.97" y="72.73" width="6.061" height="6.061"/><rect x="103.03" y="72.73" width="6.061" height="6.061"/><rect x="127.27" y="72.73" width="6.061" height="6.061"/><rect x="24.24" y="78.79" width="6.061" height="6.061"/><rect x="54.55" y="78.79" width="6.061" height="6.061"/><rect x="72.73" y="78.79" width="6.061" height="6.061"/><rect x="96.97" y="78.79" width="6.061" height="6.061"/><rect x="103.03" y="78.79" width="6.061" height="6.061"/><rect x="121.21" y="78.79" width="6.061" height="6.061"/><rect x="127.27" y="78.79" width="6.061" height="6.061"/><rect x="133.33" y="78.79" width="6.061" height="6.061"/><rect x="169.70" y="78.79" width="6.061" height="6.061"/><rect x="24.24" y="84.85" width="6.061" height="6.061"/><rect x="42.42" y="84.85" width="6.061" height="6.061"/><rect x="60.61" y="84.85" width="6.061" height="6.061"/><rect x="66.67" y="84.85" width="6.061" height="6.061"/><rect x="78.79" y="84.85" width="6.061" height="6.061"/><rect x="103.03" y="84.85" width="6.061" height="6.061"/><rect x="127.27" y="84.85" width="6.061" height="6.061"/><rect x="139.39" y="84.85" width="6.061" height="6.061"/><rect x="157.58" y="84.85" width="6.061" height="6.061"/><rect x="163.64" y="84.85" width="6.061" height="6.061"/><rect x="169.70" y="84.85" width="6.061" height="6.061"/><rect x="42.42" y="90.91" width="6.061" height="6.061"/><rect x="48.48" y="90.91" width="6.061" height="6.061"/><rect x="54.55" y="90.91" width="6.061" height="6.061"/><rect x="66.67" y="90.91" width="6.061" height="6.061"/><rect x="72.73" y="90.91" width="6.061" height="6.061"/><rect x="78.79" y="90.91" width="6.061" height="6.061"/><rect x="90.91" y="90.91" width="6.061" height="6.061"/><rect x="103.03" y="90.91" width="6.061" height="6.061"/><rect x="109.09" y="90.91" width="6.061" height="6.061"/><rect x="115.15" y="90.91" width="6.061" height="6.061"/><rect x="127.27" y="90.91" width="6.061" height="6.061"/><rect x="133.33" y="90.91" width="6.061" height="6.061"/><rect x="139.39" y="90.91" width="6.061" height="6.061"/><rect x="145.45" y="90.91" width="6.061" height="6.061"/><rect x="163.64" y="90.91" width="6.061" height="6.061"/><rect x="30.30" y="96.97" width="6.061" height="6.061"/><rect x="54.55" y="96.97" width="6.061" height="6.061"/><rect x="60.61" y="96.97" width="6.061" height="6.061"/><rect x="72.73" y="96.97" width="6.061" height="6.061"/><rect x="78.79" y="96.97" width="6.061" height="6.061"/><rect x="90.91" y="96.97" width="6.061" height="6.061"/><rect x="96.97" y="96.97" width="6.061" height="6.061"/><rect x="103.03" y="96.97" width="6.061" height="6.061"/><rect x="115.15" y="96.97" width="6.061" height="6.061"/><rect x="121.21" y="96.97" width="6.061" height="6.061"/><rect x="127.27" y="96.97" width="6.061" height="6.061"/><rect x="133.33" y="96.97" width="6.061" height="6.061"/><rect x="151.52" y="96.97" width="6.061" height="6.061"/><rect x="163.64" y="96.97" width="6.061" height="6.061"/><rect x="169.70" y="96.97" width="6.061" height="6.061"/><rect x="36.36" y="103.03" width="6.061" height="6.061"/><rect x="48.48" y="103.03" width="6.061" height="6.061"/><rect x="54.55" y="103.03" width="6.061" height="6.061"/><rect x="66.67" y="103.03" width="6.061" height="6.061"/><rect x="72.73" y="103.03" width="6.061" height="6.061"/><rect x="78.79" y="103.03" width="6.061" height="6.061"/><rect x="96.97" y="103.03" width="6.061" height="6.061"/><rect x="121.21" y="103.03" width="6.061" height="6.061"/><rect x="127.27" y="103.03" width="6.061" height="6.061"/><rect x="133.33" y="103.03" width="6.061" height="6.061"/><rect x="151.52" y="103.03" width="6.061" height="6.061"/><rect x="169.70" y="103.03" width="6.061" height="6.061"/><rect x="24.24" y="109.09" width="6.061" height="6.061"/><rect x="42.42" y="109.09" width="6.061" height="6.061"/><rect x="48.48" y="109.09" width="6.061" height="6.061"/><rect x="54.55" y="109.09" width="6.061" height="6.061"/><rect x="60.61" y="109.09" width="6.061" height="6.061"/><rect x="96.97" y="109.09" width="6.061" height="6.061"/><rect x="109.09" y="109.09" width="6.061" height="6.061"/><rect x="133.33" y="109.09" width="6.061" height="6.061"/><rect x="139.39" y="109.09" width="6.061" height="6.061"/><rect x="157.58" y="109.09" width="6.061" height="6.061"/><rect x="163.64" y="109.09" width="6.061" height="6.061"/><rect x="169.70" y="109.09" width="6.061" height="6.061"/><rect x="24.24" y="115.15" width="6.061" height="6.061"/><rect x="30.30" y="115.15" width="6.061" height="6.061"/><rect x="42.42" y="115.15" width="6.061" height="6.061"/><rect x="54.55" y="115.15" width="6.061" height="6.061"/><rect x="66.67" y="115.15" width="6.061" height="6.061"/><rect x="78.79" y="115.15" width="6.061" height="6.061"/><rect x="84.85" y="115.15" width="6.061" height="6.061"/><rect x="96.97" y="115.15" width="6.061" height="6.061"/><rect x="103.03" y="115.15" width="6.061" height="6.061"/><rect x="109.09" y="115.15" width="6.061" height="6.061"/><rect x="115.15" y="115.15" width="6.061" height="6.061"/><rect x="145.45" y="115.15" width="6.061" height="6.061"/><rect x="163.64" y="115.15" width="6.061" height="6.061"/><rect x="24.24" y="121.21" width="6.061" height="6.061"/><rect x="36.36" y="121.21" width="6.061" height="6.061"/><rect x="42.42" y="121.21" width="6.061" height="6.061"/><rect x="48.48" y="121.21" width="6.061" height="6.061"/><rect x="60.61" y="121.21" width="6.061" height="6.061"/><rect x="66.67" y="121.21" width="6.061" height="6.061"/><rect x="78.79" y="121.21" width="6.061" height="6.061"/><rect x="90.91" y="121.21" width="6.061" height="6.061"/><rect x="96.97" y="121.21" width="6.061" height="6.061"/><rect x="103.03" y="121.21" width="6.061" height="6.061"/><rect x="121.21" y="121.21" width="6.061" height="6.061"/><rect x="127.27" y="121.21" width="6.061" height="6.061"/><rect x="133.33" y="121.21" width="6.061" height="6.061"/><rect x="139.39" y="121.21" width="6.061" height="6.061"/><rect x="145.45" y="121.21" width="6.061" height="6.061"/><rect x="151.52" y="121.21" width="6.061" height="6.061"/><rect x="24.24" y="127.27" width="6.061" height="6.061"/><rect x="36.36" y="127.27" width="6.061" height="6.061"/><rect x="48.48" y="127.27" width="6.061" height="6.061"/><rect x="66.67" y="127.27" width="6.061" height="6.061"/><rect x="78.79" y="127.27" width="6.061" height="6.061"/><rect x="103.03" y="127.27" width="6.061" height="6.061"/><rect x="109.09" y="127.27" width="6.061" height="6.061"/><rect x="115.15" y="127.27" width="6.061" height="6.061"/><rect x="121.21" y="127.27" width="6.061" height="6.061"/><rect x="145.45" y="127.27" width="6.061" height="6.061"/><rect x="151.52" y="127.27" width="6.061" height="6.061"/><rect x="163.64" y="127.27" width="6.061" height="6.061"/><rect x="169.70" y="127.27" width="6.061" height="6.061"/><rect x="24.24" y="133.33" width="6.061" height="6.061"/><rect x="30.30" y="133.33" width="6.061" height="6.061"/><rect x="36.36" y="133.33" width="6.061" height="6.061"/><rect x="42.42" y="133.33" width="6.061" height="6.061"/><rect x="48.48" y="133.33" width="6.061" height="6.061"/><rect x="54.55" y="133.33" width="6.061" height="6.061"/><rect x="60.61" y="133.33" width="6.061" height="6.061"/><rect x="96.97" y="133.33" width="6.061" height="6.061"/><rect x="115.15" y="133.33" width="6.061" height="6.061"/><rect x="121.21" y="133.33" width="6.061" height="6.061"/><rect x="133.33" y="133.33" width="6.061" height="6.061"/><rect x="145.45" y="133.33" width="6.061" height="6.061"/><rect x="151.52" y="133.33" width="6.061" height="6.061"/><rect x="163.64" y="133.33" width="6.061" height="6.061"/><rect x="169.70" y="133.33" width="6.061" height="6.061"/><rect x="24.24" y="139.39" width="6.061" height="6.061"/><rect x="30.30" y="139.39" width="6.061" height="6.061"/><rect x="36.36" y="139.39" width="6.061" height="6.061"/><rect x="42.42" y="139.39" width="6.061" height="6.061"/><rect x="48.48" y="139.39" width="6.061" height="6.061"/><rect x="54.55" y="139.39" width="6.061" height="6.061"/><rect x="60.61" y="139.39" width="6.061" height="6.061"/><rect x="72.73" y="139.39" width="6.061" height="6.061"/><rect x="78.79" y="139.39" width="6.061" height="6.061"/><rect x="103.03" y="139.39" width="6.061" height="6.061"/><rect x="121.21" y="139.39" width="6.061" height="6.061"/><rect x="145.45" y="139.39" width="6.061" height="6.061"/><rect x="151.52" y="139.39" width="6.061" height="6.061"/><rect x="163.64" y="139.39" width="6.061" height="6.061"/><rect x="24.24" y="145.45" width="6.061" height="6.061"/><rect x="30.30" y="145.45" width="6.061" height="6.061"/><rect x="54.55" y="145.45" width="6.061" height="6.061"/><rect x="60.61" y="145.45" width="6.061" height="6.061"/><rect x="78.79" y="145.45" width="6.061" height="6.061"/><rect x="84.85" y="145.45" width="6.061" height="6.061"/><rect x="96.97" y="145.45" width="6.061" height="6.061"/><rect x="103.03" y="145.45" width="6.061" height="6.061"/><rect x="121.21" y="145.45" width="6.061" height="6.061"/><rect x="127.27" y="145.45" width="6.061" height="6.061"/><rect x="133.33" y="145.45" width="6.061" height="6.061"/><rect x="139.39" y="145.45" width="6.061" height="6.061"/><rect x="145.45" y="145.45" width="6.061" height="6.061"/><rect x="151.52" y="145.45" width="6.061" height="6.061"/><rect x="163.64" y="145.45" width="6.061" height="6.061"/><rect x="169.70" y="145.45" width="6.061" height="6.061"/><rect x="24.24" y="151.52" width="6.061" height="6.061"/><rect x="30.30" y="151.52" width="6.061" height="6.061"/><rect x="54.55" y="151.52" width="6.061" height="6.061"/><rect x="60.61" y="151.52" width="6.061" height="6.061"/><rect x="72.73" y="151.52" width="6.061" height="6.061"/><rect x="96.97" y="151.52" width="6.061" height="6.061"/><rect x="121.21" y="151.52" width="6.061" height="6.061"/><rect x="139.39" y="151.52" width="6.061" height="6.061"/><rect x="145.45" y="151.52" width="6.061" height="6.061"/><rect x="151.52" y="151.52" width="6.061" height="6.061"/><rect x="157.58" y="151.52" width="6.061" height="6.061"/><rect x="163.64" y="151.52" width="6.061" height="6.061"/><rect x="169.70" y="151.52" width="6.061" height="6.061"/><rect x="24.24" y="157.58" width="6.061" height="6.061"/><rect x="30.30" y="157.58" width="6.061" height="6.061"/><rect x="54.55" y="157.58" width="6.061" height="6.061"/><rect x="60.61" y="157.58" width="6.061" height="6.061"/><rect x="72.73" y="157.58" width="6.061" height="6.061"/><rect x="78.79" y="157.58" width="6.061" height="6.061"/><rect x="109.09" y="157.58" width="6.061" height="6.061"/><rect x="145.45" y="157.58" width="6.061" height="6.061"/><rect x="169.70" y="157.58" width="6.061" height="6.061"/><rect x="24.24" y="163.64" width="6.061" height="6.061"/><rect x="30.30" y="163.64" width="6.061" height="6.061"/><rect x="36.36" y="163.64" width="6.061" height="6.061"/><rect x="42.42" y="163.64" width="6.061" height="6.061"/><rect x="48.48" y="163.64" width="6.061" height="6.061"/><rect x="54.55" y="163.64" width="6.061" height="6.061"/><rect x="60.61" y="163.64" width="6.061" height="6.061"/><rect x="72.73" y="163.64" width="6.061" height="6.061"/><rect x="78.79" y="163.64" width="6.061" height="6.061"/><rect x="84.85" y="163.64" width="6.061" height="6.061"/><rect x="90.91" y="163.64" width="6.061" height="6.061"/><rect x="96.97" y="163.64" width="6.061" height="6.061"/><rect x="103.03" y="163.64" width="6.061" height="6.061"/><rect x="115.15" y="163.64" width="6.061" height="6.061"/><rect x="121.21" y="163.64" width="6.061" height="6.061"/><rect x="133.33" y="163.64" width="6.061" height="6.061"/><rect x="145.45" y="163.64" width="6.061" height="6.061"/><rect x="151.52" y="163.64" width="6.061" height="6.061"/><rect x="163.64" y="163.64" width="6.061" height="6.061"/><rect x="24.24" y="169.70" width="6.061" height="6.061"/><rect x="30.30" y="169.70" width="6.061" height="6.061"/><rect x="36.36" y="169.70" width="6.061" height="6.061"/><rect x="42.42" y="169.70" width="6.061" height="6.061"/><rect x="48.48" y="169.70" width="6.061" height="6.061"/><rect x="54.55" y="169.70" width="6.061" height="6.061"/><rect x="60.61" y="169.70" width="6.061" height="6.061"/><rect x="72.73" y="169.70" width="6.061" height="6.061"/><rect x="84.85" y="169.70" width="6.061" height="6.061"/><rect x="103.03" y="169.70" width="6.061" height="6.061"/><rect x="115.15" y="169.70" width="6.061" height="6.061"/><rect x="121.21" y="169.70" width="6.061" height="6.061"/><rect x="133.33" y="169.70" width="6.061" height="6.061"/><rect x="139.39" y="169.70" width="6.061" height="6.061"/><rect x="163.64" y="169.70" width="6.061" height="6.061"/><rect x="169.70" y="169.70" width="6.061" height="6.061"/></g></svg>
+      </div>
+
+      <div class="steps">
+        <div class="steps-title">How it works</div>
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <strong>Scan the QR code</strong>
+            <span>Opens ZenEd instantly</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <strong>Pick your subject</strong>
+            <span>Regents, SAT, or college</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <strong>Enter your unit grades</strong>
+            <span>Takes under 60 seconds</span>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <strong>Get your study plan</strong>
+            <span>Exact topics to focus on</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="features">
+      <div class="feat">
+        <div class="feat-ico">🧬</div>
+        <div class="feat-label">Living<br>Environment</div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico">📐</div>
+        <div class="feat-label">Algebra I</div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico">📖</div>
+        <div class="feat-label">ELA</div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico">🗽</div>
+        <div class="feat-label">US History</div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico">🎯</div>
+        <div class="feat-label">SAT / ACT<br>Prep</div>
+      </div>
+      <div class="feat">
+        <div class="feat-ico">🏫</div>
+        <div class="feat-label">College<br>Admissions</div>
+      </div>
+    </div>
+
+    <!-- BOTTOM -->
+    <div class="bottom">
+      <span class="bottom-url">kunalkaiser.github.io/zened</span>
+      <span class="bottom-tag">Built for NYC students · Always free</span>
+    </div>
+
+  </div>
+
+  <button class="print-btn" onclick="window.print()">🖨️ Print this poster</button>
+  <p class="print-hint">Works best printed on A4 or Letter paper · Color recommended</p>
+</div>
+
+
+</body>
+</html>
