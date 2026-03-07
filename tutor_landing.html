@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teach on ZenEd — Tutor for NYC Students</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d1117;--cream:#f5f3ef;--white:#fff;
+  --teal:#0ea87a;--teal-dark:#0b8f68;--teal-pale:#e6f5f0;
+  --amber:#d97706;--amber-pale:#fef3c7;
+  --border:#e2ddd6;--gray:#78716c;--gray-light:#f7f5f2;
+  --purple:#7c3aed;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
+
+/* NAV */
+.nav{height:56px;background:var(--ink);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:300;}
+.logo{display:flex;align-items:center;gap:7px;text-decoration:none;color:white;font-weight:700;font-size:15px;}
+.logo-ico{width:26px;height:26px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.logo em{color:var(--teal);font-style:normal;}
+.nav-links{margin-left:auto;display:flex;gap:6px;align-items:center;}
+.nav-link{font-size:13px;color:rgba(255,255,255,.55);text-decoration:none;padding:6px 10px;font-weight:600;}
+.nav-link:hover{color:white;}
+.nav-cta{font-size:13px;font-weight:700;color:var(--ink);background:var(--teal);padding:7px 16px;border-radius:100px;text-decoration:none;transition:all .2s;}
+.nav-cta:hover{background:var(--teal-dark);}
+
+/* HERO */
+.hero{background:var(--ink);padding:80px 24px 0;overflow:hidden;position:relative;}
+.hero::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle,rgba(14,168,122,.15) 0%,transparent 70%);pointer-events:none;}
+.hero-inner{max-width:900px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:end;}
+.hero-tag{display:inline-block;background:rgba(14,168,122,.15);border:1px solid rgba(14,168,122,.3);color:#4ade80;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:5px 12px;border-radius:20px;margin-bottom:20px;}
+.hero h1{font-family:'Fraunces',Georgia,serif;font-size:58px;line-height:1.02;letter-spacing:-.5px;color:white;margin-bottom:20px;}
+.hero h1 em{font-style:italic;color:var(--teal);}
+.hero-sub{font-size:16px;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:32px;max-width:440px;}
+.hero-cta-row{display:flex;gap:10px;align-items:center;margin-bottom:48px;}
+.btn-hero{padding:14px 28px;background:var(--teal);color:white;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;text-decoration:none;transition:all .2s;display:inline-block;}
+.btn-hero:hover{background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 8px 24px rgba(14,168,122,.3);}
+.btn-hero-ghost{padding:14px 24px;color:rgba(255,255,255,.6);font-size:14px;font-weight:600;text-decoration:none;}
+.btn-hero-ghost:hover{color:white;}
+.hero-stats{display:flex;gap:28px;}
+.h-stat{text-align:center;}
+.h-stat-num{font-family:'Fraunces',serif;font-size:28px;font-style:italic;color:var(--teal);line-height:1;}
+.h-stat-lbl{font-size:11px;color:rgba(255,255,255,.35);margin-top:3px;font-weight:600;}
+/* earnings card */
+.earnings-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:28px;margin-bottom:-1px;align-self:end;}
+.ec-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:rgba(255,255,255,.3);margin-bottom:16px;}
+.ec-main{font-family:'Fraunces',serif;font-size:52px;font-style:italic;color:white;line-height:1;margin-bottom:4px;}
+.ec-sub{font-size:13px;color:rgba(255,255,255,.4);margin-bottom:20px;}
+.ec-breakdown{display:flex;flex-direction:column;gap:8px;}
+.ec-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;}
+.ec-sessions{color:rgba(255,255,255,.6);}
+.ec-amount{color:white;font-weight:700;}
+.ec-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;margin:4px 0;overflow:hidden;}
+.ec-bar-fill{height:100%;background:var(--teal);border-radius:2px;}
+.ec-note{font-size:11px;color:rgba(255,255,255,.25);margin-top:14px;line-height:1.5;}
+
+/* HOW IT WORKS */
+.section{padding:72px 24px;}
+.section-inner{max-width:900px;margin:0 auto;}
+.section-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;background:var(--ink);color:white;padding:5px 11px;border-radius:5px;margin-bottom:16px;}
+.section h2{font-family:'Fraunces',serif;font-size:42px;line-height:1.08;letter-spacing:-.3px;margin-bottom:12px;}
+.section h2 em{font-style:italic;color:var(--teal);}
+.section-sub{font-size:15px;color:var(--gray);line-height:1.7;max-width:520px;margin-bottom:48px;}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.step{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;}
+.step-num{width:36px;height:36px;background:var(--ink);color:white;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:18px;font-style:italic;font-weight:700;margin-bottom:16px;}
+.step-title{font-size:15px;font-weight:800;margin-bottom:8px;}
+.step-desc{font-size:13px;color:var(--gray);line-height:1.6;}
+
+/* SUBJECTS */
+.subjects-section{background:var(--ink);padding:72px 24px;}
+.subjects-inner{max-width:900px;margin:0 auto;}
+.subjects-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);padding:5px 11px;border-radius:5px;margin-bottom:16px;}
+.subjects-inner h2{font-family:'Fraunces',serif;font-size:42px;color:white;line-height:1.08;letter-spacing:-.3px;margin-bottom:10px;}
+.subjects-inner h2 em{font-style:italic;color:var(--teal);}
+.subjects-sub{font-size:15px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:40px;}
+.subjects-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.subject-card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:18px;transition:all .2s;}
+.subject-card:hover{background:rgba(255,255,255,.08);border-color:rgba(14,168,122,.3);}
+.sc-emoji{font-size:24px;margin-bottom:10px;}
+.sc-name{font-size:14px;font-weight:700;color:white;margin-bottom:4px;}
+.sc-detail{font-size:12px;color:rgba(255,255,255,.4);line-height:1.5;}
+.sc-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:6px;}
+.badge-hot{background:rgba(14,168,122,.2);color:#4ade80;}
+.badge-new{background:rgba(251,191,36,.15);color:#fbbf24;}
+
+/* CONFLICT NOTICE */
+.conflict-section{background:#fef3c7;border-top:3px solid var(--amber);padding:48px 24px;}
+.conflict-inner{max-width:760px;margin:0 auto;display:flex;gap:24px;align-items:flex-start;}
+.conflict-ico{font-size:36px;flex-shrink:0;}
+.conflict-title{font-size:18px;font-weight:800;color:#92400e;margin-bottom:10px;}
+.conflict-text{font-size:14px;color:#78350f;line-height:1.75;}
+.conflict-rule{background:rgba(180,83,9,.1);border-radius:10px;padding:14px 16px;margin-top:14px;font-size:13px;font-weight:600;color:#92400e;line-height:1.6;}
+
+/* EARNINGS */
+.earn-section{background:white;padding:72px 24px;}
+.earn-inner{max-width:900px;margin:0 auto;}
+.earn-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+.rate-table{background:var(--gray-light);border-radius:16px;overflow:hidden;}
+.rt-head{background:var(--ink);padding:14px 20px;display:flex;justify-content:space-between;}
+.rt-head span{font-size:12px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:1px;}
+.rt-row{padding:13px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border);}
+.rt-row:last-child{border-bottom:none;}
+.rt-hours{font-size:14px;font-weight:600;}
+.rt-range{font-size:14px;color:var(--gray);}
+.rt-earn{font-size:15px;font-weight:800;color:var(--teal);}
+.earn-note{font-size:12px;color:var(--gray);margin-top:10px;font-style:italic;}
+
+/* REQUIREMENTS */
+.req-section{padding:72px 24px;background:var(--cream);}
+.req-inner{max-width:900px;margin:0 auto;}
+.req-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:40px;}
+.req-item{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 20px;display:flex;gap:12px;align-items:flex-start;}
+.req-check{width:28px;height:28px;background:var(--teal-pale);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.req-title{font-size:14px;font-weight:700;margin-bottom:3px;}
+.req-desc{font-size:12px;color:var(--gray);line-height:1.5;}
+
+/* FINAL CTA */
+.final-cta{background:var(--ink);padding:80px 24px;text-align:center;}
+.fc-inner{max-width:600px;margin:0 auto;}
+.fc-inner h2{font-family:'Fraunces',serif;font-size:48px;color:white;letter-spacing:-.3px;margin-bottom:14px;}
+.fc-inner h2 em{font-style:italic;color:var(--teal);}
+.fc-sub{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:32px;}
+.btn-final{display:inline-block;padding:16px 40px;background:var(--teal);color:white;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;text-decoration:none;transition:all .2s;}
+.btn-final:hover{background:var(--teal-dark);transform:translateY(-2px);box-shadow:0 12px 32px rgba(14,168,122,.35);}
+.fc-note{font-size:12px;color:rgba(255,255,255,.25);margin-top:14px;}
+
+/* FOOTER */
+footer{padding:28px 24px;background:var(--ink);border-top:1px solid rgba(255,255,255,.07);display:flex;align-items:center;justify-content:space-between;}
+.footer-links{display:flex;gap:16px;}
+.footer-links a{font-size:12px;color:rgba(255,255,255,.3);text-decoration:none;}
+.footer-links a:hover{color:white;}
+.footer-copy{font-size:12px;color:rgba(255,255,255,.2);}
+
+@media(max-width:768px){
+  .hero-inner,.earn-grid{grid-template-columns:1fr;}
+  .earnings-card{display:none;}
+  .steps,.subjects-grid,.req-grid{grid-template-columns:1fr;}
+  .hero h1{font-size:40px;}
+  .section h2,.subjects-inner h2,.fc-inner h2{font-size:32px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">
+    <div class="logo-ico"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    Zen<em>Ed</em>
+  </a>
+  <div class="nav-links">
+    <a href="index.html" class="nav-link">Home</a>
+    <a href="practice.html" class="nav-link">Practice</a>
+    <a href="tutor_apply.html" class="nav-cta">Apply to Tutor →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">Now Accepting Tutor Applications</div>
+      <h1>Teach beyond<br>your <em>classroom</em></h1>
+      <p class="hero-sub">ZenEd connects NYC licensed teachers with students who need Regents prep and SHSAT coaching. Set your own hours, set your own rate, work from anywhere.</p>
+      <div class="hero-cta-row">
+        <a href="tutor_apply.html" class="btn-hero">Apply to Tutor →</a>
+        <a href="#how-it-works" class="btn-hero-ghost">See how it works</a>
+      </div>
+      <div class="hero-stats">
+        <div class="h-stat"><div class="h-stat-num">$45–$95</div><div class="h-stat-lbl">Avg hourly rate</div></div>
+        <div class="h-stat"><div class="h-stat-num">8</div><div class="h-stat-lbl">Subjects needed</div></div>
+        <div class="h-stat"><div class="h-stat-num">NYC</div><div class="h-stat-lbl">All 5 boroughs</div></div>
+      </div>
+    </div>
+    <div class="earnings-card">
+      <div class="ec-label">Example Monthly Earnings</div>
+      <div class="ec-main">$1,440</div>
+      <div class="ec-sub">8 sessions · $60/hr · 3 hrs each</div>
+      <div class="ec-bar"><div class="ec-bar-fill" style="width:72%"></div></div>
+      <div class="ec-breakdown">
+        <div class="ec-row"><span class="ec-sessions">Living Environment (4 students)</span><span class="ec-amount">$720</span></div>
+        <div class="ec-row"><span class="ec-sessions">Algebra I (2 students)</span><span class="ec-amount">$360</span></div>
+        <div class="ec-row"><span class="ec-sessions">SHSAT Math (2 students)</span><span class="ec-amount">$360</span></div>
+      </div>
+      <div class="ec-note">Example only. You set your rate. ZenEd retains a small platform commission.</div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-inner">
+    <div class="section-tag">How It Works</div>
+    <h2>Three steps to<br><em>start earning</em></h2>
+    <p class="section-sub">No cold outreach. No finding your own students. You apply, we match you, you teach.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-title">Apply &amp; get approved</div>
+        <div class="step-desc">Fill out a 4-step application covering your subjects, availability, and rate. You'll confirm your compliance with NYC DOE conflict-of-interest rules. Review takes 2–3 business days.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-title">Get matched with students</div>
+        <div class="step-desc">Your profile goes live and students can book you directly. ZenEd's AI already knows each student's weak areas — so you walk into every session knowing exactly where to focus.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-title">Teach &amp; get paid</div>
+        <div class="step-desc">Sessions happen over Zoom or Google Meet — no commuting. Payment is processed through ZenEd after each session. You set your rate. We handle the rest.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SUBJECTS -->
+<section class="subjects-section">
+  <div class="subjects-inner">
+    <div class="subjects-tag">Subjects We Need</div>
+    <h2>Where students need<br><em>the most help</em></h2>
+    <p class="subjects-sub">We prioritize subjects tied to New York State Regents exams and SHSAT prep — the highest-stakes tests NYC students face.</p>
+    <div class="subjects-grid">
+      <div class="subject-card"><div class="sc-emoji">🧬</div><div class="sc-name">Living Environment</div><div class="sc-detail">Regents exam · Highest demand</div><span class="sc-badge badge-hot">🔥 High demand</span></div>
+      <div class="subject-card"><div class="sc-emoji">📐</div><div class="sc-name">Algebra I</div><div class="sc-detail">Regents exam · Most failed exam in NYC</div><span class="sc-badge badge-hot">🔥 High demand</span></div>
+      <div class="subject-card"><div class="sc-emoji">📚</div><div class="sc-name">ELA (English)</div><div class="sc-detail">Regents exam · Reading &amp; writing focus</div><span class="sc-badge badge-hot">🔥 High demand</span></div>
+      <div class="subject-card"><div class="sc-emoji">🗽</div><div class="sc-name">US History</div><div class="sc-detail">Regents exam · DBQ writing intensive</div><span class="sc-badge badge-hot">🔥 High demand</span></div>
+      <div class="subject-card"><div class="sc-emoji">🔢</div><div class="sc-name">Algebra II / Geometry</div><div class="sc-detail">Regents exam · Upper level math</div><span class="sc-badge badge-new">Needed</span></div>
+      <div class="subject-card"><div class="sc-emoji">🌍</div><div class="sc-name">Earth Science</div><div class="sc-detail">Regents exam · Lab practical skills</div><span class="sc-badge badge-new">Needed</span></div>
+      <div class="subject-card"><div class="sc-emoji">🧪</div><div class="sc-name">Chemistry / Physics</div><div class="sc-detail">Regents exam · Upper level sciences</div><span class="sc-badge badge-new">Needed</span></div>
+      <div class="subject-card"><div class="sc-emoji">🏆</div><div class="sc-name">SHSAT Prep</div><div class="sc-detail">Specialized HS admissions test · Math &amp; ELA</div><span class="sc-badge badge-hot">🔥 High demand</span></div>
+      <div class="subject-card"><div class="sc-emoji">🌐</div><div class="sc-name">Global History</div><div class="sc-detail">Regents exam · World history &amp; geography</div><span class="sc-badge badge-new">Needed</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONFLICT OF INTEREST NOTICE -->
+<section class="conflict-section">
+  <div class="conflict-inner">
+    <div class="conflict-ico">⚠️</div>
+    <div>
+      <div class="conflict-title">Important: NYC DOE Conflict-of-Interest Rules</div>
+      <p class="conflict-text">ZenEd is committed to legal compliance for all tutors. Before applying, please read and understand the following:</p>
+      <div class="conflict-rule">
+        NYC public school teachers are <strong>prohibited from tutoring students currently enrolled at their own school</strong> for pay, under NYC Department of Education conflict-of-interest rules and Chancellor's Regulation C-110.<br><br>
+        By applying to tutor on ZenEd, you will be required to confirm that you will not use this platform to tutor any student enrolled at your current school. ZenEd does not verify employer policies — compliance is your responsibility.<br><br>
+        Tutoring students from <strong>other schools</strong> is generally permitted. When in doubt, consult your school's compliance officer or the NYC Conflicts of Interest Board.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EARNINGS -->
+<section class="earn-section">
+  <div class="earn-inner">
+    <div class="earn-grid">
+      <div>
+        <div class="section-tag">Earnings</div>
+        <h2>You set your rate.<br><em>We handle payments.</em></h2>
+        <p class="section-sub" style="margin-bottom:24px">ZenEd retains a small platform commission on each session. The rest goes directly to you via Stripe. No chasing payments, no invoicing, no awkward money conversations.</p>
+        <div class="earn-note">* Example earnings are illustrative. Actual income depends on your rate, availability, and student demand. Tutors are independent contractors responsible for their own taxes.</div>
+      </div>
+      <div>
+        <div class="rate-table">
+          <div class="rt-head"><span>Sessions/month</span><span>Rate</span><span>Your earnings</span></div>
+          <div class="rt-row"><span class="rt-hours">4 sessions</span><span class="rt-range">$40/hr · 2 hrs</span><span class="rt-earn">~$288</span></div>
+          <div class="rt-row"><span class="rt-hours">8 sessions</span><span class="rt-range">$60/hr · 3 hrs</span><span class="rt-earn">~$1,296</span></div>
+          <div class="rt-row"><span class="rt-hours">12 sessions</span><span class="rt-range">$75/hr · 3 hrs</span><span class="rt-earn">~$2,430</span></div>
+          <div class="rt-row"><span class="rt-hours">16 sessions</span><span class="rt-range">$90/hr · 3 hrs</span><span class="rt-earn">~$3,888</span></div>
+        </div>
+        <p style="font-size:11px;color:var(--gray);margin-top:8px;font-style:italic">After ZenEd platform commission. Tutors are independent contractors.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REQUIREMENTS -->
+<section class="req-section">
+  <div class="req-inner">
+    <div class="section-tag">Requirements</div>
+    <h2>What we look for<br>in a <em>ZenEd Tutor</em></h2>
+    <div class="req-grid">
+      <div class="req-item"><div class="req-check">✅</div><div><div class="req-title">Licensed NYC teacher</div><div class="req-desc">Current or former NYC DOE teacher with subject expertise in at least one Regents subject or SHSAT.</div></div></div>
+      <div class="req-item"><div class="req-check">✅</div><div><div class="req-title">Reliable availability</div><div class="req-desc">Minimum 2 hours per week. Consistent availability — students and parents depend on it.</div></div></div>
+      <div class="req-item"><div class="req-check">✅</div><div><div class="req-title">Zoom or Google Meet access</div><div class="req-desc">All sessions are conducted online via video call. A stable internet connection and quiet environment required.</div></div></div>
+      <div class="req-item"><div class="req-check">✅</div><div><div class="req-title">Conflict-of-interest compliance</div><div class="req-desc">You confirm you will not tutor students currently enrolled at your own school, per NYC DOE rules.</div></div></div>
+      <div class="req-item"><div class="req-check">✅</div><div><div class="req-title">Stripe account (for payments)</div><div class="req-desc">You'll need a Stripe account to receive payouts. Setup is free and takes about 10 minutes.</div></div></div>
+      <div class="req-item"><div class="req-check">✅</div><div><div class="req-title">Professionalism</div><div class="req-desc">Responsive communication, punctual for sessions, and committed to student outcomes.</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="fc-inner">
+    <h2>Ready to <em>apply?</em></h2>
+    <p class="fc-sub">Application takes about 5 minutes. We review within 2–3 business days. If approved, your profile goes live immediately.</p>
+    <a href="tutor_apply.html" class="btn-final">Start Your Application →</a>
+    <div class="fc-note">Free to apply · You set your rate · Teachers only at this time</div>
+  </div>
+</section>
+
+<footer>
+  <a href="index.html" class="logo"><div class="logo-ico"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></svg></div>Zen<em>Ed</em></a>
+  <div class="footer-links">
+    <a href="terms.html">Terms</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="mailto:hello@zened.app">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 ZenEd</div>
+</footer>
+
+</body>
+</html>

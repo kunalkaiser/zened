@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Apply to Tutor | ZenEd</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --ink:#0d1117;--cream:#f5f3ef;--white:#fff;
+  --teal:#0ea87a;--teal-dark:#0b8f68;--teal-pale:#e6f5f0;
+  --amber:#d97706;--amber-pale:#fef3c7;
+  --red:#dc2626;--red-pale:#fef2f2;
+  --border:#e2ddd6;--gray:#78716c;--gray-light:#f7f5f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+/* NAV */
+.nav{height:56px;background:var(--ink);display:flex;align-items:center;padding:0 24px;gap:14px;position:sticky;top:0;z-index:300;}
+.logo{display:flex;align-items:center;gap:7px;text-decoration:none;color:white;font-weight:700;font-size:15px;}
+.logo-ico{width:26px;height:26px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.logo em{color:var(--teal);font-style:normal;}
+.nav-back{font-size:12px;color:rgba(255,255,255,.45);text-decoration:none;font-weight:500;}
+.nav-back:hover{color:white;}
+
+/* LAYOUT */
+.page{max-width:680px;margin:0 auto;padding:48px 24px 80px;}
+
+/* PROGRESS */
+.progress-wrap{margin-bottom:40px;}
+.progress-steps{display:flex;gap:0;margin-bottom:8px;}
+.ps{flex:1;height:3px;background:var(--border);transition:background .3s;}
+.ps.done{background:var(--teal);}
+.ps.active{background:var(--teal);}
+.progress-labels{display:flex;justify-content:space-between;}
+.pl{font-size:11px;color:var(--gray);font-weight:600;}
+.pl.active{color:var(--ink);}
+
+/* STEP CONTAINER */
+.step-wrap{display:none;}
+.step-wrap.active{display:block;animation:up .3s ease;}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.step-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:var(--teal);margin-bottom:10px;}
+.step-title{font-family:'Fraunces',serif;font-size:36px;line-height:1.08;letter-spacing:-.3px;margin-bottom:8px;}
+.step-sub{font-size:14px;color:var(--gray);line-height:1.7;margin-bottom:32px;}
+
+/* FORM ELEMENTS */
+.field{margin-bottom:18px;}
+.field label{display:block;font-size:12px;font-weight:700;margin-bottom:7px;color:var(--ink);}
+.field label span{color:var(--red);margin-left:2px;}
+input[type=text],input[type=email],select,textarea{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-family:'DM Sans',sans-serif;font-size:14px;color:var(--ink);background:white;outline:none;transition:border-color .2s;}
+input[type=text]:focus,input[type=email]:focus,select:focus,textarea:focus{border-color:var(--teal);}
+textarea{resize:none;min-height:90px;line-height:1.6;}
+.field-hint{font-size:11px;color:var(--gray);margin-top:5px;line-height:1.5;}
+.field-error{font-size:11px;color:var(--red);margin-top:5px;display:none;}
+.field.error input,.field.error select,.field.error textarea{border-color:var(--red);}
+.field.error .field-error{display:block;}
+
+/* GRID */
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* CHECKBOXES — Subjects */
+.check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;}
+.check-item{border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;cursor:pointer;transition:all .15s;display:flex;gap:10px;align-items:flex-start;background:white;}
+.check-item:hover{border-color:var(--teal);}
+.check-item.checked{border-color:var(--teal);background:var(--teal-pale);}
+.check-item input[type=checkbox]{display:none;}
+.ci-box{width:18px;height:18px;border:2px solid var(--border);border-radius:5px;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .15s;}
+.check-item.checked .ci-box{background:var(--teal);border-color:var(--teal);}
+.ci-check{color:white;font-size:11px;display:none;}
+.check-item.checked .ci-check{display:block;}
+.ci-text{font-size:13px;font-weight:600;line-height:1.35;}
+.ci-sub{font-size:11px;color:var(--gray);margin-top:2px;}
+
+/* AVAILABILITY */
+.avail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.avail-item{border:1.5px solid var(--border);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all .15s;background:white;}
+.avail-item:hover{border-color:var(--teal);}
+.avail-item.checked{border-color:var(--teal);background:var(--teal-pale);}
+.avail-item input{display:none;}
+.avail-ico{font-size:20px;margin-bottom:5px;}
+.avail-label{font-size:12px;font-weight:700;}
+.avail-detail{font-size:11px;color:var(--gray);margin-top:2px;}
+
+/* RATE SLIDER */
+.rate-display{text-align:center;margin-bottom:10px;}
+.rate-num{font-family:'Fraunces',serif;font-size:48px;font-style:italic;color:var(--teal);line-height:1;}
+.rate-unit{font-size:14px;color:var(--gray);margin-top:2px;}
+input[type=range]{width:100%;accent-color:var(--teal);height:6px;cursor:pointer;}
+.rate-range{display:flex;justify-content:space-between;font-size:11px;color:var(--gray);margin-top:6px;}
+
+/* TEACHING STYLE */
+.style-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.style-item{border:1.5px solid var(--border);border-radius:10px;padding:14px;cursor:pointer;transition:all .15s;background:white;}
+.style-item:hover{border-color:var(--teal);}
+.style-item.checked{border-color:var(--teal);background:var(--teal-pale);}
+.style-item input{display:none;}
+.si-emoji{font-size:20px;margin-bottom:6px;}
+.si-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.si-desc{font-size:11px;color:var(--gray);line-height:1.4;}
+
+/* CONFLICT ACKNOWLEDGMENT */
+.conflict-box{background:var(--amber-pale);border:1.5px solid #fde68a;border-radius:14px;padding:20px 22px;margin-bottom:20px;}
+.cb-title{font-size:14px;font-weight:800;color:#92400e;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.ack-item{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;cursor:pointer;}
+.ack-item:last-child{margin-bottom:0;}
+.ack-box{width:20px;height:20px;border:2px solid #d97706;border-radius:6px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s;background:white;}
+.ack-item.checked .ack-box{background:var(--amber);border-color:var(--amber);}
+.ack-check{color:white;font-size:11px;display:none;}
+.ack-item.checked .ack-check{display:block;}
+.ack-text{font-size:13px;color:#78350f;line-height:1.6;}
+.ack-text strong{color:#92400e;}
+
+/* BUTTONS */
+.btn-row{display:flex;gap:10px;margin-top:28px;}
+.btn-next{flex:1;padding:14px;background:var(--teal);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-next:hover{background:var(--teal-dark);}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;}
+.btn-back{padding:14px 20px;background:white;color:var(--gray);border:1.5px solid var(--border);border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;}
+.btn-back:hover{border-color:var(--ink);color:var(--ink);}
+
+/* CHAR COUNTER */
+.char-row{text-align:right;font-size:10px;color:var(--gray);margin-top:4px;}
+
+/* SUCCESS */
+.success-wrap{text-align:center;padding:60px 20px;}
+.success-ico{width:72px;height:72px;background:var(--teal-pale);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;}
+.success-title{font-family:'Fraunces',serif;font-size:36px;letter-spacing:-.3px;margin-bottom:12px;}
+.success-sub{font-size:15px;color:var(--gray);line-height:1.7;max-width:440px;margin:0 auto 28px;}
+.btn-home{display:inline-block;padding:13px 28px;background:var(--ink);color:white;border-radius:10px;text-decoration:none;font-size:14px;font-weight:700;}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:white;padding:10px 16px;border-radius:9px;font-size:12px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+@media(max-width:600px){
+  .field-row{grid-template-columns:1fr;}
+  .check-grid,.style-grid{grid-template-columns:1fr;}
+  .avail-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="index.html" class="logo">
+    <div class="logo-ico"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    Zen<em>Ed</em>
+  </a>
+  <a href="tutor_landing.html" class="nav-back">← Tutor Info</a>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<div class="page">
+
+  <!-- PROGRESS -->
+  <div class="progress-wrap">
+    <div class="progress-steps">
+      <div class="ps active" id="ps1"></div>
+      <div class="ps" id="ps2"></div>
+      <div class="ps" id="ps3"></div>
+      <div class="ps" id="ps4"></div>
+    </div>
+    <div class="progress-labels">
+      <span class="pl active" id="pl1">Basic Info</span>
+      <span class="pl" id="pl2">What You Teach</span>
+      <span class="pl" id="pl3">Your Profile</span>
+      <span class="pl" id="pl4">Compliance</span>
+    </div>
+  </div>
+
+  <!-- ══ STEP 1 — BASIC INFO ══ -->
+  <div class="step-wrap active" id="step1">
+    <div class="step-label">Step 1 of 4</div>
+    <div class="step-title">Tell us about yourself</div>
+    <p class="step-sub">Basic information so we can review your application and set up your tutor profile.</p>
+
+    <div class="field-row">
+      <div class="field" id="f-first">
+        <label>First name <span>*</span></label>
+        <input type="text" id="firstName" placeholder="Maria">
+        <div class="field-error">Required</div>
+      </div>
+      <div class="field" id="f-last">
+        <label>Last name <span>*</span></label>
+        <input type="text" id="lastName" placeholder="Rodriguez">
+        <div class="field-error">Required</div>
+      </div>
+    </div>
+
+    <div class="field" id="f-email">
+      <label>Email address <span>*</span></label>
+      <input type="email" id="email" placeholder="maria@school.nyc">
+      <div class="field-hint">Use your personal email, not your DOE email.</div>
+      <div class="field-error">Valid email required</div>
+    </div>
+
+    <div class="field-row">
+      <div class="field" id="f-borough">
+        <label>Borough <span>*</span></label>
+        <select id="borough">
+          <option value="">Select borough…</option>
+          <option>Manhattan</option>
+          <option>Brooklyn</option>
+          <option>Queens</option>
+          <option>The Bronx</option>
+          <option>Staten Island</option>
+        </select>
+        <div class="field-error">Required</div>
+      </div>
+      <div class="field" id="f-years">
+        <label>Years teaching <span>*</span></label>
+        <select id="yearsTeaching">
+          <option value="">Select…</option>
+          <option>1–2 years</option>
+          <option>3–5 years</option>
+          <option>6–10 years</option>
+          <option>11–20 years</option>
+          <option>20+ years</option>
+        </select>
+        <div class="field-error">Required</div>
+      </div>
+    </div>
+
+    <div class="field" id="f-school">
+      <label>Current school name <span>*</span></label>
+      <input type="text" id="schoolName" placeholder="e.g. Stuyvesant High School">
+      <div class="field-hint">This is used internally only to prevent conflict-of-interest booking. It is never shown publicly on your profile.</div>
+      <div class="field-error">Required</div>
+    </div>
+
+    <div class="field">
+      <label>Employment status</label>
+      <select id="employmentStatus">
+        <option value="">Select…</option>
+        <option>Active NYC DOE teacher</option>
+        <option>Former NYC DOE teacher</option>
+        <option>NYC DOE — planning to leave</option>
+        <option>Private / charter school teacher</option>
+      </select>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-next" onclick="nextStep(1)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 2 — WHAT YOU TEACH ══ -->
+  <div class="step-wrap" id="step2">
+    <div class="step-label">Step 2 of 4</div>
+    <div class="step-title">What do you teach?</div>
+    <p class="step-sub">Select all subjects you're comfortable tutoring. Choose availability and set your hourly rate.</p>
+
+    <div class="field" id="f-subjects">
+      <label>Subjects <span>*</span> <span style="font-weight:400;color:var(--gray)">(select all that apply)</span></label>
+      <div class="check-grid" id="subjectsGrid">
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="Living Environment"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">🧬 Living Environment</div><div class="ci-sub">Regents · High demand</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="Algebra I"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">📐 Algebra I</div><div class="ci-sub">Regents · High demand</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="ELA"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">📚 ELA (English)</div><div class="ci-sub">Regents · Reading &amp; writing</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="US History"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">🗽 US History</div><div class="ci-sub">Regents · DBQ writing</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="Algebra II"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">🔢 Algebra II</div><div class="ci-sub">Regents · Upper math</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="Geometry"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">📏 Geometry</div><div class="ci-sub">Regents · Upper math</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="Earth Science"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">🌍 Earth Science</div><div class="ci-sub">Regents · Lab skills</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="Chemistry"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">🧪 Chemistry</div><div class="ci-sub">Regents · Upper science</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="Physics"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">⚡ Physics</div><div class="ci-sub">Regents · Upper science</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="Global History"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">🌐 Global History</div><div class="ci-sub">Regents · World history</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="SHSAT Math"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">🏆 SHSAT Math</div><div class="ci-sub">Specialized HS admissions</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'subjects')"><input type="checkbox" value="SHSAT ELA"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">🏆 SHSAT ELA</div><div class="ci-sub">Specialized HS admissions</div></div></div>
+      </div>
+      <div class="field-error" id="subjects-error">Select at least one subject</div>
+    </div>
+
+    <div class="field" style="margin-top:24px">
+      <label>Availability <span>*</span></label>
+      <div class="avail-grid" id="availGrid">
+        <div class="avail-item" onclick="toggleAvail(this,'weekday-after')"><input type="checkbox" value="weekday-after"><div class="avail-ico">🌆</div><div class="avail-label">Weekdays</div><div class="avail-detail">After 3pm</div></div>
+        <div class="avail-item" onclick="toggleAvail(this,'weekend-morning')"><input type="checkbox" value="weekend-morning"><div class="avail-ico">🌅</div><div class="avail-label">Weekend mornings</div><div class="avail-detail">Sat / Sun AM</div></div>
+        <div class="avail-item" onclick="toggleAvail(this,'weekend-afternoon')"><input type="checkbox" value="weekend-afternoon"><div class="avail-ico">☀️</div><div class="avail-label">Weekend afternoons</div><div class="avail-detail">Sat / Sun PM</div></div>
+      </div>
+      <div class="field-error" id="avail-error">Select at least one time slot</div>
+    </div>
+
+    <div class="field" style="margin-top:24px">
+      <label>Your hourly rate</label>
+      <div class="rate-display">
+        <div class="rate-num" id="rateDisplay">$60</div>
+        <div class="rate-unit">per hour · you keep ~90% after platform fee</div>
+      </div>
+      <input type="range" id="rateSlider" min="25" max="150" value="60" step="5" oninput="updateRate(this.value)">
+      <div class="rate-range"><span>$25/hr</span><span>$150/hr</span></div>
+    </div>
+
+    <div class="field">
+      <label>Grade levels you're comfortable with</label>
+      <div class="check-grid" id="gradesGrid">
+        <div class="check-item" onclick="toggleCheck(this,'grades')"><input type="checkbox" value="6-8"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">Grades 6–8</div><div class="ci-sub">Middle school</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'grades')"><input type="checkbox" value="9-10"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">Grades 9–10</div><div class="ci-sub">Regents years</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'grades')"><input type="checkbox" value="11-12"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">Grades 11–12</div><div class="ci-sub">Upper high school</div></div></div>
+        <div class="check-item" onclick="toggleCheck(this,'grades')"><input type="checkbox" value="SHSAT-prep"><div class="ci-box"><span class="ci-check">✓</span></div><div><div class="ci-text">SHSAT Prep</div><div class="ci-sub">7th–8th grade test</div></div></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(2)">← Back</button>
+      <button class="btn-next" onclick="nextStep(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 3 — PROFILE ══ -->
+  <div class="step-wrap" id="step3">
+    <div class="step-label">Step 3 of 4</div>
+    <div class="step-title">Build your profile</div>
+    <p class="step-sub">This is what students and parents will see when browsing tutors. Be specific — it directly affects how many bookings you get.</p>
+
+    <div class="field" id="f-bio">
+      <label>Short bio <span>*</span></label>
+      <textarea id="bio" maxlength="200" placeholder="e.g. I've been teaching Living Environment at a Brooklyn high school for 6 years. I specialize in helping students who struggle with genetics and ecology — the two topics that trip up most test takers." oninput="countChars('bio','bioCc',200)"></textarea>
+      <div class="char-row"><span id="bioCc">0</span>/200 characters</div>
+      <div class="field-error">Required (10 characters minimum)</div>
+    </div>
+
+    <div class="field" id="f-specialty">
+      <label>One thing you're especially good at <span>*</span></label>
+      <input type="text" id="specialty" maxlength="100" placeholder="e.g. Making genetics click for visual learners" oninput="countChars('specialty','specCc',100)">
+      <div class="char-row"><span id="specCc">0</span>/100</div>
+      <div class="field-error">Required</div>
+    </div>
+
+    <div class="field">
+      <label>Teaching style <span style="font-weight:400;color:var(--gray)">(select up to 3)</span></label>
+      <div class="style-grid" id="styleGrid">
+        <div class="style-item" onclick="toggleStyle(this)"><input type="checkbox" value="patient-methodical"><div class="si-emoji">🧘</div><div class="si-name">Patient &amp; methodical</div><div class="si-desc">Step by step, no one gets left behind</div></div>
+        <div class="style-item" onclick="toggleStyle(this)"><input type="checkbox" value="fast-rigorous"><div class="si-emoji">⚡</div><div class="si-name">Fast-paced &amp; rigorous</div><div class="si-desc">High expectations, high results</div></div>
+        <div class="style-item" onclick="toggleStyle(this)"><input type="checkbox" value="test-focused"><div class="si-emoji">🎯</div><div class="si-name">Test-focused &amp; strategic</div><div class="si-desc">Every session is exam prep</div></div>
+        <div class="style-item" onclick="toggleStyle(this)"><input type="checkbox" value="encouraging"><div class="si-emoji">💪</div><div class="si-name">Encouraging &amp; supportive</div><div class="si-desc">Build confidence first, scores follow</div></div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(3)">← Back</button>
+      <button class="btn-next" onclick="nextStep(3)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ══ STEP 4 — COMPLIANCE ══ -->
+  <div class="step-wrap" id="step4">
+    <div class="step-label">Step 4 of 4</div>
+    <div class="step-title">Compliance &amp; agreement</div>
+    <p class="step-sub">This step is required. Please read each statement carefully before checking the box. All five must be confirmed to submit your application.</p>
+
+    <div class="conflict-box">
+      <div class="cb-title">⚠️ NYC DOE Conflict-of-Interest Acknowledgment</div>
+
+      <div class="ack-item" id="ack1" onclick="toggleAck(this)">
+        <div class="ack-box"><span class="ack-check">✓</span></div>
+        <div class="ack-text">I confirm that I am a licensed teacher currently employed by or formerly employed by a New York City school.</div>
+      </div>
+
+      <div class="ack-item" id="ack2" onclick="toggleAck(this)">
+        <div class="ack-box"><span class="ack-check">✓</span></div>
+        <div class="ack-text">I understand that <strong>NYC DOE rules prohibit me from tutoring students currently enrolled at my own school for pay</strong>, under Chancellor's Regulation C-110 and NYC Conflicts of Interest Board rules.</div>
+      </div>
+
+      <div class="ack-item" id="ack3" onclick="toggleAck(this)">
+        <div class="ack-box"><span class="ack-check">✓</span></div>
+        <div class="ack-text">I confirm that I will <strong>not use ZenEd to tutor any student currently enrolled at my school</strong>. If I am ever matched with such a student, I will immediately decline and report it to ZenEd.</div>
+      </div>
+
+      <div class="ack-item" id="ack4" onclick="toggleAck(this)">
+        <div class="ack-box"><span class="ack-check">✓</span></div>
+        <div class="ack-text">I understand that <strong>ZenEd does not verify my employer's conflict-of-interest policies</strong>. I am solely responsible for ensuring my participation complies with all applicable employer policies, contracts, and regulations.</div>
+      </div>
+
+      <div class="ack-item" id="ack5" onclick="toggleAck(this)">
+        <div class="ack-box"><span class="ack-check">✓</span></div>
+        <div class="ack-text">I have read and agree to ZenEd's <a href="terms.html" target="_blank" style="color:#92400e;font-weight:700">Terms of Use</a> and <a href="privacy.html" target="_blank" style="color:#92400e;font-weight:700">Privacy Policy</a>, including the tutoring marketplace and independent contractor provisions.</div>
+      </div>
+    </div>
+
+    <div id="ack-error" style="font-size:12px;color:var(--red);margin-bottom:12px;display:none">Please confirm all five statements to continue.</div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(4)">← Back</button>
+      <button class="btn-next" id="btnSubmit" onclick="submitApplication()">Submit Application →</button>
+    </div>
+  </div>
+
+  <!-- ══ SUCCESS ══ -->
+  <div class="step-wrap" id="stepSuccess">
+    <div class="success-wrap">
+      <div class="success-ico">✅</div>
+      <div class="success-title">Application submitted!</div>
+      <p class="success-sub">Thank you for applying to tutor on ZenEd. We'll review your application within 2–3 business days and email you at <strong id="successEmail"></strong>.</p>
+      <p style="font-size:13px;color:var(--gray);margin-bottom:28px">In the meantime, feel free to explore ZenEd's student tools — the same platform your future students will use.</p>
+      <a href="index.html" class="btn-home">Back to ZenEd →</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = 'https://spkqmhrogykcbrvujgub.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3FtaHJvZ3lrY2JydnVqZ3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTU0OTEsImV4cCI6MjA4NzM3MTQ5MX0.00fS4NTvcC4f-mD8gRSqD1huWIdHo8Xe6UMZn8UJeb0';
+let db;
+try { db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY); } catch(e){}
+
+let curStep = 1;
+
+function showStep(n) {
+  document.querySelectorAll('.step-wrap').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n)?.classList.add('active');
+  // Progress bar
+  for (let i = 1; i <= 4; i++) {
+    const ps = document.getElementById('ps' + i);
+    const pl = document.getElementById('pl' + i);
+    if (!ps) continue;
+    ps.className = 'ps' + (i <= n ? ' done' : '') + (i === n ? ' active' : '');
+    if (pl) pl.className = 'pl' + (i === n ? ' active' : '');
+  }
+  curStep = n;
+  window.scrollTo(0, 0);
+}
+
+function nextStep(from) {
+  if (from === 1 && !validateStep1()) return;
+  if (from === 2 && !validateStep2()) return;
+  if (from === 3 && !validateStep3()) return;
+  showStep(from + 1);
+}
+
+function prevStep(from) { showStep(from - 1); }
+
+function validateStep1() {
+  let ok = true;
+  const checks = [
+    ['f-first', 'firstName', v => v.trim().length > 0],
+    ['f-last', 'lastName', v => v.trim().length > 0],
+    ['f-email', 'email', v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)],
+    ['f-borough', 'borough', v => v !== ''],
+    ['f-years', 'yearsTeaching', v => v !== ''],
+    ['f-school', 'schoolName', v => v.trim().length > 0],
+  ];
+  checks.forEach(([fid, iid, fn]) => {
+    const el = document.getElementById(fid);
+    const val = document.getElementById(iid)?.value || '';
+    if (!fn(val)) { el?.classList.add('error'); ok = false; }
+    else el?.classList.remove('error');
+  });
+  return ok;
+}
+
+function validateStep2() {
+  let ok = true;
+  const subjects = getChecked('subjects');
+  const avail = getAvailChecked();
+  const se = document.getElementById('subjects-error');
+  const ae = document.getElementById('avail-error');
+  if (subjects.length === 0) { se.style.display = 'block'; ok = false; } else se.style.display = 'none';
+  if (avail.length === 0) { ae.style.display = 'block'; ok = false; } else ae.style.display = 'none';
+  return ok;
+}
+
+function validateStep3() {
+  let ok = true;
+  const bio = document.getElementById('bio').value.trim();
+  const spec = document.getElementById('specialty').value.trim();
+  const bf = document.getElementById('f-bio');
+  const sf = document.getElementById('f-specialty');
+  if (bio.length < 10) { bf?.classList.add('error'); ok = false; } else bf?.classList.remove('error');
+  if (spec.length === 0) { sf?.classList.add('error'); ok = false; } else sf?.classList.remove('error');
+  return ok;
+}
+
+function toggleCheck(el, group) {
+  el.classList.toggle('checked');
+  el.querySelector('input').checked = el.classList.contains('checked');
+}
+
+function toggleAvail(el) {
+  el.classList.toggle('checked');
+  el.querySelector('input').checked = el.classList.contains('checked');
+}
+
+function toggleStyle(el) {
+  const checked = document.querySelectorAll('#styleGrid .style-item.checked');
+  if (!el.classList.contains('checked') && checked.length >= 3) {
+    toast('Select up to 3 teaching styles'); return;
+  }
+  el.classList.toggle('checked');
+  el.querySelector('input').checked = el.classList.contains('checked');
+}
+
+function toggleAck(el) {
+  el.classList.toggle('checked');
+}
+
+function getChecked(group) {
+  const items = group === 'subjects'
+    ? document.querySelectorAll('#subjectsGrid .check-item.checked input')
+    : document.querySelectorAll('#gradesGrid .check-item.checked input');
+  return Array.from(items).map(i => i.value);
+}
+
+function getAvailChecked() {
+  return Array.from(document.querySelectorAll('#availGrid .avail-item.checked input')).map(i => i.value);
+}
+
+function updateRate(val) {
+  document.getElementById('rateDisplay').textContent = '$' + val;
+}
+
+function countChars(inputId, countId, max) {
+  const len = document.getElementById(inputId).value.length;
+  document.getElementById(countId).textContent = len;
+}
+
+async function submitApplication() {
+  // Validate all 5 acks checked
+  const acks = ['ack1','ack2','ack3','ack4','ack5'];
+  const allChecked = acks.every(id => document.getElementById(id)?.classList.contains('checked'));
+  if (!allChecked) {
+    document.getElementById('ack-error').style.display = 'block';
+    return;
+  }
+  document.getElementById('ack-error').style.display = 'none';
+
+  const btn = document.getElementById('btnSubmit');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const email = document.getElementById('email').value.trim();
+  const payload = {
+    first_name: document.getElementById('firstName').value.trim(),
+    last_name: document.getElementById('lastName').value.trim(),
+    email,
+    borough: document.getElementById('borough').value,
+    years_teaching: document.getElementById('yearsTeaching').value,
+    school_name: document.getElementById('schoolName').value.trim(),
+    employment_status: document.getElementById('employmentStatus').value,
+    subjects: getChecked('subjects'),
+    grade_levels: getChecked('grades'),
+    availability: getAvailChecked(),
+    hourly_rate: parseInt(document.getElementById('rateSlider').value),
+    bio: document.getElementById('bio').value.trim(),
+    specialty: document.getElementById('specialty').value.trim(),
+    teaching_styles: Array.from(document.querySelectorAll('#styleGrid .style-item.checked input')).map(i=>i.value),
+    conflict_acknowledged: true,
+    status: 'pending',
+    applied_at: new Date().toISOString()
+  };
+
+  try {
+    if (db) {
+      await db.from('tutor_applications').insert([payload]);
+    }
+  } catch(e) { console.log('Supabase save skipped:', e.message); }
+
+  document.getElementById('successEmail').textContent = email;
+  document.querySelectorAll('.step-wrap').forEach(s => s.classList.remove('active'));
+  document.getElementById('stepSuccess').classList.add('active');
+  // Hide progress on success
+  document.querySelector('.progress-wrap').style.display = 'none';
+  window.scrollTo(0, 0);
+}
+
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.className = 'toast show';
+  setTimeout(() => el.className = 'toast', 2800);
+}
+</script>
+</body>
+</html>
