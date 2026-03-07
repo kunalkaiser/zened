@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — CER Writing Trainer</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0d1117;--cream:#f5f3ef;--white:#fff;
+  --teal:#0ea87a;--teal-dark:#0b8f68;--teal-pale:#e6f5f0;
+  --amber:#d97706;--amber-pale:#fef3c7;
+  --red:#dc2626;--red-pale:#fef2f2;
+  --purple:#7c3aed;--purple-pale:#f5f3ff;
+  --border:#e2ddd6;--gray:#78716c;--gray-light:#f7f5f2;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+/* NAV */
+.nav{height:54px;background:var(--ink);display:flex;align-items:center;padding:0 20px;gap:14px;position:sticky;top:0;z-index:300;}
+.logo{display:flex;align-items:center;gap:7px;text-decoration:none;color:white;font-weight:700;font-size:15px;}
+.logo-ico{width:25px;height:25px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:6px;display:flex;align-items:center;justify-content:center;}
+.logo em{color:var(--teal);font-style:normal;}
+.nav-back{font-size:12px;color:rgba(255,255,255,.45);text-decoration:none;font-weight:500;}
+.nav-back:hover{color:white;}
+.nav-badge{margin-left:auto;background:rgba(14,168,122,.18);border:1px solid rgba(14,168,122,.28);color:#4ade80;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;}
+
+/* SCREENS */
+.screen{display:none;}
+.screen.active{display:block;animation:up .3s ease;}
+@keyframes up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ─── SCREEN 1 INTRO ─── */
+.intro{max-width:720px;margin:0 auto;padding:44px 24px;}
+.eyebrow{display:inline-block;background:var(--ink);color:white;font-size:10px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;padding:5px 11px;border-radius:5px;margin-bottom:18px;}
+.intro h1{font-family:'Fraunces',Georgia,serif;font-size:50px;line-height:1.06;letter-spacing:-.4px;margin-bottom:14px;}
+.intro h1 em{font-style:italic;color:var(--teal);}
+.intro-sub{font-size:15px;color:var(--gray);line-height:1.75;margin-bottom:28px;max-width:560px;}
+.stat-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
+.stat-box{background:white;border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center;}
+.stat-num{font-family:'Fraunces',serif;font-size:32px;font-style:italic;color:var(--teal);line-height:1;}
+.stat-lbl{font-size:11px;color:var(--gray);margin-top:4px;font-weight:600;}
+.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px;}
+.pillar{border-radius:14px;padding:20px 18px;}
+.p-c{background:var(--ink);color:white;}
+.p-e{background:var(--teal);color:white;}
+.p-r{background:#1e1b4b;color:white;}
+.p-letter{font-family:'Fraunces',serif;font-size:48px;font-style:italic;line-height:1;margin-bottom:5px;opacity:.85;}
+.p-word{font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:6px;}
+.p-desc{font-size:11px;line-height:1.6;opacity:.75;}
+.qtype-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:28px;}
+.qt-card{background:white;border:1px solid var(--border);border-radius:11px;padding:14px;display:flex;gap:10px;}
+.qt-icon{font-size:20px;flex-shrink:0;margin-top:1px;}
+.qt-name{font-size:13px;font-weight:800;margin-bottom:3px;}
+.qt-ex{font-size:11px;color:var(--gray);line-height:1.5;font-style:italic;}
+.qt-freq{font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:5px;display:inline-block;}
+.fa{background:#dcfce7;color:#166534;}
+.fm{background:var(--amber-pale);color:#92400e;}
+.btn-go{width:100%;padding:15px;background:var(--teal);color:white;border:none;border-radius:11px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-go:hover{background:var(--teal-dark);transform:translateY(-1px);box-shadow:0 6px 20px rgba(14,168,122,.3);}
+.start-note{text-align:center;font-size:12px;color:var(--gray);margin-top:10px;}
+
+/* ─── SCREEN 2 PRACTICE ─── */
+.practice-wrap{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 54px);}
+.sidebar{background:var(--ink);padding:18px 14px;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto;display:flex;flex-direction:column;}
+.sb-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.25);padding:0 6px;margin:10px 0 5px;}
+.sb-q{display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;cursor:pointer;transition:all .12s;}
+.sb-q:hover{background:rgba(255,255,255,.07);}
+.sb-q.active{background:rgba(14,168,122,.18);border:1px solid rgba(14,168,122,.28);}
+.sb-q-n{font-size:11px;font-weight:700;color:rgba(255,255,255,.35);min-width:18px;}
+.sb-q-t{font-size:11px;color:rgba(255,255,255,.65);line-height:1.35;flex:1;}
+.sb-q.active .sb-q-t,.sb-q.active .sb-q-n{color:white;}
+.sb-q.done .sb-q-n{color:var(--teal);}
+.sb-q.done .sb-q-t{color:rgba(255,255,255,.4);}
+.sb-q-ck{font-size:11px;flex-shrink:0;}
+.sb-div{border:none;border-top:1px solid rgba(255,255,255,.07);margin:8px 0;}
+.sb-tutor{display:flex;align-items:center;gap:9px;padding:10px 9px;border-radius:8px;cursor:pointer;transition:all .12s;margin-top:4px;}
+.sb-tutor:hover{background:rgba(255,255,255,.07);}
+.sb-tutor-ico{width:28px;height:28px;background:linear-gradient(135deg,var(--purple),#4c1d95);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;}
+.sb-tutor-txt{font-size:12px;color:rgba(255,255,255,.7);font-weight:600;}
+.sb-tutor:hover .sb-tutor-txt{color:white;}
+.sb-prog{padding-top:12px;border-top:1px solid rgba(255,255,255,.07);margin-top:auto;}
+.sb-prog-lbl{font-size:9px;color:rgba(255,255,255,.25);margin-bottom:5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;}
+.sb-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;}
+.sb-fill{height:100%;background:var(--teal);border-radius:2px;transition:width .4s;}
+.main{padding:28px 32px;max-width:800px;}
+.q-meta{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:18px;}
+.q-badge{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;}
+.b-defend{background:var(--teal-pale);color:var(--teal-dark);}
+.b-systems{background:var(--purple-pale);color:var(--purple);}
+.b-evidence{background:#dbeafe;color:#1e40af;}
+.b-explain{background:var(--teal-pale);color:var(--teal-dark);}
+.b-evaluate{background:#fce7f3;color:#9d174d;}
+.b-criterion{background:var(--amber-pale);color:#92400e;}
+.b-solution{background:#dcfce7;color:#166534;}
+.b-common{background:#f1f5f9;color:#475569;}
+.b-feedback{background:#f0fdf4;color:#166534;}
+.q-num-lbl{font-size:12px;color:var(--gray);font-weight:600;margin-left:auto;}
+.ctx{background:white;border:1px solid var(--border);border-left:4px solid var(--teal);border-radius:0 11px 11px 0;padding:14px 16px;margin-bottom:18px;}
+.ctx-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:var(--teal);margin-bottom:5px;}
+.ctx-text{font-size:12px;color:var(--gray);line-height:1.75;}
+.ctx-text strong{color:var(--ink);}
+.q-text{font-size:16px;font-weight:600;line-height:1.6;margin-bottom:5px;}
+.q-pts{font-size:12px;color:var(--gray);margin-bottom:18px;}
+.mode-row{display:flex;gap:6px;align-items:center;margin-bottom:12px;}
+.mode-lbl{font-size:11px;color:var(--gray);font-weight:600;}
+.mbtn{padding:4px 11px;border-radius:7px;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;cursor:pointer;border:1.5px solid var(--border);background:white;color:var(--gray);transition:all .12s;}
+.mbtn.on{background:var(--ink);color:white;border-color:var(--ink);}
+.scaffold{display:grid;gap:8px;}
+.part{border:1.5px solid var(--border);border-radius:11px;overflow:hidden;transition:border-color .2s;background:white;}
+.part:focus-within{border-color:var(--teal);}
+.part-head{padding:9px 13px;display:flex;align-items:flex-start;gap:8px;border-bottom:1px solid var(--border);background:var(--gray-light);}
+.part-ico{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:13px;font-style:italic;font-weight:700;flex-shrink:0;margin-top:1px;}
+.ico-c{background:var(--ink);color:white;}
+.ico-e{background:var(--teal);color:white;}
+.ico-r{background:#1e1b4b;color:white;}
+.part-info{flex:1;}
+.part-label{font-size:12px;font-weight:800;}
+.part-hint{font-size:11px;color:var(--gray);line-height:1.4;margin-top:2px;}
+textarea.ti{width:100%;border:none;outline:none;resize:none;padding:11px 13px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.65;color:var(--ink);min-height:60px;background:white;}
+textarea.ti::placeholder{color:#c8c0b8;}
+.char-row{padding:4px 13px;font-size:10px;color:var(--gray);background:var(--gray-light);text-align:right;}
+.fwrite{border:1.5px solid var(--border);border-radius:11px;overflow:hidden;background:white;}
+.fwrite:focus-within{border-color:var(--teal);}
+.fwrite-head{padding:9px 14px;border-bottom:1px solid var(--border);background:var(--gray-light);display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:700;color:var(--gray);}
+textarea.fti{width:100%;border:none;outline:none;resize:none;padding:14px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.7;color:var(--ink);min-height:120px;background:white;}
+textarea.fti::placeholder{color:#c8c0b8;}
+.eval-banner{background:var(--red-pale);border:1px solid #fecdd3;border-radius:9px;padding:9px 13px;font-size:12px;font-weight:600;color:var(--red);margin-bottom:11px;}
+.crit-banner{background:var(--amber-pale);border:1px solid #fde68a;border-radius:9px;padding:9px 13px;font-size:12px;line-height:1.5;color:#92400e;margin-bottom:11px;}
+.sub-row{display:flex;gap:8px;margin-top:12px;align-items:center;flex-wrap:wrap;}
+.btn-submit{padding:11px 24px;background:var(--teal);color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-submit:hover{background:var(--teal-dark);}
+.btn-submit:disabled{opacity:.4;cursor:not-allowed;}
+.btn-next{padding:11px 20px;background:white;color:var(--ink);border:2px solid var(--border);border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:none;}
+.btn-next:hover{border-color:var(--ink);}
+.btn-ask{padding:11px 18px;background:var(--purple-pale);color:var(--purple);border:2px solid #ddd6fe;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;display:none;}
+.btn-ask:hover{background:#ede9fe;}
+
+/* feedback panel */
+.fb-panel{margin-top:18px;border-radius:13px;overflow:hidden;animation:up .35s ease;border:1px solid var(--border);}
+.fb-top{background:var(--ink);padding:13px 16px;display:flex;align-items:center;gap:10px;}
+.fb-title{color:white;font-size:13px;font-weight:700;}
+.fb-sub{color:rgba(255,255,255,.45);font-size:11px;}
+.fb-chips{margin-left:auto;display:flex;gap:6px;}
+.chip{padding:3px 9px;border-radius:20px;font-size:10px;font-weight:800;}
+.chip-great{background:#4ade80;color:#14532d;}
+.chip-ok{background:#fde68a;color:#78350f;}
+.chip-needs{background:#fca5a5;color:#7f1d1d;}
+.fb-body{background:white;padding:18px;}
+.fb-sec{margin-bottom:16px;}
+.fb-sec:last-child{margin-bottom:0;}
+.fb-sec-head{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px;display:flex;align-items:center;gap:6px;}
+.fb-text{font-size:13px;line-height:1.7;color:#374151;}
+.hl-box{background:var(--teal-pale);border-left:3px solid var(--teal);padding:8px 11px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.6;margin-top:7px;}
+.fix-box{background:var(--amber-pale);border-left:3px solid var(--amber);padding:8px 11px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.6;margin-top:7px;}
+.rw-box{background:var(--purple-pale);border-left:3px solid var(--purple);padding:9px 13px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.7;margin-top:7px;font-style:italic;}
+.earn-yes{background:#dcfce7;border:1px solid #86efac;border-radius:8px;padding:10px 13px;font-size:13px;font-weight:700;color:#166534;margin-top:10px;line-height:1.5;}
+.earn-no{background:#fee2e2;border:1px solid #fca5a5;border-radius:8px;padding:10px 13px;font-size:13px;font-weight:700;color:#991b1b;margin-top:10px;line-height:1.5;}
+.tip-box{background:var(--amber-pale);border-left:3px solid var(--amber);padding:9px 11px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.6;margin-top:12px;}
+.model-box{background:var(--gray-light);border:1px solid var(--border);border-radius:11px;padding:14px 16px;margin-top:13px;}
+.model-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.8px;color:var(--gray);margin-bottom:7px;}
+.model-text{font-size:12px;line-height:1.75;color:var(--ink);}
+.show-model-btn{font-size:12px;font-weight:700;color:var(--teal);background:none;border:none;cursor:pointer;padding:0;}
+/* loading */
+.loading{padding:24px;text-align:center;}
+.dots{display:flex;gap:5px;justify-content:center;}
+.dot{width:7px;height:7px;background:var(--teal);border-radius:50%;animation:bonce .8s ease infinite;}
+.dot:nth-child(2){animation-delay:.15s;}
+.dot:nth-child(3){animation-delay:.3s;}
+@keyframes bonce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+.loading-txt{font-size:12px;color:var(--gray);margin-top:9px;font-style:italic;}
+
+/* ─── SCREEN 3 TUTOR ─── */
+.tutor-wrap{display:grid;grid-template-columns:260px 1fr;min-height:calc(100vh - 54px);}
+.ts{background:var(--ink);padding:18px 14px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
+.ts-head{color:white;font-size:13px;font-weight:700;padding:2px 6px;margin-bottom:2px;}
+.ts-sub{color:rgba(255,255,255,.4);font-size:11px;padding:0 6px;margin-bottom:10px;line-height:1.5;}
+.ts-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.25);padding:0 6px;margin:10px 0 5px;}
+.ts-score{display:flex;align-items:center;gap:8px;padding:7px 9px;border-radius:7px;}
+.ts-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.ts-name{font-size:11px;color:rgba(255,255,255,.65);flex:1;}
+.ts-val{font-size:11px;font-weight:700;color:white;}
+.quick-q{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 10px;cursor:pointer;font-size:11px;color:rgba(255,255,255,.7);line-height:1.4;transition:all .12s;margin-bottom:4px;}
+.quick-q:hover{background:rgba(255,255,255,.1);color:white;}
+.ts-back{display:flex;align-items:center;gap:8px;padding:9px 9px;border-radius:8px;cursor:pointer;font-size:12px;color:rgba(255,255,255,.5);margin-top:auto;font-weight:600;}
+.ts-back:hover{color:white;background:rgba(255,255,255,.07);}
+/* chat */
+.chat-area{display:flex;flex-direction:column;height:calc(100vh - 54px);}
+.chat-hdr{padding:16px 24px;border-bottom:1px solid var(--border);background:white;flex-shrink:0;}
+.chat-hdr-title{font-size:15px;font-weight:800;margin-bottom:2px;}
+.chat-hdr-sub{font-size:12px;color:var(--gray);}
+.chat-msgs{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px;}
+.msg{display:flex;gap:10px;max-width:720px;}
+.msg.user{flex-direction:row-reverse;align-self:flex-end;}
+.msg-ico{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.ai-ico{background:linear-gradient(135deg,var(--teal),#076b4f);}
+.user-ico{background:linear-gradient(135deg,var(--purple),#4c1d95);}
+.msg-bubble{padding:11px 14px;border-radius:12px;font-size:13px;line-height:1.75;}
+.msg.ai .msg-bubble{background:white;border:1px solid var(--border);color:var(--ink);border-radius:4px 12px 12px 12px;}
+.msg.user .msg-bubble{background:var(--purple);color:white;border-radius:12px 4px 12px 12px;}
+.msg-bubble strong{font-weight:700;}
+.msg-bubble ul{margin:6px 0 6px 16px;}
+.msg-bubble li{margin-bottom:3px;}
+.chat-inp-wrap{padding:14px 24px;border-top:1px solid var(--border);background:white;flex-shrink:0;display:flex;gap:10px;}
+textarea.ci{flex:1;border:1.5px solid var(--border);border-radius:10px;padding:10px 13px;font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.5;resize:none;outline:none;min-height:42px;max-height:120px;transition:border-color .2s;}
+textarea.ci:focus{border-color:var(--teal);}
+.btn-send{padding:10px 18px;background:var(--teal);color:white;border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;align-self:flex-end;}
+.btn-send:hover{background:var(--teal-dark);}
+.btn-send:disabled{opacity:.4;cursor:not-allowed;}
+/* toast */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:white;padding:10px 16px;border-radius:9px;font-size:12px;font-weight:600;z-index:9999;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+@media(max-width:768px){
+  .practice-wrap,.tutor-wrap{grid-template-columns:1fr;}
+  .sidebar,.ts{display:none;}
+  .pillars,.qtype-grid,.stat-strip{grid-template-columns:1fr;}
+  .intro h1{font-size:36px;}
+}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html" class="logo">
+    <div class="logo-ico"><svg viewBox="0 0 24 24" fill="none" width="12" height="12"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+    Zen<em>Ed</em>
+  </a>
+  <a href="mockregents.html" class="nav-back">← Mock Tests</a>
+  <span class="nav-badge">✍️ CER Writing Trainer</span>
+</nav>
+<div id="toast" class="toast"></div>
+
+<!-- ══ S1 INTRO ══ -->
+<div id="s1" class="screen active">
+<div class="intro">
+  <div class="eyebrow">Living Environment · Jan 2026 Regents</div>
+  <h1>Master<br><em>CER Writing</em></h1>
+  <p class="intro-sub">On the January 2026 exam, <strong>16 out of 45 questions</strong> required written responses. Most students lose points here — not because they don't know the biology, but because they don't know how to write the answer. This trainer fixes that.</p>
+  <div class="stat-strip">
+    <div class="stat-box"><div class="stat-num">16</div><div class="stat-lbl">Written questions on Jan 2026 Regents</div></div>
+    <div class="stat-box"><div class="stat-num">8</div><div class="stat-lbl">Practice questions — every type that appears</div></div>
+    <div class="stat-box"><div class="stat-num">AI</div><div class="stat-lbl">Tutor reads your response &amp; tells you exactly what's missing</div></div>
+  </div>
+  <div class="pillars">
+    <div class="pillar p-c"><div class="p-letter">C</div><div class="p-word">Claim</div><div class="p-desc">State your answer directly. Don't start with "I think." One sentence that answers what's asked.</div></div>
+    <div class="pillar p-e"><div class="p-letter">E</div><div class="p-word">Evidence</div><div class="p-desc">Use specific data from the graph, table, or model. Include numbers. "The graph shows" alone earns zero.</div></div>
+    <div class="pillar p-r"><div class="p-letter">R</div><div class="p-word">Reasoning</div><div class="p-desc">Explain WHY your evidence proves your claim using biology. This is where most students lose the point.</div></div>
+  </div>
+  <div class="qtype-grid">
+    <div class="qt-card"><div class="qt-icon">🔗</div><div><div class="qt-name">Two-System Interactions</div><div class="qt-ex">"Identify two body systems and describe how they interact to regulate glucose."</div><span class="qt-freq fa">Every exam</span></div></div>
+    <div class="qt-card"><div class="qt-icon">📊</div><div><div class="qt-name">Graph Evidence + Reasoning</div><div class="qt-ex">"Using evidence from the graphs, describe how wolf reintroduction impacted the environment."</div><span class="qt-freq fa">Every exam</span></div></div>
+    <div class="qt-card"><div class="qt-icon">🛡️</div><div><div class="qt-name">Defend a Claim with Biology</div><div class="qt-ex">"Use evidence and reasoning to defend the claim that sexual reproduction results in different traits."</div><span class="qt-freq fa">Every exam</span></div></div>
+    <div class="qt-card"><div class="qt-icon">⚗️</div><div><div class="qt-name">Explain a Biological Process</div><div class="qt-ex">"Construct an explanation for how genes determine the Fel d 1 allergen structure."</div><span class="qt-freq fa">Every exam</span></div></div>
+    <div class="qt-card"><div class="qt-icon">✅</div><div><div class="qt-name">Evaluate a Claim (Valid/Not Valid)</div><div class="qt-ex">"Using evidence, evaluate whether the claim about Varroa mite treatment timing is valid."</div><span class="qt-freq fm">Most exams</span></div></div>
+    <div class="qt-card"><div class="qt-icon">🛠️</div><div><div class="qt-name">Criterion &amp; Constraint</div><div class="qt-ex">"State one criterion and one constraint that scientists considered when developing diabetes solutions."</div><span class="qt-freq fm">Most exams</span></div></div>
+  </div>
+  <button class="btn-go" onclick="startPractice()">Start Practice — 8 Questions from Jan 2026 →</button>
+  <p class="start-note">AI grades every response line-by-line · Live chat tutor · Model answers included</p>
+</div>
+</div>
+
+<!-- ══ S2 PRACTICE ══ -->
+<div id="s2" class="screen">
+<div class="practice-wrap">
+  <div class="sidebar" id="sidebar">
+    <div class="sb-lbl">Questions</div>
+    <div id="sbQs"></div>
+    <hr class="sb-div">
+    <div class="sb-tutor" onclick="goTutor()">
+      <div class="sb-tutor-ico">🤖</div>
+      <div class="sb-tutor-txt">Ask the AI Tutor</div>
+    </div>
+    <div class="sb-prog">
+      <div class="sb-prog-lbl">Progress <span id="progTxt">0/8</span></div>
+      <div class="sb-bar"><div class="sb-fill" id="sbFill" style="width:0%"></div></div>
+    </div>
+  </div>
+  <div class="main" id="main"></div>
+</div>
+</div>
+
+<!-- ══ S3 TUTOR ══ -->
+<div id="s3" class="screen">
+<div class="tutor-wrap">
+  <div class="ts">
+    <div class="ts-head">🤖 CER Writing Tutor</div>
+    <div class="ts-sub">Ask me anything — your responses, the biology, how to improve your writing, practice questions.</div>
+    <hr class="sb-div">
+    <div class="ts-lbl">Your Progress</div>
+    <div id="tutorScores"></div>
+    <hr class="sb-div">
+    <div class="ts-lbl">Quick Questions</div>
+    <div id="quickQs"></div>
+    <div class="ts-back" onclick="backToPractice()">← Back to Practice</div>
+  </div>
+  <div class="chat-area">
+    <div class="chat-hdr">
+      <div class="chat-hdr-title">CER Writing Tutor</div>
+      <div class="chat-hdr-sub">Knows the Jan 2026 exam and your specific responses · Powered by AI</div>
+    </div>
+    <div class="chat-msgs" id="chatMsgs"></div>
+    <div class="chat-inp-wrap">
+      <textarea class="ci" id="chatInput" placeholder="Ask about a question, a biology concept, how to improve…" rows="1" onkeydown="chatKey(event)" oninput="autoResize(this)"></textarea>
+      <button class="btn-send" id="sendBtn" onclick="sendChat()">Send</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// QUESTION BANK — All 8 from January 2026 Regents
+// ═══════════════════════════════════════════════════
+const QS = [
+  {
+    id:1, type:'defend', badge:'b-defend', label:'🛡️ Defend a Claim',
+    unit:'Genetics', source:'Q3 — Jan 2026 Regents',
+    context:'Fraternal twins develop from <strong>two separate eggs fertilized by two separate sperm</strong>. Identical twins develop from one fertilized egg that splits. During sexual reproduction, each parent contributes one set of chromosomes. <strong>Meiosis</strong> separates and recombines chromosomes — crossing over shuffles genetic material between chromosomes before gametes are formed. Model A shows 1 egg + 1 sperm → same placenta. Model B shows 2 eggs + 2 sperm → separate placentas.',
+    question:'Use evidence and reasoning to defend the claim that processes that occur during sexual reproduction result in fraternal twins having different traits. [1 point]',
+    scaffold:true,
+    c_hint:'Why do fraternal twins have different traits? State it directly in one sentence.',
+    e_hint:'Name the specific process that creates genetic variation — meiosis, crossing over, different gametes from different parents.',
+    r_hint:'Link: different gametes → different DNA sequences → different proteins → different traits. Explain the whole chain.',
+    model:'Sexual reproduction results in fraternal twins having different traits because each twin is produced from a different egg fertilized by a different sperm. During meiosis, crossing over shuffles genetic material between chromosomes, producing gametes with unique combinations of alleles. When two different eggs are each fertilized by different sperm, each zygote receives a completely different combination of genetic information. Because different gene sequences code for different proteins, each fraternal twin will express different physical traits.',
+    rubric:'Must include: (1) fraternal twins come from different eggs and different sperm, (2) meiosis/crossing over creates different gametes with different allele combinations, (3) different DNA → different proteins → different traits. "They have different DNA" without explaining HOW sexual reproduction creates that difference earns 0.'
+  },
+  {
+    id:2, type:'systems', badge:'b-systems', label:'🔗 Two-System Interaction',
+    unit:'Human Biology', source:'Q15 — Jan 2026 Regents',
+    context:'A model shows an allergic response to Fel d 1 (a cat protein allergen). When exposed to Fel d 1: it binds to receptors on <strong>mast cells</strong> (immune system cells found throughout the body). Mast cells then release <strong>histamine</strong> (a signal molecule). Histamine causes: rash, itchy/watery eyes, <strong>difficulty breathing</strong>, and <strong>increased mucus production</strong> in the airways.',
+    question:'Based on the model, describe how components of the immune system and respiratory system interact when a person with a cat allergy is exposed to Fel d 1. [1 point]',
+    scaffold:true,
+    c_hint:'Name BOTH systems clearly — immune system AND respiratory system.',
+    e_hint:'What does the immune system DO specifically? (mast cells, histamine release) — What happens to the respiratory system? (breathing, mucus)',
+    r_hint:'How does the immune system\'s response CAUSE the respiratory symptoms? Describe the signal pathway between them.',
+    model:'When a person with a cat allergy is exposed to Fel d 1, the immune system and respiratory system interact to produce symptoms. The immune system\'s mast cells detect Fel d 1 binding to their receptors and release histamine into the body. This chemical signal from the immune system acts on the respiratory system, causing difficulty breathing and increased mucus production in the airways. The immune system\'s histamine signal directly triggers an abnormal respiratory response.',
+    rubric:'Must name BOTH systems. Must describe immune system action (mast cells detect allergen → release histamine) AND respiratory system response (difficulty breathing, mucus). Must show how one causes the other. Naming systems without describing the interaction earns 0.'
+  },
+  {
+    id:3, type:'evidence', badge:'b-evidence', label:'📊 Graph Evidence',
+    unit:'Ecology', source:'Q12 — Jan 2026 Regents',
+    context:'Wolves were reintroduced to Yellowstone in 1995. Before reintroduction, elk had overpopulated and stripped willow trees. Graphs show changes after reintroduction: <strong>Willow trees (West Fork)</strong> increased from ~50 to over 350 (1994–2014). <strong>Canopy cover (West Fork)</strong> rose from ~0% to ~80%. <strong>Beaver colonies</strong> grew from 1 to about 9 (1994–2012). Wolves directly predated elk; elk indirectly affected trees, beavers, birds, and soil stability.',
+    question:'Using evidence from the graphs and information provided, describe how the decision by humans to reintroduce wolves into Yellowstone in 1995 had an impact on the environment. [1 point]',
+    scaffold:true,
+    c_hint:'State the overall environmental impact of wolf reintroduction — positive, negative, or both?',
+    e_hint:'Include at least ONE specific number — willows (50→350), canopy cover (0→80%), OR beaver colonies (1→9).',
+    r_hint:'Explain the ecological chain: wolves → elk population controlled → trees recovered → other organisms benefited. This is a trophic cascade.',
+    model:'The reintroduction of wolves in 1995 had a positive impact on the Yellowstone environment by triggering a trophic cascade. Wolves controlled the elk population, which allowed willow trees to recover — willows in West Fork increased from approximately 50 to over 350 between 1994 and 2014, and canopy cover rose to about 80%. With more willows available, beaver colonies grew from 1 to about 9, further stabilizing streams and increasing biodiversity. The wolves\' presence indirectly restored plant and animal populations throughout the park.',
+    rubric:'Must include: (1) positive environmental impact statement, (2) at least one specific data point from the graphs, (3) biological explanation connecting wolves → elk → plant recovery → other organisms. Just saying wolves were reintroduced without the ecological chain earns 0.'
+  },
+  {
+    id:4, type:'explain', badge:'b-explain', label:'⚗️ Explain a Process',
+    unit:'Genetics', source:'Q18 — Jan 2026 Regents',
+    context:'The protein Fel d 1 causes cat allergies. It has a specific amino acid sequence: GLU-TYR-VAL-GLU-GLN-VAL-ALA-GLN-TYR-LYS-ALA-LEU. Researchers used <strong>CRISPR-cas9</strong> to edit the DNA of fertilized cat eggs <em>before any mitotic cell division occurred</em>. After editing, the salivary gland cells of the kittens could no longer produce functional Fel d 1 protein — so the cats no longer trigger allergies.',
+    question:'Construct an explanation for how genes determine the structure of the Fel d 1 allergen by explaining why the use of CRISPR-cas9 to edit the cat\'s DNA resulted in the inability of the salivary glands to produce functional Fel d 1 protein. [1 point]',
+    scaffold:true,
+    c_hint:'What is the fundamental relationship between DNA (genes) and protein structure?',
+    e_hint:'CRISPR changed the DNA sequence of the Fel d 1 gene. What happened next — to the mRNA? To the amino acid sequence? To the protein?',
+    r_hint:'Walk the full molecular pathway: DNA sequence → mRNA (transcription) → amino acid sequence (translation) → protein 3D shape → protein function. Show how changing the start breaks the end.',
+    model:'Genes in DNA contain the code that determines the specific sequence of amino acids in a protein, and the amino acid sequence determines the protein\'s 3D structure and function. CRISPR-cas9 altered the DNA sequence of the gene that codes for Fel d 1. This changed the mRNA produced during transcription, which caused a different amino acid sequence to be assembled during translation. Because the amino acid sequence was changed, the protein could no longer fold into its correct functional shape, so the salivary glands produced a non-functional version of Fel d 1 that no longer triggers allergic reactions.',
+    rubric:'Must include the molecular chain: DNA sequence → mRNA → amino acid sequence → protein structure → function. Must explain that CRISPR changed the DNA, which changed the amino acid sequence, which changed the protein\'s structure and function. "CRISPR changed the DNA so the protein didn\'t form" without the molecular pathway earns 0.'
+  },
+  {
+    id:5, type:'evaluate', badge:'b-evaluate', label:'✅ Evaluate a Claim',
+    unit:'Ecology', source:'Q32 — Jan 2026 Regents',
+    context:'Varroa mites parasitize honeybee colonies. Beekeepers treat with <strong>oxalic acid</strong>, which kills mites. Graphs show: mite populations are <strong>very low Jan–Mar</strong> (dormant in winter), peak at <strong>35 mites per 100 bees</strong> in Jul–Aug, then remain high into fall. Studies show mite rates <strong>above 5% in fall</strong> reduce colony survival over winter. After oxalic acid treatment, mite populations drop sharply then begin to recover after ~7 days.',
+    question:'Using evidence and reasoning, evaluate the claim that the time of year for a Varroa mite treatment may determine whether a new ecosystem results in the following year.\n\n<strong>State: Claim is valid OR Claim is not valid. Then explain with evidence.</strong> [1 point]',
+    scaffold:false, eval_note:true,
+    model:'The claim is valid. The graph shows mite populations peak at 35 mites per 100 bees in summer, far above the 5% threshold that reduces colony survival over winter. If treatment is applied in late summer or early fall — before the colony is weakened beyond recovery — bees survive the winter and are available to pollinate plants the following spring, allowing the ecosystem to function. If treatment is delayed until winter, when mites have already collapsed the colony, no bees survive to pollinate, and the ecosystem that depends on them cannot recover. Therefore, treatment timing directly determines ecosystem recovery.',
+    rubric:'Must: (1) explicitly state "valid" or "not valid", (2) cite specific data (35 mites per 100 bees, 5% threshold, seasonal timing), (3) explain the biological chain: mite timing → colony survival/death → pollination → ecosystem impact. Just circling without explanation earns 0.'
+  },
+  {
+    id:6, type:'criterion', badge:'b-criterion', label:'🛠️ Criterion & Constraint',
+    unit:'Human Biology', source:'Q27 — Jan 2026 Regents',
+    context:'Scientists developed four diabetes management strategies: <strong>(1) Personal injectables</strong> — improve blood sugar, potential weight loss; risks: hypoglycemia, injection site reactions, expensive. <strong>(2) Insulin pump therapy</strong> — precise delivery, lifestyle flexibility; risks: pump malfunction, expensive. <strong>(3) Continuous glucose monitors</strong> — real-time data, better control; risks: complex to use, expensive. <strong>(4) Pancreas transplant</strong> — insulin independence; risks: major surgery complications, lifelong immunosuppressants, organ may fail.',
+    question:'Analyze the given management strategies for a person with diabetes. State one criterion and one constraint that the scientists considered when developing these solutions to best meet the needs and wants of diabetics. [1 point]',
+    scaffold:false, crit_note:true,
+    model:'One criterion scientists considered was effectiveness — each solution must successfully lower or control blood glucose levels to manage diabetes. One constraint is cost — all four options are expensive and may not be covered by insurance, which limits accessibility for many patients. Scientists had to design solutions that achieve the medical goal (blood glucose control) while working within real-world limitations like financial cost and the serious risks of surgery or device malfunction.',
+    rubric:'Criterion = what the solution MUST achieve (a goal or desired feature: effectiveness, safety, convenience, accuracy). Constraint = what LIMITS design options (cost, risk of side effects, surgical complications, complexity, insurance coverage). Must state ONE of EACH clearly. Stating two criteria OR two constraints earns 0. Vague answers like "it must work" need specifics.'
+  },
+  {
+    id:7, type:'evidence', badge:'b-evidence', label:'📊 Graph Evidence',
+    unit:'Evolution', source:'Q35 — Jan 2026 Regents',
+    context:'African baboons groom each other, removing parasitic <strong>ticks</strong>. Ticks reduce oxygen-carrying capacity in the blood and can cause death in infants. A graph shows: as <strong>number of groomings received increases from 0 to ~100</strong>, <strong>tick count decreases from ~130 to near 0</strong>. Strongly inverse (negative) relationship. Grooming behavior is influenced by specific genes. Ticks prefer dry environments with less than 750 mm of rainfall per year.',
+    question:'Describe the evidence from the graph that supports the claim that grooming increases an African baboon\'s chance to survive and reproduce. [1 point]',
+    scaffold:true,
+    c_hint:'What relationship does the graph show between grooming received and tick count?',
+    e_hint:'Give specific numbers — describe the trend with actual values from the graph.',
+    r_hint:'Connect the dots: fewer ticks → better oxygen-carrying capacity → survival → able to reproduce. Why does this graph prove the claim?',
+    model:'The graph shows that as the number of groomings received increases from 0 to approximately 100, the number of ticks decreases from about 130 to near 0, showing a strong inverse relationship. Since ticks reduce oxygen-carrying capacity in the blood and can cause death in infants, baboons that receive more grooming have fewer ticks and a greater ability to carry oxygen. This means groomed baboons are more likely to survive to reproductive age and successfully produce offspring, supporting the claim that grooming increases survival and reproduction.',
+    rubric:'Must include: (1) description of the inverse relationship with specific numbers from the graph, (2) the biological connection between fewer ticks and better survival (oxygen-carrying capacity), (3) explicit link back to survival and reproduction. "More grooming means fewer ticks" without explaining WHY that matters for survival earns 0.'
+  },
+  {
+    id:8, type:'systems', badge:'b-systems', label:'🔗 Two-System Interaction',
+    unit:'Plants', source:'Q40 — Jan 2026 Regents',
+    context:'A model shows nitrogen uptake in non-carnivorous plants: <strong>Root hair cells</strong> (root system) absorb nitrates (NO₃⁻) from the surrounding soil. The nitrates travel through the stem (part of the <strong>shoot system</strong>) upward into the leaves. In the leaves, nitrogen from the nitrates is used to produce <strong>chlorophyll</strong> and other proteins necessary for photosynthesis. The model labels both the root system and shoot system clearly.',
+    question:'Using the model, describe how components of the two systems interact in the non-carnivorous plant to obtain nitrogen from the surrounding environment that is necessary for its leaves to produce chlorophyll. [1 point]',
+    scaffold:true,
+    c_hint:'Name both plant systems shown in the model — be specific.',
+    e_hint:'What does each system DO? Root system: absorbs nitrates from soil. Shoot system: transports nitrates upward, uses them in leaves.',
+    r_hint:'How do they WORK TOGETHER? How does the root system\'s action enable the shoot system to make chlorophyll? Describe the handoff.',
+    model:'The root system and the shoot system interact to obtain nitrogen for chlorophyll production. Root hair cells in the root system absorb nitrates (NO₃⁻) from the surrounding soil through active transport. These nitrates are then transported upward through the stem, which is part of the shoot system, and into the leaves. In the leaves, the nitrogen from the nitrates is used to synthesize chlorophyll and other proteins needed for photosynthesis. Without the root system absorbing and delivering nitrogen, the shoot system\'s leaves could not produce chlorophyll.',
+    rubric:'Must name BOTH systems (root system AND shoot system specifically). Must describe the root system absorbing nitrates AND the shoot system transporting/using them in leaves. Must describe their interaction — not just list them separately. Naming two systems without describing the interaction earns 0.'
+  }
+];
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let curQ=0, scaffoldMode=true;
+let responses={}, submitted={};
+let chatHistory=[], tutorInited=false;
+
+// ═══════════════════════════════════════════════════
+// SCREENS
+// ═══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function startPractice(){ showScreen('s2'); buildSidebar(); renderQ(0); }
+function goTutor(){ showScreen('s3'); buildTutorSidebar(); if(!tutorInited){initTutorChat();tutorInited=true;} }
+function backToPractice(){ showScreen('s2'); }
+function toast(m){ const el=document.getElementById('toast'); el.textContent=m; el.className='toast show'; setTimeout(()=>el.className='toast',2800); }
+
+// ═══════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════
+function buildSidebar(){
+  document.getElementById('sbQs').innerHTML=QS.map((q,i)=>{
+    const done=submitted[q.id], earned=responses[q.id]?.earned;
+    const ck=done?(earned?'✅':'📝'):'';
+    return `<div class="sb-q${i===curQ?' active':''}${done?' done':''}" id="sbq${i}" onclick="jumpQ(${i})">
+      <span class="sb-q-n">${i+1}</span>
+      <span class="sb-q-t">${q.unit} · ${q.label.split(' ').slice(1).join(' ')}</span>
+      <span class="sb-q-ck">${ck}</span>
+    </div>`;
+  }).join('');
+  updateProgress();
+}
+function updateSidebar(){
+  QS.forEach((q,i)=>{
+    const el=document.getElementById('sbq'+i); if(!el) return;
+    const done=submitted[q.id], earned=responses[q.id]?.earned;
+    el.className='sb-q'+(i===curQ?' active':'')+(done?' done':'');
+    el.querySelector('.sb-q-ck').textContent=done?(earned?'✅':'📝'):'';
+  });
+  updateProgress();
+}
+function updateProgress(){
+  const n=Object.keys(submitted).length;
+  document.getElementById('progTxt').textContent=n+'/'+QS.length;
+  document.getElementById('sbFill').style.width=(n/QS.length*100)+'%';
+}
+function jumpQ(i){ curQ=i; renderQ(i); }
+
+// ═══════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════
+function renderQ(i){
+  const q=QS[i], done=submitted[q.id], saved=responses[q.id]||{};
+  let inputHtml='';
+
+  if(q.scaffold){
+    inputHtml=`
+      <div class="mode-row">
+        <span class="mode-lbl">Writing mode:</span>
+        <button class="mbtn${scaffoldMode?' on':''}" onclick="setMode(true)">CER Guided</button>
+        <button class="mbtn${!scaffoldMode?' on':''}" onclick="setMode(false)">Free Write</button>
+      </div>
+      <div id="scWrap">
+        <div class="scaffold">
+          <div class="part"><div class="part-head"><div class="part-ico ico-c">C</div><div class="part-info"><div class="part-label">Claim</div><div class="part-hint">${q.c_hint}</div></div></div>
+          <textarea class="ti" id="iClaim" placeholder="State your claim directly…" oninput="sf('claim',this.value,'ccC')" ${done?'disabled':''}>${saved.claim||''}</textarea>
+          <div class="char-row" id="ccC">${(saved.claim||'').length} chars</div></div>
+          <div class="part"><div class="part-head"><div class="part-ico ico-e">E</div><div class="part-info"><div class="part-label">Evidence</div><div class="part-hint">${q.e_hint}</div></div></div>
+          <textarea class="ti" id="iEvidence" placeholder="Cite specific data with numbers…" oninput="sf('evidence',this.value,'ccE')" ${done?'disabled':''}>${saved.evidence||''}</textarea>
+          <div class="char-row" id="ccE">${(saved.evidence||'').length} chars</div></div>
+          <div class="part"><div class="part-head"><div class="part-ico ico-r">R</div><div class="part-info"><div class="part-label">Reasoning</div><div class="part-hint">${q.r_hint}</div></div></div>
+          <textarea class="ti" id="iReasoning" placeholder="Connect evidence to biology…" oninput="sf('reasoning',this.value,'ccR')" ${done?'disabled':''}>${saved.reasoning||''}</textarea>
+          <div class="char-row" id="ccR">${(saved.reasoning||'').length} chars</div></div>
+        </div>
+      </div>
+      <div id="fwWrap" style="display:none">
+        <div class="fwrite"><div class="fwrite-head"><span>Full Response</span><span>Use C → E → R</span></div>
+        <textarea class="fti" id="iFull" placeholder="Write your complete CER response…" oninput="sf('full',this.value,null)" ${done?'disabled':''}>${saved.full||''}</textarea></div>
+      </div>`;
+  } else {
+    const banner=q.eval_note
+      ?`<div class="eval-banner">⚠️ First state <strong>"Claim is valid"</strong> or <strong>"Claim is not valid"</strong> — then explain with specific data and reasoning.</div>`
+      :q.crit_note
+      ?`<div class="crit-banner">📌 <strong>Criterion</strong> = a GOAL the solution must achieve (effectiveness, safety, accuracy).<br><strong>Constraint</strong> = a LIMITATION that restricts design (cost, risk, complexity, insurance). State ONE of each.</div>`:'';
+    inputHtml=`${banner}<div class="fwrite"><div class="fwrite-head"><span>Your Response</span><span>Aim for 3–5 sentences</span></div>
+      <textarea class="fti" id="iFull" placeholder="Write your complete response…" oninput="sf('full',this.value,null)" ${done?'disabled':''}>${saved.full||''}</textarea></div>`;
+  }
+
+  document.getElementById('main').innerHTML=`
+    <div class="q-meta">
+      <span class="q-badge ${q.badge}">${q.label}</span>
+      <span class="q-badge b-common">${q.unit}</span>
+      <span class="q-badge b-common" style="font-size:10px">${q.source}</span>
+      <span class="q-num-lbl">Q${i+1} of ${QS.length}</span>
+    </div>
+    <div class="ctx"><div class="ctx-lbl">Context — Jan 2026 Regents</div><div class="ctx-text">${q.context}</div></div>
+    <div class="q-text">${q.question}</div>
+    <div class="q-pts">1 point · Requires Claim + Evidence + Reasoning</div>
+    ${inputHtml}
+    <div class="sub-row">
+      <button class="btn-submit" id="btnSub" onclick="submitR()" ${done?'disabled':''}>${done?'✓ Submitted':'Get AI Feedback →'}</button>
+      <button class="btn-next" id="btnNext" onclick="nextQ()" style="display:${done&&i<QS.length-1?'block':'none'}">Next Question →</button>
+      <button class="btn-ask" id="btnAsk" onclick="askTutorAbout(${i})" style="display:${done?'block':'none'}">Ask Tutor About This →</button>
+    </div>
+    <div id="fbArea">${done&&saved.feedback?`<div class="fb-panel">${saved.feedback}</div>`:''}</div>
+    <div class="model-box" style="margin-top:13px">
+      <div class="model-lbl">📋 Regents-Level Model Answer</div>
+      <div class="model-text" id="modelTxt" style="display:${done?'block':'none'}">${q.model}</div>
+      ${!done?`<button class="show-model-btn" onclick="document.getElementById('modelTxt').style.display='block';this.style.display='none'">Show model answer ▸</button>`:''}
+    </div>`;
+
+  if(q.scaffold) applyMode();
+  updateSidebar();
+}
+
+function setMode(g){ scaffoldMode=g; document.querySelectorAll('.mbtn').forEach((b,i)=>b.classList.toggle('on',g?(i===0):(i===1))); applyMode(); }
+function applyMode(){ const sc=document.getElementById('scWrap'),fw=document.getElementById('fwWrap'); if(sc)sc.style.display=scaffoldMode?'block':'none'; if(fw)fw.style.display=scaffoldMode?'none':'block'; }
+function sf(field,val,countId){ const q=QS[curQ]; if(!responses[q.id])responses[q.id]={}; responses[q.id][field]=val; if(countId){const el=document.getElementById(countId);if(el)el.textContent=val.length+' chars';} }
+function nextQ(){ if(curQ<QS.length-1){curQ++;renderQ(curQ);window.scrollTo(0,0);} }
+
+// ═══════════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════════
+async function submitR(){
+  const q=QS[curQ]; if(!responses[q.id])responses[q.id]={}; const saved=responses[q.id];
+  let fullText='';
+  if(q.scaffold&&scaffoldMode){
+    const cl=document.getElementById('iClaim')?.value.trim()||'';
+    const ev=document.getElementById('iEvidence')?.value.trim()||'';
+    const re=document.getElementById('iReasoning')?.value.trim()||'';
+    if(!cl&&!ev&&!re){toast('Write something first!');return;}
+    saved.claim=cl;saved.evidence=ev;saved.reasoning=re;
+    fullText='CLAIM: '+cl+'\n\nEVIDENCE: '+ev+'\n\nREASONING: '+re;
+  } else {
+    const fu=document.getElementById('iFull')?.value.trim()||'';
+    if(!fu){toast('Write something first!');return;}
+    saved.full=fu; fullText=fu;
+  }
+  document.getElementById('btnSub').disabled=true;
+  document.getElementById('btnSub').textContent='Analyzing…';
+  document.getElementById('fbArea').innerHTML=`<div class="fb-panel"><div class="fb-top"><div class="fb-title">🤖 Reading your response…</div></div><div class="fb-body"><div class="loading"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div><div class="loading-txt">Checking your claim, evidence, and reasoning against the Regents rubric…</div></div></div></div>`;
+
+  const sys=`You are an expert NY Living Environment Regents writing tutor for 9th-10th grade students. You score CER responses exactly like a Regents exam scorer would.
+
+QUESTION TYPE: ${q.label}
+UNIT: ${q.unit}
+QUESTION: ${q.question.replace(/<[^>]*>/g,'')}
+CONTEXT: ${q.context.replace(/<[^>]*>/g,'')}
+RUBRIC: ${q.rubric}
+MODEL ANSWER: ${q.model}
+
+Analyze the student's response. Be honest, specific, and encouraging. Quote their words when giving feedback. Return ONLY a raw JSON object — no markdown fences, no preamble:
+{"overall":"Strong"|"Developing"|"Needs Work","overall_note":"1-sentence summary","claim":{"score":"Strong"|"Developing"|"Needs Work","feedback":"specific comment on their claim","fix":null|"what to change","rewrite":null|"better version of their claim"},"evidence":{"score":"Strong"|"Developing"|"Needs Work","feedback":"did they use specific data/numbers?","fix":null|"what specific evidence is missing","rewrite":null|"show stronger evidence"},"reasoning":{"score":"Strong"|"Developing"|"Needs Work","feedback":"did they explain the biology connection?","fix":null|"what biological link is missing","rewrite":null|"show stronger reasoning"},"earned":true|false,"earned_reason":"exactly why they earn or lose the Regents point","tip":"one specific actionable Regents exam tip for this question type"}`;
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:sys,messages:[{role:'user',content:'Student response:\n\n'+fullText}]})});
+    const data=await res.json();
+    let raw=(data.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim();
+    const fb=JSON.parse(raw);
+    saved.earned=fb.earned;
+    const html=buildFb(fb); saved.feedback=html;
+    submitted[q.id]=true;
+    document.getElementById('fbArea').innerHTML='<div class="fb-panel">'+html+'</div>';
+    document.getElementById('btnSub').textContent='✓ Submitted';
+    document.getElementById('btnSub').disabled=true;
+    document.getElementById('modelTxt').style.display='block';
+    if(curQ<QS.length-1)document.getElementById('btnNext').style.display='block';
+    document.getElementById('btnAsk').style.display='block';
+    updateSidebar();
+    document.getElementById('fbArea').scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(e){
+    console.error(e);
+    document.getElementById('fbArea').innerHTML='<div class="fb-panel"><div class="fb-top"><div class="fb-title">⚠️ Connection issue</div></div><div class="fb-body"><p style="font-size:13px;color:var(--gray)">Couldn\'t reach AI. Check your connection and try again.</p></div></div>';
+    document.getElementById('btnSub').disabled=false;
+    document.getElementById('btnSub').textContent='Get AI Feedback →';
+  }
+}
+
+function buildFb(fb){
+  const cs=s=>s==='Strong'?'chip-great':s==='Developing'?'chip-ok':'chip-needs';
+  const part=(L,col,bg,d)=>{
+    if(!d) return '';
+    return `<div class="fb-sec">
+      <div class="fb-sec-head" style="color:${col}">
+        <span style="width:22px;height:22px;border-radius:6px;background:${bg};color:white;display:inline-flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:12px;font-style:italic;font-weight:700;flex-shrink:0">${L}</span>
+        ${L==='C'?'Claim':L==='E'?'Evidence':'Reasoning'}
+        <span class="chip ${cs(d.score)}">${d.score}</span>
+      </div>
+      <div class="fb-text">${d.feedback}</div>
+      ${d.fix?`<div class="fix-box"><strong>→ Fix:</strong> ${d.fix}</div>`:''}
+      ${d.rewrite?`<div class="rw-box">💡 Try this: "${d.rewrite}"</div>`:''}
+    </div>`;
+  };
+  return `<div class="fb-top"><div><div class="fb-title">AI Feedback</div><div class="fb-sub">${fb.overall_note||''}</div></div><div class="fb-chips"><span class="chip ${cs(fb.overall)}">${fb.overall}</span></div></div>
+  <div class="fb-body">
+    ${part('C','#0d1117','#0d1117',fb.claim)}
+    ${part('E',getComputedStyle(document.documentElement).getPropertyValue('--teal-dark')||'#0b8f68','#0ea87a',fb.evidence)}
+    ${part('R','#6d28d9','#7c3aed',fb.reasoning)}
+    <div class="${fb.earned?'earn-yes':'earn-no'}">${fb.earned?'✅':'❌'} ${fb.earned_reason}</div>
+    ${fb.tip?`<div class="tip-box"><strong>📌 Regents Tip:</strong> ${fb.tip}</div>`:''}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// AI TUTOR
+// ═══════════════════════════════════════════════════
+function buildTutorSidebar(){
+  const done=QS.filter(q=>submitted[q.id]);
+  document.getElementById('tutorScores').innerHTML=done.length===0
+    ?'<div style="font-size:11px;color:rgba(255,255,255,.3);padding:0 6px">Complete questions first to see your scores.</div>'
+    :done.map(q=>{
+        const earned=responses[q.id]?.earned;
+        return `<div class="ts-score"><div class="ts-dot" style="background:${earned?'#4ade80':'#f87171'}"></div><div class="ts-name">Q${QS.indexOf(q)+1} ${q.unit}</div><div class="ts-val">${earned?'✅ Earned':'📝 Review'}</div></div>`;
+      }).join('');
+
+  const weak=QS.filter(q=>submitted[q.id]&&!responses[q.id]?.earned);
+  const qs=[
+    'What am I doing wrong with my reasoning?',
+    'How do I use evidence correctly on the Regents?',
+    weak.length>0?`Help me fix my Q${QS.indexOf(weak[0])+1} ${weak[0].unit} response`:'What\'s the most common mistake students make?',
+    'Can you give me a practice question to try?',
+    'Explain the two-system interaction question type',
+    'What\'s the difference between criterion and constraint?'
+  ];
+  document.getElementById('quickQs').innerHTML=qs.map(q=>`<div class="quick-q" onclick="sendQuick('${q.replace(/'/g,"\\'")}')">${q}</div>`).join('');
+}
+
+function tutorSysPrompt(){
+  const done=QS.filter(q=>submitted[q.id]);
+  let summary='';
+  done.forEach(q=>{
+    const r=responses[q.id]||{};
+    const txt=r.full||['CLAIM: '+(r.claim||''),'EVIDENCE: '+(r.evidence||''),'REASONING: '+(r.reasoning||'')].join('\n');
+    summary+=`\n\nQ${QS.indexOf(q)+1} — ${q.label} (${q.unit}) — ${r.earned?'EARNED POINT':'DID NOT EARN POINT'}\nQuestion: ${q.question.replace(/<[^>]*>/g,'')}\nStudent wrote: ${txt}\nRubric: ${q.rubric}\nModel: ${q.model}`;
+  });
+  return `You are ZenEd's CER Writing Tutor — a warm, knowledgeable writing coach for NYC students preparing for the Living Environment Regents exam. You have read the entire January 2026 exam.
+
+YOUR STYLE:
+- Talk like a great tutor who genuinely cares — not a robot, not overly formal
+- Be direct and honest about what needs fixing — kindly but clearly
+- Give specific, concrete advice. Show examples. Quote their actual words.
+- Keep responses focused — 3-6 sentences usually. No walls of text.
+- If they ask for a practice question, make a Regents-style one and give feedback on their response
+
+YOU KNOW:
+- Every question type: Two-System Interactions, Graph Evidence, Defend a Claim, Explain a Process, Evaluate a Claim, Criterion & Constraint, Solution Description
+- Common mistakes for each type (missing specific numbers in evidence, no biological chain in reasoning, just naming systems without showing interaction, etc.)
+- The January 2026 Living Environment Regents in full — all 45 questions
+
+STUDENT PERFORMANCE:
+${summary||'Student has not completed any questions yet. Encourage them and help them get started.'}
+
+FORMAT: Short paragraphs. Bold key terms with **bold**. Use bullet lists sparingly — only when truly listing multiple distinct items.`;
+}
+
+function initTutorChat(){
+  const done=Object.keys(submitted).length;
+  const earned=QS.filter(q=>submitted[q.id]&&responses[q.id]?.earned).length;
+  const missed=QS.filter(q=>submitted[q.id]&&!responses[q.id]?.earned);
+  let intro='';
+  if(done===0){
+    intro="Hi! I'm your CER Writing Tutor for the Living Environment Regents. I've read the entire January 2026 exam and I know exactly what earns points on every written question.\n\nYou haven't practiced any questions yet. Head back and try a few, then come talk to me — I'll be able to give you specific feedback on your actual responses. Or ask me anything right now!";
+  } else {
+    intro=`Hi! I've seen your work — you've done ${done} question${done>1?'s':''} and earned the point on ${earned} of them.\n\n`;
+    if(missed.length>0) intro+=`I want to help you fix **Q${missed.map(q=>QS.indexOf(q)+1).join(', Q')}** — that's where you're losing points. `;
+    if(earned>0&&earned===done) intro+=`You're doing well! Let's keep sharpening your skills. `;
+    intro+=`\n\nWhat do you want to tackle first?`;
+  }
+  addMsg('ai',intro);
+  chatHistory=[{role:'user',content:'Hi, I need help with CER writing for the Regents.'},{role:'assistant',content:intro}];
+}
+
+function addMsg(role,text){
+  const wrap=document.getElementById('chatMsgs');
+  const div=document.createElement('div');
+  div.className='msg '+role;
+  const ico=role==='ai'?'<div class="msg-ico ai-ico">🤖</div>':'<div class="msg-ico user-ico">✏️</div>';
+  const fmt=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  div.innerHTML=(role==='ai'?ico:'')+'<div class="msg-bubble">'+fmt+'</div>'+(role==='user'?ico:'');
+  wrap.appendChild(div);
+  wrap.scrollTop=wrap.scrollHeight;
+}
+
+function addTyping(){ const wrap=document.getElementById('chatMsgs'); const d=document.createElement('div'); d.className='msg ai'; d.id='typing'; d.innerHTML='<div class="msg-ico ai-ico">🤖</div><div class="msg-bubble"><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>'; wrap.appendChild(d); wrap.scrollTop=wrap.scrollHeight; }
+function rmTyping(){ document.getElementById('typing')?.remove(); }
+
+async function sendChat(){
+  const inp=document.getElementById('chatInput');
+  const msg=inp.value.trim(); if(!msg) return;
+  inp.value=''; inp.style.height='';
+  inp.disabled=true; document.getElementById('sendBtn').disabled=true;
+  addMsg('user',msg); chatHistory.push({role:'user',content:msg}); addTyping();
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:700,system:tutorSysPrompt(),messages:chatHistory})});
+    const data=await res.json();
+    const reply=data.content?.[0]?.text||"Sorry, I had a connection issue. Try again!";
+    rmTyping(); addMsg('ai',reply); chatHistory.push({role:'assistant',content:reply});
+  } catch(e){ rmTyping(); addMsg('ai',"Lost connection for a moment — try sending again!"); }
+  inp.disabled=false; document.getElementById('sendBtn').disabled=false; inp.focus();
+}
+
+function sendQuick(msg){ document.getElementById('chatInput').value=msg; sendChat(); }
+
+function askTutorAbout(i){
+  const q=QS[i], r=responses[q.id]||{};
+  const txt=r.full||['CLAIM: '+(r.claim||'(blank)'),'EVIDENCE: '+(r.evidence||'(blank)'),'REASONING: '+(r.reasoning||'(blank)')].join('\n');
+  goTutor();
+  setTimeout(()=>{
+    const pre=`I want to understand Q${i+1} better — ${q.label} (${q.unit}). I ${r.earned?'earned the point':'did NOT earn the point'}. Here\'s what I wrote:\n\n${txt}\n\nWhat specifically did I do wrong and how do I fix it?`;
+    document.getElementById('chatInput').value=pre;
+  },400);
+}
+
+function chatKey(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();} }
+function autoResize(el){ el.style.height='auto'; el.style.height=Math.min(el.scrollHeight,120)+'px'; }
+</script>
+</body>
+</html>
