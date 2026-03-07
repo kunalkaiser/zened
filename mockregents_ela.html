@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — Mock ELA Regents</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --teal:#0ea87a; --teal-dark:#0b8f68; --teal-pale:#e8f7f2;
+  --ink:#0d1a12; --white:#fff; --cream:#f6f9f7;
+  --gray:#64748b; --border:#e0ebe5; --gray-light:#f1f5f2;
+  --red:#ef4444; --red-bg:#fff1f2;
+  --yellow:#f59e0b; --yellow-bg:#fffbeb;
+  --green:#10b981; --green-bg:#f0fdf4;
+  --unit1:#6366f1; --unit2:#ec4899; --unit3:#f59e0b;
+  --unit4:#10b981; --unit5:#3b82f6; --unit6:#8b5cf6;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+/* ── NAV ── */
+.nav{height:54px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:200;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:700;font-size:16px;}
+.nav-logo-ico{width:26px;height:26px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.nav-logo em{color:var(--teal);font-style:normal;}
+.nav-back{font-size:13px;color:var(--gray);text-decoration:none;display:flex;align-items:center;gap:5px;font-weight:500;}
+.nav-back:hover{color:var(--ink);}
+.nav-pill{margin-left:auto;background:var(--teal-pale);color:var(--teal);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.3px;}
+
+/* ── SCREENS ── */
+.screen{display:none;animation:fadeUp .35s ease;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════
+   SCREEN 1 — INTRO
+══════════════════════════════ */
+.intro-wrap{max-width:680px;margin:0 auto;padding:52px 24px;}
+.intro-badge{display:inline-flex;align-items:center;gap:7px;background:white;border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--gray);margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.intro-badge span{width:7px;height:7px;background:var(--teal);border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.intro-h{font-family:'DM Serif Display',Georgia,serif;font-size:48px;line-height:1.08;letter-spacing:-.5px;margin-bottom:16px;color:var(--ink);}
+.intro-h em{font-style:italic;color:var(--teal);}
+.intro-sub{font-size:16px;color:var(--gray);line-height:1.7;margin-bottom:36px;}
+.intro-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:36px;}
+.intro-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.ic-icon{font-size:22px;margin-bottom:8px;}
+.ic-label{font-size:13px;font-weight:700;margin-bottom:3px;}
+.ic-sub{font-size:12px;color:var(--gray);line-height:1.4;}
+.unit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:36px;}
+.unit-tag{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:13px;font-weight:600;}
+.unit-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.btn-start{width:100%;padding:16px;background:var(--ink);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:-.2px;}
+.btn-start:hover{background:#1a2e20;transform:translateY(-1px);box-shadow:0 6px 20px rgba(13,26,18,.2);}
+.intro-note{text-align:center;font-size:12px;color:var(--gray);margin-top:12px;}
+
+/* ══════════════════════════════
+   SCREEN 2 — TEST
+══════════════════════════════ */
+.test-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 54px);}
+.test-sidebar{background:white;border-right:1px solid var(--border);padding:20px 14px;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto;}
+.ts-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);padding:0 6px;margin-bottom:10px;}
+.ts-unit{margin-bottom:16px;}
+.ts-unit-name{font-size:11px;font-weight:700;margin-bottom:6px;padding:0 6px;color:var(--ink);}
+.ts-dots{display:flex;flex-wrap:wrap;gap:5px;padding:0 6px;}
+.ts-dot{width:28px;height:28px;border-radius:7px;border:2px solid var(--border);background:white;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;color:var(--gray);}
+.ts-dot.current{border-color:var(--teal);background:var(--teal);color:white;}
+.ts-dot.answered{border-color:var(--border);background:var(--ink);color:white;}
+.ts-dot.flagged{border-color:var(--yellow);background:var(--yellow-bg);}
+.ts-timer{background:var(--cream);border-radius:10px;padding:12px;margin-top:16px;text-align:center;}
+.ts-timer-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:4px;}
+.ts-timer-val{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);}
+.ts-timer-val.warning{color:var(--red);}
+.ts-progress{margin-top:14px;}
+.ts-progress-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.ts-progress-fill{height:100%;background:var(--teal);border-radius:3px;transition:width .3s;}
+
+.test-main{padding:32px;}
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.q-unit-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;}
+.q-meta{display:flex;align-items:center;gap:12px;}
+.q-num{font-size:13px;color:var(--gray);font-weight:600;}
+.q-freq{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.q-freq.high{background:#fef3c7;color:#92400e;}
+.q-freq.medium{background:#f0fdf4;color:#166534;}
+.q-source-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:#eff6ff;color:#1e40af;}
+
+.q-card{background:white;border:1px solid var(--border);border-radius:18px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:20px;}
+.q-text{font-size:17px;line-height:1.65;font-weight:500;margin-bottom:28px;color:var(--ink);}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;background:white;}
+.choice:hover{border-color:var(--teal);background:var(--teal-pale);}
+.choice.selected{border-color:var(--teal);background:var(--teal-pale);}
+.choice.correct{border-color:var(--green);background:var(--green-bg);pointer-events:none;}
+.choice.wrong{border-color:var(--red);background:var(--red-bg);pointer-events:none;}
+.choice.reveal-correct{border-color:var(--green);background:var(--green-bg);pointer-events:none;}
+.choice-letter{width:28px;height:28px;border-radius:8px;background:var(--gray-light);color:var(--gray);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.choice.selected .choice-letter{background:var(--teal);color:white;}
+.choice.correct .choice-letter{background:var(--green);color:white;}
+.choice.wrong .choice-letter{background:var(--red);color:white;}
+.choice.reveal-correct .choice-letter{background:var(--green);color:white;}
+.choice-text{font-size:14px;line-height:1.5;font-weight:500;padding-top:3px;}
+
+.feedback-box{border-radius:12px;padding:16px 18px;margin-top:4px;animation:fadeUp .3s ease;}
+.feedback-box.correct{background:var(--green-bg);border:1px solid #bbf7d0;}
+.feedback-box.wrong{background:var(--red-bg);border:1px solid #fecdd3;}
+.feedback-title{font-size:13px;font-weight:800;margin-bottom:5px;}
+.feedback-box.correct .feedback-title{color:#166534;}
+.feedback-box.wrong .feedback-title{color:#991b1b;}
+.feedback-text{font-size:13px;line-height:1.6;color:#374151;}
+.feedback-wrong-exp{margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.06);font-size:12px;color:var(--gray);line-height:1.6;}
+
+.q-nav{display:flex;gap:10px;align-items:center;}
+.btn-nav{padding:10px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;border:none;}
+.btn-prev{background:var(--gray-light);color:var(--ink);}
+.btn-prev:hover{background:var(--border);}
+.btn-next{background:var(--ink);color:white;}
+.btn-next:hover{background:#1a2e20;}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;}
+.btn-flag{padding:10px 14px;background:var(--yellow-bg);color:#92400e;border:1px solid #fde68a;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-submit{padding:12px 28px;background:var(--teal);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-left:auto;}
+.btn-submit:hover{background:var(--teal-dark);}
+
+/* ══════════════════════════════
+   SCREEN 3 — RESULTS
+══════════════════════════════ */
+.results-wrap{max-width:820px;margin:0 auto;padding:40px 24px;}
+.results-hero{background:var(--ink);border-radius:24px;padding:40px;color:white;text-align:center;margin-bottom:28px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(14,168,122,.25),transparent 60%);pointer-events:none;}
+.rh-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:12px;}
+.rh-score{font-family:'DM Serif Display',Georgia,serif;font-size:88px;line-height:1;font-weight:400;margin-bottom:4px;}
+.rh-score.pass{color:#4ade80;}
+.rh-score.close{color:#fbbf24;}
+.rh-score.fail{color:#f87171;}
+.rh-label2{font-size:15px;color:rgba(255,255,255,.6);margin-bottom:24px;}
+.rh-pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+.rh-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;}
+
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.unit-card{background:white;border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.uc-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.uc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.uc-name{font-size:14px;font-weight:700;}
+.uc-score{margin-left:auto;font-size:14px;font-weight:800;}
+.uc-bar{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.uc-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.uc-verdict{font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-block;}
+.uc-verdict.strong{background:var(--green-bg);color:#166534;}
+.uc-verdict.review{background:var(--yellow-bg);color:#92400e;}
+.uc-verdict.focus{background:var(--red-bg);color:#991b1b;}
+
+.predict-card{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.predict-head{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.predict-sub{font-size:13px;color:var(--gray);margin-bottom:18px;}
+.predict-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.predict-row:last-child{border-bottom:none;}
+.predict-prob{font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;min-width:46px;text-align:center;flex-shrink:0;}
+.predict-prob.very-high{background:#dcfce7;color:#166534;}
+.predict-prob.high{background:#fef3c7;color:#92400e;}
+.predict-prob.medium{background:#eff6ff;color:#1e40af;}
+.predict-topic{font-size:13px;font-weight:600;flex:1;}
+.predict-reason{font-size:11px;color:var(--gray);}
+
+.btn-ai{width:100%;padding:16px;background:linear-gradient(135deg,#0ea87a,#076b4f);color:white;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:-.2px;}
+.btn-ai:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(14,168,122,.3);}
+.btn-retake{width:100%;padding:13px;background:white;color:var(--ink);border:2px solid var(--border);border-radius:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-retake:hover{border-color:var(--ink);}
+
+/* ══════════════════════════════
+   SCREEN 4 — AI TUTOR
+══════════════════════════════ */
+.tutor-layout{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 54px);}
+.tutor-sidebar{background:white;border-right:1px solid var(--border);padding:20px;overflow-y:auto;}
+.ts2-title{font-size:15px;font-weight:800;margin-bottom:4px;}
+.ts2-sub{font-size:12px;color:var(--gray);margin-bottom:20px;line-height:1.5;}
+.ts2-section{margin-bottom:20px;}
+.ts2-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);margin-bottom:8px;}
+.ts2-unit{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border-radius:9px;margin-bottom:5px;cursor:pointer;transition:all .15s;}
+.ts2-unit:hover{background:var(--gray-light);}
+.ts2-unit-name{font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;}
+.ts2-unit-score{font-size:12px;font-weight:800;}
+.ts2-unit.weak{background:var(--red-bg);}
+.ts2-unit.weak .ts2-unit-score{color:var(--red);}
+.ts2-unit.ok{background:var(--yellow-bg);}
+.ts2-unit.ok .ts2-unit-score{color:#92400e;}
+.ts2-unit.strong{background:var(--green-bg);}
+.ts2-unit.strong .ts2-unit-score{color:#166534;}
+.quick-btns{display:flex;flex-direction:column;gap:6px;}
+.quick-btn{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left;transition:all .15s;line-height:1.4;}
+.quick-btn:hover{background:var(--teal-pale);border-color:var(--teal);color:var(--teal);}
+
+.chat-area{display:flex;flex-direction:column;height:100%;}
+.chat-msgs{flex:1;overflow-y:auto;padding:24px;}
+.chat-msg{margin-bottom:20px;animation:fadeUp .25s ease;}
+.chat-msg.user{display:flex;justify-content:flex-end;}
+.chat-msg.ai{display:flex;justify-content:flex-start;gap:10px;}
+.ai-avatar{width:32px;height:32px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.msg-bubble{max-width:70%;padding:13px 16px;border-radius:14px;font-size:14px;line-height:1.6;}
+.chat-msg.user .msg-bubble{background:var(--ink);color:white;border-radius:14px 14px 4px 14px;}
+.chat-msg.ai .msg-bubble{background:white;border:1px solid var(--border);color:var(--ink);border-radius:4px 14px 14px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.msg-bubble strong{font-weight:700;}
+.msg-bubble ul{margin:8px 0 0 16px;}
+.msg-bubble li{margin-bottom:4px;}
+.typing-indicator{display:flex;gap:4px;padding:12px 14px;}
+.typing-dot{width:7px;height:7px;background:var(--teal);border-radius:50%;animation:bounce .9s ease infinite;}
+.typing-dot:nth-child(2){animation-delay:.15s;}
+.typing-dot:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+
+.chat-input-wrap{border-top:1px solid var(--border);padding:16px 24px;background:white;display:flex;gap:10px;align-items:flex-end;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:14px;resize:none;outline:none;max-height:120px;transition:border-color .15s;line-height:1.5;}
+.chat-input:focus{border-color:var(--teal);}
+.chat-send{padding:12px 20px;background:var(--teal);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.chat-send:hover{background:var(--teal-dark);}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── MISC ── */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:white;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(10px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:768px){
+  .test-layout{grid-template-columns:1fr;}
+  .test-sidebar{display:none;}
+  .results-grid{grid-template-columns:1fr;}
+  .tutor-layout{grid-template-columns:1fr;}
+  .tutor-sidebar{display:none;}
+  .intro-cards{grid-template-columns:1fr;}
+  .intro-h{font-size:36px;}
+}
+/* ── REVIEW SECTION ── */
+.review-card{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.review-head{font-size:16px;font-weight:800;margin-bottom:4px;}
+.review-sub{font-size:13px;color:var(--gray);margin-bottom:20px;}
+.rq-item{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;}
+.rq-item.rq-correct{border-color:#bbf7d0;background:#f0fdf4;}
+.rq-item.rq-wrong{border-color:#fecdd3;background:#fff1f2;}
+.rq-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.rq-num{font-size:11px;font-weight:700;color:var(--gray);}
+.rq-unit{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--gray-light);color:var(--gray);}
+.rq-status{font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;}
+.rq-correct .rq-status{background:#dcfce7;color:#166534;}
+.rq-wrong .rq-status{background:#fee2e2;color:#991b1b;}
+.rq-text{font-size:14px;font-weight:600;margin-bottom:10px;line-height:1.5;}
+.rq-choices{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.rq-choice{font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--border);display:flex;gap:8px;}
+.rq-choice.rq-ch-correct{background:#dcfce7;border-color:#86efac;font-weight:700;}
+.rq-choice.rq-ch-yours{background:#fee2e2;border-color:#fca5a5;text-decoration:line-through;color:#991b1b;}
+.rq-choice .rq-ltr{font-weight:800;min-width:16px;color:var(--gray);}
+.rq-choice.rq-ch-correct .rq-ltr{color:#166534;}
+.rq-choice.rq-ch-yours .rq-ltr{color:#991b1b;}
+.rq-explain{font-size:12px;line-height:1.6;padding:8px 10px;background:rgba(0,0,0,.03);border-radius:8px;margin-top:4px;}
+.rq-wrong-exp{font-size:12px;color:var(--gray);margin-top:6px;padding:6px 10px;border-left:3px solid var(--red);background:var(--red-bg);border-radius:0 6px 6px 0;line-height:1.6;}
+.review-toggle{background:white;border:1.5px solid var(--border);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.review-toggle:hover{background:var(--gray-light);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-ico">
+      <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    Zen<em>Ed</em>
+  </a>
+  <a href="mockregents.html" class="nav-back">← All Mock Tests</a>
+  <span class="nav-pill">📖 ELA Mock Regents</span>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<!-- ══ SCREEN 1: INTRO ══ -->
+<div id="s1" class="screen active">
+  <div class="intro-wrap">
+    <div class="intro-badge"><span></span> 2025 Style + 2026 Predicted Questions</div>
+    <h1 class="intro-h">Mock Living<br>Environment <em>Regents</em></h1>
+    <p class="intro-sub">30 questions across all 6 units. Get scored instantly, see exactly what you missed, and unlock your personal AI tutor who knows your weak spots.</p>
+
+    <div class="intro-cards">
+      <div class="intro-card">
+        <div class="ic-icon">⏱️</div>
+        <div class="ic-label">30 Questions</div>
+        <div class="ic-sub">~45 min · timed or untimed</div>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">📊</div>
+        <div class="ic-label">Unit Breakdown</div>
+        <div class="ic-sub">Score per unit, not just total</div>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">🤖</div>
+        <div class="ic-label">AI Tutor</div>
+        <div class="ic-sub">Explains every wrong answer</div>
+      </div>
+    </div>
+
+    <div class="unit-grid">
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit1)"></span> Unit 1 — Cells & Cell Processes</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit2)"></span> Unit 2 — Genetics & Heredity</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit3)"></span> Unit 3 — Evolution</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit4)"></span> Unit 4 — Ecology</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit5)"></span> Unit 5 — Human Biology</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit6)"></span> Unit 6 — Plants & Photosynthesis</div>
+    </div>
+
+    <button class="btn-start" onclick="startTest()">Start Mock Regents →</button>
+    <p class="intro-note">No login required · Results saved if you're signed in</p>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: TEST ══ -->
+<div id="s2" class="screen">
+  <div class="test-layout">
+    <div class="test-sidebar">
+      <div class="ts-label">Questions</div>
+      <div id="sidebarDots"></div>
+      <div class="ts-timer" id="timerBox">
+        <div class="ts-timer-lbl">Time Elapsed</div>
+        <div class="ts-timer-val" id="timerVal">00:00</div>
+      </div>
+      <div class="ts-progress" style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--gray);margin-bottom:5px;">
+          <span>Progress</span><span id="progressLabel">0 / 30</span>
+        </div>
+        <div class="ts-progress-bar"><div class="ts-progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="test-main">
+      <div class="q-header">
+        <div class="q-unit-badge" id="qUnitBadge"></div>
+        <div class="q-meta">
+          <span class="q-num" id="qNum"></span>
+          <span class="q-freq" id="qFreq"></span>
+
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-text" id="qText"></div>
+        <div class="choices" id="choicesWrap"></div>
+        <div id="feedbackBox" style="display:none"></div>
+      </div>
+
+      <div class="q-nav">
+        <button class="btn-nav btn-prev" id="btnPrev" onclick="goQ(-1)">← Prev</button>
+        <button class="btn-flag" onclick="toggleFlag()">🚩 Flag</button>
+        <button class="btn-nav btn-next" id="btnNext" onclick="goQ(1)">Next →</button>
+        <button class="btn-submit" id="btnSubmit" onclick="submitTest()" style="display:none">Submit Test →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: RESULTS ══ -->
+<div id="s3" class="screen">
+  <div class="results-wrap">
+    <div class="results-hero">
+      <div class="rh-label">Your Score</div>
+      <div class="rh-score" id="rhScore"></div>
+      <div class="rh-label2" id="rhLabel2"></div>
+      <div class="rh-pills" id="rhPills"></div>
+    </div>
+
+    <div class="results-grid" id="unitCards"></div>
+
+    <div class="review-card" id="reviewCard" style="margin-bottom:24px;"></div>
+
+    <div class="predict-card">
+      <div class="predict-head">🎯 High-Probability Topics for June 2026 Regents</div>
+      <div class="predict-sub">Based on topic frequency from the last 6 ELA Regents exams (2022–2025)</div>
+      <div id="predictRows"></div>
+    </div>
+
+    <button class="btn-ai" onclick="goTutor()">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg>
+      Talk to Your AI Tutor — Personalized to Your Results
+    </button>
+    <button class="btn-retake" onclick="retake()">↩ Retake Test</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: AI TUTOR ══ -->
+<div id="s4" class="screen">
+  <div class="tutor-layout">
+    <div class="tutor-sidebar">
+      <div class="ts2-title">Your Study Plan</div>
+      <div class="ts2-sub">Click a unit to ask about it specifically</div>
+
+      <div class="ts2-section">
+        <div class="ts2-lbl">Unit Scores</div>
+        <div id="tutorUnits"></div>
+      </div>
+
+      <div class="ts2-section">
+        <div class="ts2-lbl">Quick Questions</div>
+        <div class="quick-btns" id="quickBtns"></div>
+      </div>
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" placeholder="Ask about any topic you got wrong..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+          oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+        <button class="chat-send" id="sendBtn" onclick="sendMsg()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+const SB_URL = 'https://spkqmhrogykcbrvujgub.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3FtaHJvZ3lrY2JydnVqZ3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTU0OTEsImV4cCI6MjA4NzM3MTQ5MX0.00fS4NTvcC4f-mD8gRSqD1huWIdHo8Xe6UMZn8UJeb0';
+const UNIT_COLORS = ['#0ea87a','#3b82f6','#f59e0b','#8b5cf6','#ec4899','#10b981'];
+let db, USER;
+
+// ═══════════════════════════════════════════════════
+// QUESTION BANK — 30 Questions, 6 Units × 5
+// ═══════════════════════════════════════════════════
+const QUESTIONS = [
+  // UNIT 1: READING COMPREHENSION
+  {id:1,unit:1,unit_name:"Reading Comprehension",topic:"Main idea",difficulty:1,frequency:"high",source:"2025-style",
+   text:"A student reads a passage about climate change that discusses rising sea levels, increasing temperatures, and melting glaciers — then concludes with a call for government action. What is the MAIN IDEA of this passage?",
+   choices:["Climate change has serious consequences that require a response","Sea levels are rising faster than scientists predicted","Glaciers in Antarctica are melting at an alarming rate","The government has failed to address environmental problems"],
+   correct:0,explanation:"The main idea is the central point that encompasses the entire passage. The passage describes multiple effects of climate change AND argues for action — so the main idea covers both.",
+   wrong:["","Rising sea levels is one detail that supports the main idea, not the main idea itself.","Melting glaciers is one supporting detail among several, not the central point.","The passage calls for action but doesn't say the government has 'failed' — that's stronger than the text supports."]},
+
+  {id:2,unit:1,unit_name:"Reading Comprehension",topic:"Author's purpose",difficulty:2,frequency:"high",source:"2025-style",
+   text:"An author writes: 'Every day, 8 million pieces of plastic enter our oceans. By 2050, there may be more plastic than fish by weight.' What is the author's primary purpose?",
+   choices:["To inform and persuade readers about plastic pollution","To entertain readers with surprising ocean facts","To explain how plastic is manufactured","To describe the history of ocean exploration"],
+   correct:0,explanation:"The author uses specific statistics ('8 million pieces,' '2050') to inform AND create urgency — this combination signals both informing and persuading.",
+   wrong:["","Entertaining would involve stories or humor — not alarming statistics about environmental damage.","The passage discusses plastic in oceans, not how plastic is manufactured.","Ocean exploration isn't mentioned — the passage is about plastic pollution."]},
+
+  {id:3,unit:1,unit_name:"Reading Comprehension",topic:"Inference",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"A passage states: 'Maria arrived at the job interview 20 minutes early, reviewed her notes three times, and kept checking her phone for messages from her roommate who had been ill.' What can be inferred about Maria?",
+   choices:["She is anxious about both the interview and her roommate","She is very confident about getting the job","She does not care about punctuality","She is checking her phone to seem busy"],
+   correct:0,explanation:"Arriving early and reviewing notes suggests nervousness about the interview. Checking her phone about her ill roommate shows concern. Both inferences are supported by the text.",
+   wrong:["","Reviewing notes three times and arriving very early suggests anxiety, not confidence.","Arriving 20 minutes early shows she cares deeply about punctuality.","The text explains WHY she's checking her phone — her roommate is ill — not to seem busy."]},
+
+  {id:4,unit:1,unit_name:"Reading Comprehension",topic:"Central idea vs. supporting details",difficulty:2,frequency:"high",source:"2025-style",
+   text:"In an article about the benefits of exercise, which statement would most likely be a SUPPORTING DETAIL rather than the central idea?",
+   choices:["Regular aerobic exercise can reduce the risk of heart disease by up to 35%","Exercise improves both physical and mental health in multiple proven ways","People who exercise regularly report higher quality of life","Physical activity benefits people of all ages and abilities"],
+   correct:0,explanation:"A specific statistic ('35%') is a supporting detail — it provides evidence for a broader claim. The other options are broad enough to be central ideas.",
+   wrong:["","This is broad enough to be a central idea — it captures the whole article's message.","This is a broad claim that could be the central idea, supported by specific evidence.","This is broad enough to serve as the central idea, covering all ages and abilities."]},
+
+  {id:5,unit:1,unit_name:"Reading Comprehension",topic:"Summary",difficulty:1,frequency:"medium",source:"2026-predicted",
+   text:"Which statement best summarizes the purpose of a summary?",
+   choices:["To briefly restate the main points of a text in your own words","To copy the most interesting sentences from the original text","To add your personal opinion to what the author said","To list every detail mentioned in the passage"],
+   correct:0,explanation:"A summary captures the essential points of a text concisely and in your own words — without copying, adding opinion, or including every detail.",
+   wrong:["","Copying sentences is quoting, not summarizing. Summaries use your own words.","Adding personal opinion makes it a response, not a summary. Summaries are objective.","Listing every detail is not a summary — that would be as long as the original."]},
+
+  // UNIT 2: TEXTUAL EVIDENCE
+  {id:6,unit:2,unit_name:"Textual Evidence & Analysis",topic:"Citing evidence",difficulty:2,frequency:"high",source:"2025-style",
+   text:"A student claims: 'The author believes technology makes people less social.' Which response BEST supports this claim with textual evidence?",
+   choices:["The author writes, 'Families now sit together yet remain in separate digital worlds, eyes fixed on screens rather than each other.'","The author mentions that people use technology every day.","Statistics show that 90% of teens own smartphones.","Technology has changed the world in many ways."],
+   correct:0,explanation:"A direct quote from the text that shows the author's perspective on technology reducing social interaction directly supports the claim with specific textual evidence.",
+   wrong:["","Saying people use technology every day doesn't support the claim that it makes people LESS social.","Outside statistics aren't textual evidence from the passage — they're external sources.","'Changed the world in many ways' is vague and doesn't specifically support the claim about social connection."]},
+
+  {id:7,unit:2,unit_name:"Textual Evidence & Analysis",topic:"Close reading",difficulty:3,frequency:"high",source:"2025-style",
+   text:"In the sentence 'The mayor's silence on the housing crisis spoke louder than any speech,' what literary technique is used and what does it suggest?",
+   choices:["Paradox — suggesting the mayor's inaction communicated more than words could","Simile — comparing silence to a speech","Personification — giving silence human qualities","Alliteration — using repeated 'S' sounds for effect"],
+   correct:0,explanation:"A paradox is a statement that seems contradictory but reveals a deeper truth. 'Silence speaks louder' is contradictory (silence can't speak) but suggests the mayor's failure to act was itself a powerful message.",
+   wrong:["","A simile uses 'like' or 'as' for comparison. This sentence has no 'like' or 'as.'","Personification gives human traits to nonhuman things (silence speaking). While present, the main technique creating meaning is the PARADOX of silence speaking LOUDER.","Alliteration is about sound (repeated consonants) — this is about meaning, not just sound."]},
+
+  {id:8,unit:2,unit_name:"Textual Evidence & Analysis",topic:"Analyzing word choice",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"An author describes a protest as 'a surge of determined citizens.' A different author describes the same protest as 'an unruly mob.' What does this difference demonstrate?",
+   choices:["Word choice (diction) reflects the author's perspective and bias","Both authors made factual errors about the event","The first author was present and the second was not","Longer descriptions are always more accurate"],
+   correct:0,explanation:"'Surge of determined citizens' is positive language; 'unruly mob' is negative. Same event, different diction — this shows how word choice reveals the author's attitude and can shape readers' perceptions.",
+   wrong:["","The text gives no reason to think either author made errors — they're using different language intentionally.","Whether an author was present doesn't explain differences in word choice — perspective and bias do.","Length doesn't determine accuracy — word choice reveals perspective regardless of length."]},
+
+  {id:9,unit:2,unit_name:"Textual Evidence & Analysis",topic:"Comparing texts",difficulty:3,frequency:"medium",source:"2025-style",
+   text:"Two authors write about the same historical event. Author A focuses on economic causes; Author B focuses on social causes. What is the best way to use BOTH texts?",
+   choices:["Synthesize both to get a fuller understanding of the multiple causes","Decide which author is correct and ignore the other","Use whichever author's argument is longer","Accept both as equally valid even if they contradict each other"],
+   correct:0,explanation:"Synthesis means combining multiple sources to build a richer understanding. Economic AND social causes can both be true — they complement, not contradict, each other.",
+   wrong:["","Historical events often have multiple causes. Ignoring one perspective loses important information.","Length doesn't determine accuracy or relevance in historical analysis.","'Accepting both' without analysis isn't synthesis — you need to evaluate how the perspectives relate to each other."]},
+
+  {id:10,unit:2,unit_name:"Textual Evidence & Analysis",topic:"Implicit vs explicit",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"The text states: 'James stared at his empty plate, then quietly excused himself from the table without a word.' What is IMPLICITLY communicated?",
+   choices:["James is upset or disturbed about something","James is not hungry","James is being polite by excusing himself","James finished eating quickly"],
+   correct:0,explanation:"The text doesn't say James is upset — it shows it through his behavior (staring at empty plate, saying nothing, quietly leaving). Implicit meaning is communicated through actions rather than direct statements.",
+   wrong:["","The plate is empty so he may have eaten, but 'not hungry' doesn't explain the emotional detail of staring and leaving silently.","Excusing himself IS polite, but the manner described (quietly, without a word, staring) implies emotional tension beyond politeness.","The text doesn't indicate he ate quickly — it focuses on his emotional state after the meal."]},
+
+  // UNIT 3: ARGUMENT & RHETORIC
+  {id:11,unit:3,unit_name:"Argument & Rhetoric",topic:"Claim and evidence",difficulty:1,frequency:"high",source:"2025-style",
+   text:"Which of the following is an ARGUMENT (claim + reasoning), not just a statement of fact?",
+   choices:["Schools should ban cell phones because they distract from learning and lower academic performance","Cell phones were invented in the 1970s","Many students own smartphones","Some schools have cell phone policies"],
+   correct:0,explanation:"An argument makes a debatable claim ('should ban') AND gives reasoning ('distract from learning, lower academic performance'). Facts can't be argued — they're verifiable.",
+   wrong:["","This is a verifiable fact about history, not an argument. Arguments are debatable.","This is a factual observation that can be verified — not an argument.","Mentioning that policies exist states a fact — it doesn't argue for or against anything."]},
+
+  {id:12,unit:3,unit_name:"Argument & Rhetoric",topic:"Counterargument",difficulty:2,frequency:"high",source:"2025-style",
+   text:"A writer argues for year-round school and includes the following: 'Critics argue that students need long summers to recharge, but research shows that students in year-round schools report similar or higher wellbeing.' This passage demonstrates:",
+   choices:["Acknowledging and refuting a counterargument","A logical fallacy","Presenting only one side of an argument","Avoiding the opposing perspective"],
+   correct:0,explanation:"The writer acknowledges the opposing view ('critics argue') and then refutes it with evidence ('research shows'). This is a strong rhetorical strategy that strengthens the argument.",
+   wrong:["","A logical fallacy is a flaw in reasoning (like attacking the person instead of the idea). This is valid argumentation.","The writer DOES present the other side — by acknowledging critics. This is not one-sided.","Introducing critics' views and responding IS engaging the opposing perspective — the opposite of avoiding it."]},
+
+  {id:13,unit:3,unit_name:"Argument & Rhetoric",topic:"Ethos, pathos, logos",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"A politician says: 'As a parent of three children in our public schools, I understand firsthand the challenges teachers face.' Which rhetorical appeal is primarily used?",
+   choices:["Ethos — establishing credibility through personal experience","Pathos — appealing to the audience's emotions","Logos — using logic and statistics","Kairos — using timely current events"],
+   correct:0,explanation:"Ethos builds credibility — the speaker claims authority through personal experience as a parent with children in public schools. This makes them seem more trustworthy on education issues.",
+   wrong:["","Pathos would involve emotional stories or language meant to make the audience FEEL something. This is about establishing credibility.","Logos uses data, statistics, or logical reasoning. No numbers or logical argument is presented here.","Kairos is about timing an argument at the right moment. This is about personal credibility."]},
+
+  {id:14,unit:3,unit_name:"Argument & Rhetoric",topic:"Logical fallacies",difficulty:3,frequency:"medium",source:"2025-style",
+   text:"Someone argues: 'We shouldn't listen to Dr. Smith's research on climate change because she drives a gas-powered car.' This is an example of:",
+   choices:["Ad hominem — attacking the person rather than the argument","Straw man — misrepresenting the opponent's position","False dilemma — presenting only two options","Bandwagon — appealing to popularity"],
+   correct:0,explanation:"Ad hominem attacks the PERSON rather than addressing the argument's merit. Dr. Smith's car has nothing to do with the validity of her climate research.",
+   wrong:["","A straw man misrepresents what someone said to make it easier to attack. This attacks her personally, not a distorted version of her argument.","A false dilemma presents only two choices when more exist. No either/or choice is presented here.","Bandwagon uses 'everyone does it' logic. This is a personal attack, not an appeal to popularity."]},
+
+  {id:15,unit:3,unit_name:"Argument & Rhetoric",topic:"Purpose and audience",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"A student writes an essay arguing for a longer lunch period. To be MOST effective, which version of this sentence would best appeal to the school administration?",
+   choices:["Research shows students who have 30+ minute lunches demonstrate improved focus and test scores in afternoon classes.","Everyone hates the short lunch period and thinks it's unfair.","My friends and I are always starving by 7th period.","The cafeteria is so crowded and loud it's basically a mosh pit."],
+   correct:0,explanation:"School administrators respond to evidence-based arguments. Research, improved focus, and test scores directly address administrators' priorities (academic performance), making this the most rhetorically effective choice.",
+   wrong:["","'Everyone hates it' is an emotional appeal without evidence. Administrators need data, not complaints.","Personal anecdote about being hungry is relatable but not persuasive to administrators — it's not evidence.","This is vivid but informal and sarcastic — likely to undermine the student's credibility with administrators."]},
+
+  // UNIT 4: LITERARY ELEMENTS
+  {id:16,unit:4,unit_name:"Literary Elements",topic:"Theme",difficulty:2,frequency:"high",source:"2025-style",
+   text:"A story follows a young athlete who loses a championship but realizes her team's bond is stronger than any trophy. What is the most likely THEME?",
+   choices:["True success comes from relationships, not achievements","Sports are more important than school","Winning is everything in competitive athletics","Young people shouldn't take sports too seriously"],
+   correct:0,explanation:"The theme is the universal message the story conveys. The athlete learning that team bonds matter more than winning reflects the theme that relationships outweigh achievements.",
+   wrong:["","The story shows sports have value — it doesn't say they're more important than school. That's not supported.","The protagonist learns the OPPOSITE — that winning isn't everything. This contradicts the story's message.","The story doesn't suggest she should take sports less seriously — it values the experience and relationships."]},
+
+  {id:17,unit:4,unit_name:"Literary Elements",topic:"Characterization",difficulty:2,frequency:"high",source:"2025-style",
+   text:"The author shows a character who always shares her lunch with students who forgot theirs, volunteers for every school club, but never asks for recognition. What type of characterization is this?",
+   choices:["Indirect characterization — revealing personality through actions","Direct characterization — the narrator states she is generous","Dynamic characterization — showing how she changes","Static characterization — showing she never changes"],
+   correct:0,explanation:"Indirect characterization shows who a character IS through their actions, not by directly telling us. We infer the character is generous and selfless from what she does.",
+   wrong:["","Direct characterization would be: 'She was the most generous person in school.' The author shows, not tells.","Dynamic characterization shows change over time. We see consistent behavior here, not change.","Static characterization does show consistency, but the METHOD shown here is INDIRECT — through actions, not statements."]},
+
+  {id:18,unit:4,unit_name:"Literary Elements",topic:"Conflict",difficulty:1,frequency:"high",source:"2026-predicted",
+   text:"A character struggles with whether to report a friend's cheating on an exam. This conflict is best described as:",
+   choices:["Person vs. self (internal conflict)","Person vs. person (external conflict)","Person vs. society (external conflict)","Person vs. nature (external conflict)"],
+   correct:0,explanation:"The struggle is happening INSIDE the character's mind — a moral dilemma about loyalty vs. integrity. Internal conflict is the character wrestling with their own values.",
+   wrong:["","Person vs. person would involve direct confrontation or opposition between two characters — not an internal debate.","Person vs. society involves a character against social norms or institutions — not a personal moral dilemma.","Person vs. nature involves physical forces (storm, survival) — not a moral decision."]},
+
+  {id:19,unit:4,unit_name:"Literary Elements",topic:"Figurative language",difficulty:2,frequency:"high",source:"2025-style",
+   text:"'The classroom was a zoo during the substitute teacher's lesson.' This sentence uses:",
+   choices:["Metaphor — directly comparing the classroom to a zoo","Simile — comparing using 'like' or 'as'","Personification — giving the classroom human qualities","Hyperbole — extreme exaggeration for effect"],
+   correct:0,explanation:"A metaphor directly states one thing IS another. 'The classroom WAS a zoo' (not 'like a zoo') directly equates the two to suggest it was chaotic.",
+   wrong:["","A simile uses 'like' or 'as': 'The classroom was LIKE a zoo.' Without 'like' or 'as,' it's a metaphor.","Personification gives human qualities to non-human things. A zoo is not a human quality.","Hyperbole is extreme exaggeration: 'The classroom was the loudest place in history.' A zoo is a specific comparison, not extreme exaggeration."]},
+
+  {id:20,unit:4,unit_name:"Literary Elements",topic:"Point of view",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"A story uses the pronoun 'he' throughout and the narrator knows what multiple characters are thinking. What point of view is this?",
+   choices:["Third-person omniscient","Third-person limited","First person","Second person"],
+   correct:0,explanation:"Third person uses 'he/she/they.' Omniscient means the narrator knows ALL characters' thoughts. If the narrator only knew one character's thoughts, it would be third-person LIMITED.",
+   wrong:["","Third-person limited uses 'he/she' but only knows ONE character's inner thoughts. This narrator knows multiple characters' thoughts — so it's omniscient.","First person uses 'I' and tells the story from one character's direct perspective. This uses 'he.'","Second person uses 'you' — this uses 'he.'"]},
+
+  // UNIT 5: VOCABULARY IN CONTEXT
+  {id:21,unit:5,unit_name:"Vocabulary in Context",topic:"Context clues",difficulty:1,frequency:"high",source:"2025-style",
+   text:"'The scientist was meticulous in her research, double-checking every calculation and never leaving a single variable unexamined.' Based on context, meticulous most likely means:",
+   choices:["Extremely careful and precise","Overly ambitious","Confused and disorganized","Quick and efficient"],
+   correct:0,explanation:"Context clues: double-checking calculations and examining every variable describes someone who is extremely careful and thorough — meticulous.",
+   wrong:["","Nothing in the sentence suggests ambition — the focus is on carefulness and thoroughness.","The context shows organized, systematic behavior — the opposite of confused and disorganized.","Double-checking everything suggests thoroughness, not speed. Quick and efficient would mean doing things faster."]},
+
+  {id:22,unit:5,unit_name:"Vocabulary in Context",topic:"Connotation",difficulty:2,frequency:"high",source:"2025-style",
+   text:"Which pair of words has similar DENOTATIONS (dictionary meanings) but different CONNOTATIONS (emotional associations)?",
+   choices:["Stubborn / Determined","Cat / Feline","Large / Enormous","Happy / Sad"],
+   correct:0,explanation:"Stubborn and determined both mean 'not easily changing one's mind,' but stubborn has a NEGATIVE connotation (unreasonable) while determined has a POSITIVE one (admirable).",
+   wrong:["","Cat and feline have the same denotation AND essentially the same neutral connotation. They're synonyms with no significant emotional difference.","Large and enormous differ in degree (size) but share similar connotations — both are neutral/descriptive.","Happy and sad have opposite denotations — they're antonyms, not synonyms with different connotations."]},
+
+  {id:23,unit:5,unit_name:"Vocabulary in Context",topic:"Roots and affixes",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"The word 'benevolent' contains the Latin root 'bene' (meaning 'well' or 'good') and 'vol' (meaning 'wish'). What does benevolent most likely mean?",
+   choices:["Wishing good for others; kind and generous","Having strong beliefs; firm in one's views","Acting without thinking; impulsive","Wishing harm to others; malicious"],
+   correct:0,explanation:"Bene (good/well) + vol (wish) = wishing good. Benevolent describes someone kind and generous who wishes well for others.",
+   wrong:["","Nothing in the roots relates to beliefs or firmness — that would be roots like 'firm' or 'creed.'","Impulsive relates to acting on impulse — nothing in bene+vol suggests lack of thought.","The opposite would use 'mal' (bad) + 'vol' = malevolent. Bene means good, not harm."]},
+
+  {id:24,unit:5,unit_name:"Vocabulary in Context",topic:"Tone and mood",difficulty:2,frequency:"high",source:"2025-style",
+   text:"The passage ends: 'The last train had gone, the lights were out, and she sat in the quiet dark, holding a faded photograph.' The mood of this passage is best described as:",
+   choices:["Melancholy and lonely","Angry and frustrated","Hopeful and uplifting","Tense and suspenseful"],
+   correct:0,explanation:"The last train gone (missed opportunity), lights out (darkness), quiet dark (isolation), faded photograph (loss/past) — all create a melancholy, lonely atmosphere.",
+   wrong:["","Nothing suggests anger — the setting is quiet and still, not charged with conflict.","No hopeful elements exist — the train is GONE, the lights are OUT, the photo is FADED. These are images of loss.","Suspense requires uncertainty or danger. This passage has stillness and resignation, not anticipation."]},
+
+  {id:25,unit:5,unit_name:"Vocabulary in Context",topic:"Allusions",difficulty:3,frequency:"medium",source:"2026-predicted",
+   text:"An author writes: 'Refusing to help, he played Pontius Pilate, washing his hands of the whole affair.' This allusion suggests the character:",
+   choices:["Avoids taking responsibility for something morally wrong","Cleans himself carefully before a meal","Is about to go on a long journey","Is a deeply religious person"],
+   correct:0,explanation:"Pontius Pilate literally washed his hands before allowing Jesus's crucifixion — symbolizing he refused responsibility. 'Washing hands' of a situation means refusing accountability for a moral wrong.",
+   wrong:["","Washing hands is used here as a figure of speech (allusion) — the character isn't literally washing hands.","Nothing in the allusion suggests travel — it's about moral responsibility.","The allusion is used to show avoidance of responsibility, not to characterize someone as religious."]},
+
+  // UNIT 6: WRITING & GRAMMAR
+  {id:26,unit:6,unit_name:"Writing & Grammar",topic:"Thesis statements",difficulty:2,frequency:"high",source:"2025-style",
+   text:"Which of the following is the STRONGEST thesis statement for an essay about social media?",
+   choices:["While social media enables connection, its addictive design and spread of misinformation make stricter regulation necessary.","Social media is a topic that many people care about today.","This essay will discuss the pros and cons of social media.","Social media has changed the world."],
+   correct:0,explanation:"A strong thesis makes a specific, arguable claim with a roadmap. This thesis takes a clear position ('stricter regulation necessary') and previews the two reasons (addiction, misinformation).",
+   wrong:["","'Many people care about it' states an obvious fact — it doesn't make an arguable claim.","'This essay will discuss' announces a topic but doesn't take a position. A thesis makes a claim.","'Changed the world' is too vague — it doesn't state how or argue for a specific position."]},
+
+  {id:27,unit:6,unit_name:"Writing & Grammar",topic:"Transitions",difficulty:1,frequency:"high",source:"2025-style",
+   text:"A student writes: 'Exercise improves mental health. _____, it can reduce symptoms of depression and anxiety.' Which transition word BEST fits the blank?",
+   choices:["For example","However","In contrast","Meanwhile"],
+   correct:0,explanation:"'For example' signals that the second sentence provides a SPECIFIC EXAMPLE of the first general claim. The second sentence illustrates HOW exercise improves mental health.",
+   wrong:["","'However' signals contrast or contradiction. The second sentence supports, not contradicts, the first.","'In contrast' signals opposition between two ideas. Both sentences say exercise is beneficial — there's no contrast.","'Meanwhile' signals two things happening at the same time. This isn't a time relationship — it's an example."]},
+
+  {id:28,unit:6,unit_name:"Writing & Grammar",topic:"Subject-verb agreement",difficulty:1,frequency:"medium",source:"2026-predicted",
+   text:"Which sentence demonstrates CORRECT subject-verb agreement?",
+   choices:["The team of scientists is publishing their findings next month.","The team of scientists are publishing their findings next month.","The team of scientists have published their findings last month.","The teams of scientists is publishing their findings next month."],
+   correct:0,explanation:"The subject is 'team' (singular), not 'scientists' (object of prepositional phrase). A singular subject takes a singular verb: 'team IS publishing.'",
+   wrong:["","'Are' is plural — but the subject 'team' is singular. Don't be confused by 'of scientists.'","'Have published' is plural and also past tense — both errors. The subject is singular ('team') and the time is future.","'Teams' is plural — it would need 'are publishing,' not 'is publishing.'"]},
+
+  {id:29,unit:6,unit_name:"Writing & Grammar",topic:"Pronoun-antecedent agreement",difficulty:2,frequency:"medium",source:"2025-style",
+   text:"Which sentence has a PRONOUN-ANTECEDENT AGREEMENT error?",
+   choices:["Each student must bring their own lunch to the field trip.","The girls finished their project on time.","Marcus forgot his homework at home.","Neither the cats nor the dog lost their collar."],
+   correct:0,explanation:"'Each' is singular, so technically the pronoun should be 'his or her.' However, note: 'their' is now widely accepted as singular in modern usage. If your exam uses traditional grammar rules, this has the agreement issue. Know your teacher's standard.",
+   wrong:["","'Girls' is plural, and 'their' is plural — correct agreement.","'Marcus' is singular (he), and 'his' is singular — correct agreement.","When 'neither...nor' connects two subjects, the verb and pronoun agree with the CLOSER subject ('dog' - singular). 'Their' is incorrect here — should be 'its.' This is actually the clearest error!"]},
+
+  {id:30,unit:6,unit_name:"Writing & Grammar",topic:"Sentence structure",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"'Although she studied for weeks she failed the exam because of test anxiety however she plans to retake it.' This sentence has what problem?",
+   choices:["Multiple punctuation errors — needs commas and a period or semicolon to fix run-on","It is a sentence fragment — missing a subject","It has a dangling modifier — 'although' doesn't connect properly","It uses passive voice — should be rewritten in active voice"],
+   correct:0,explanation:"This is a run-on sentence with missing punctuation. It needs: 'Although she studied for weeks, she failed the exam because of test anxiety. However, she plans to retake it.' — or use a semicolon before 'however.'",
+   wrong:["","It has a subject (she) and verbs — it's not a fragment. The problem is punctuation in a run-on.","'Although' correctly modifies 'she failed' — the modifier isn't dangling.","The sentence uses active voice ('she studied,' 'she failed') — no passive voice issue here."]}
+]
+const PREDICTIONS = [
+  {topic:"Main idea and textual evidence",unit:"Unit 1/2",prob:"Very High",reason:"Core standard — appears on every ELA Regents"},
+  {topic:"Analyzing author's word choice (diction)",unit:"Unit 2",prob:"Very High",reason:"Appeared 6/6 recent exams"},
+  {topic:"Argumentative writing — claim and evidence",unit:"Unit 3",prob:"Very High",reason:"Major portion of ELA Regents essay section"},
+  {topic:"Figurative language (metaphor, simile, personification)",unit:"Unit 4",prob:"Very High",reason:"Appears every exam — multiple questions"},
+  {topic:"Counterargument and rebuttal",unit:"Unit 3",prob:"High",reason:"Appeared 5/6 recent exams in reading and essay"},
+  {topic:"Context clues and vocabulary",unit:"Unit 5",prob:"High",reason:"Appeared 5/6 recent exams"},
+  {topic:"Tone and mood analysis",unit:"Unit 5",prob:"High",reason:"Appeared 5/6 recent exams"},
+  {topic:"Theme in fiction",unit:"Unit 4",prob:"High",reason:"Appeared 5/6 recent exams"},
+  {topic:"Thesis statement writing",unit:"Unit 6",prob:"Very High",reason:"Required for extended response portion every year"},
+  {topic:"Ethos, pathos, logos in persuasive text",unit:"Unit 3",prob:"Medium",reason:"Appeared 3/6 recent exams — trending upward"},
+]
+
+// ═══════════════════════════════════════════════════
+// SHUFFLE — randomize answer positions per session
+// ═══════════════════════════════════════════════════
+let shuffledQuestions = [];
+
+function shuffleQuestions(){
+  shuffledQuestions = QUESTIONS.map(q => {
+    // Create index map [0,1,2,3] and shuffle it
+    const idxs = [0,1,2,3];
+    for(let i=idxs.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [idxs[i],idxs[j]]=[idxs[j],idxs[i]];
+    }
+    // Reorder choices and wrong explanations using shuffled indexes
+    const newChoices = idxs.map(i=>q.choices[i]);
+    const newWrong = idxs.map(i=>q.wrong[i]);
+    const newCorrect = idxs.indexOf(q.correct);
+    return {...q, choices:newChoices, wrong:newWrong, correct:newCorrect, _origCorrect:q.correct};
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let current = 0;
+let answers = new Array(30).fill(null);
+let flagged = new Array(30).fill(false);
+let timerInterval, seconds = 0;
+let testResults = null;
+let chatHistory = [];
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function toast(msg,type='info'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast show';
+  setTimeout(()=>el.className='toast',3000);
+}
+function unitColor(u){ return UNIT_COLORS[u-1]; }
+
+// ═══════════════════════════════════════════════════
+// SCREEN 1 → START
+// ═══════════════════════════════════════════════════
+function startTest(){
+  answers = new Array(30).fill(null);
+  flagged = new Array(30).fill(false);
+  current = 0; seconds = 0;
+  shuffleQuestions();
+  showScreen('s2');
+  buildSidebar();
+  renderQ(0);
+  timerInterval = setInterval(()=>{
+    seconds++;
+    const m=String(Math.floor(seconds/60)).padStart(2,'0');
+    const s2=String(seconds%60).padStart(2,'0');
+    document.getElementById('timerVal').textContent=`${m}:${s2}`;
+  },1000);
+}
+
+// ═══════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════
+function buildSidebar(){
+  const wrap = document.getElementById('sidebarDots');
+  const byUnit = {};
+  shuffledQuestions.forEach((q,i)=>{
+    if(!byUnit[q.unit]) byUnit[q.unit]=[];
+    byUnit[q.unit].push(i);
+  });
+  let html='';
+  Object.entries(byUnit).forEach(([unit,idxs])=>{
+    html+=`<div class="ts-unit">
+      <div class="ts-unit-name" style="color:${unitColor(parseInt(unit))}">Unit ${unit}</div>
+      <div class="ts-dots" id="dots-u${unit}">`;
+    idxs.forEach(i=>{
+      html+=`<div class="ts-dot ${i===0?'current':''}" id="dot-${i}" onclick="jumpTo(${i})">${i+1}</div>`;
+    });
+    html+=`</div></div>`;
+  });
+  wrap.innerHTML=html;
+}
+
+function updateSidebar(){
+  QUESTIONS.forEach((q,i)=>{
+    const el=document.getElementById(`dot-${i}`);
+    if(!el) return;
+    el.className='ts-dot'+(i===current?' current':answers[i]!==null?' answered':flagged[i]?' flagged':'');
+  });
+  const answered=answers.filter(a=>a!==null).length;
+  document.getElementById('progressLabel').textContent=`${answered} / 30`;
+  document.getElementById('progressFill').style.width=`${(answered/30)*100}%`;
+}
+
+function jumpTo(i){ current=i; renderQ(i); }
+
+// ═══════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════
+function renderQ(i){
+  const q=shuffledQuestions[i];
+  // Unit badge
+  const badge=document.getElementById('qUnitBadge');
+  badge.textContent=`${q.unit_name}`;
+  badge.style.background=unitColor(q.unit)+'18';
+  badge.style.color=unitColor(q.unit);
+  badge.style.border=`1px solid ${unitColor(q.unit)}44`;
+  // Meta
+  document.getElementById('qNum').textContent=`Question ${i+1} of 30`;
+  const freq=document.getElementById('qFreq');
+  freq.textContent=q.frequency==='high'?'🔥 High Frequency':'📋 Medium Frequency';
+  freq.className='q-freq '+(q.frequency==='high'?'high':'medium');
+
+  // Question text
+  document.getElementById('qText').textContent=q.text;
+  // Choices — no correct/wrong reveal during test, only selected state
+  const chosen=answers[i];
+  const letters=['A','B','C','D'];
+  let html='';
+  q.choices.forEach((c,ci)=>{
+    const sel=ci===chosen;
+    html+=`<div class="choice${sel?' selected':''}" onclick="selectAnswer(${ci})">
+      <div class="choice-letter">${letters[ci]}</div>
+      <div class="choice-text">${c}</div>
+    </div>`;
+  });
+  document.getElementById('choicesWrap').innerHTML=html;
+  // No feedback during test — hide always
+  document.getElementById('feedbackBox').style.display='none';
+  // Nav buttons
+  document.getElementById('btnPrev').style.display=i===0?'none':'';
+  const isLast=i===29;
+  document.getElementById('btnNext').style.display=isLast?'none':'';
+  document.getElementById('btnSubmit').style.display=isLast?'':'none';
+  updateSidebar();
+}
+
+function selectAnswer(ci){
+  answers[current]=ci;
+  renderQ(current);
+
+}
+
+function goQ(dir){
+  current=Math.max(0,Math.min(29,current+dir));
+  renderQ(current);
+}
+
+function toggleFlag(){
+  flagged[current]=!flagged[current];
+  updateSidebar();
+  toast(flagged[current]?'Question flagged 🚩':'Flag removed');
+}
+
+// ═══════════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════════
+function submitTest(){
+  const unanswered=answers.filter(a=>a===null).length;
+  if(unanswered>0 && !confirm(`You have ${unanswered} unanswered question${unanswered>1?'s':''}. Submit anyway?`)) return;
+  clearInterval(timerInterval);
+
+  // Calculate results
+  let total=0;
+  const unitScores={};
+  const wrongQs=[];
+
+  shuffledQuestions.forEach((q,i)=>{
+    if(!unitScores[q.unit]) unitScores[q.unit]={name:q.unit_name,correct:0,total:0,wrong:[]};
+    unitScores[q.unit].total++;
+    const correct=answers[i]===q.correct;
+    if(correct){ total++; unitScores[q.unit].correct++; }
+    else {
+      unitScores[q.unit].wrong.push({qid:i,question:q.text,yourAnswer:answers[i]!==null?q.choices[answers[i]]:'(unanswered)',correctAnswer:q.choices[q.correct],explanation:q.explanation,wrongExplanation:answers[i]!==null?q.wrong[answers[i]]:''});
+      wrongQs.push({unit:q.unit,unit_name:q.unit_name,...q,yourIdx:answers[i]});
+    }
+  });
+
+  const scaledScore=Math.round((total/30)*100);
+  testResults={total,scaledScore,unitScores,wrongQs,timeSeconds:seconds};
+  showResults();
+  saveToSupabase();
+}
+
+// ═══════════════════════════════════════════════════
+// REVIEW BUILDER
+// ═══════════════════════════════════════════════════
+function buildReview(){
+  const letters=['A','B','C','D'];
+  const wrap=document.getElementById('reviewCard');
+
+  let wrongCount=0,rightCount=0;
+  const wrongItems=[],rightItems=[];
+
+  shuffledQuestions.forEach((q,i)=>{
+    const chosen=answers[i];
+    const correct=chosen===q.correct;
+    if(correct) rightCount++;
+    else wrongCount++;
+
+    const choicesHtml=q.choices.map((c,ci)=>{
+      let cls='rq-choice';
+      if(ci===q.correct) cls+=' rq-ch-correct';
+      else if(ci===chosen && ci!==q.correct) cls+=' rq-ch-yours';
+      return `<div class="${cls}"><span class="rq-ltr">${letters[ci]}</span>${c}</div>`;
+    }).join('');
+
+    const wrongExpHtml=(chosen!==null && !correct && q.wrong[chosen])?
+      `<div class="rq-wrong-exp">Why your answer was wrong: ${q.wrong[chosen]}</div>`:'';
+
+    const item=`<div class="rq-item ${correct?'rq-correct':'rq-wrong'}">
+      <div class="rq-meta">
+        <span class="rq-num">Q${i+1}</span>
+        <span class="rq-unit">${q.unit_name}</span>
+        <span class="rq-status">${correct?'✅ Correct':'❌ Incorrect'}</span>
+        ${chosen===null?'<span class="rq-unit" style="background:#fef3c7;color:#92400e;">Skipped</span>':''}
+      </div>
+      <div class="rq-text">${q.text}</div>
+      <div class="rq-choices">${choicesHtml}</div>
+      <div class="rq-explain">${q.explanation}</div>
+      ${wrongExpHtml}
+    </div>`;
+
+    if(correct) rightItems.push(item);
+    else wrongItems.push(item);
+  });
+
+  wrap.innerHTML=`
+    <div class="review-head">📋 Full Question Review</div>
+    <div class="review-sub">${wrongCount} incorrect · ${rightCount} correct — review every question below</div>
+    ${wrongCount>0?`<div style="margin-bottom:12px;font-size:13px;font-weight:700;color:var(--red);">❌ Questions You Missed (${wrongCount})</div>${wrongItems.join('')}`:''}
+    ${rightCount>0?`<button class="review-toggle" onclick="toggleRight(this)">✅ Show Correct Answers (${rightCount}) ▸</button><div id="rightAnswers" style="display:none">${rightItems.join('')}</div>`:''}
+  `;
+}
+
+function toggleRight(btn){
+  const el=document.getElementById('rightAnswers');
+  const open=el.style.display==='block';
+  el.style.display=open?'none':'block';
+  btn.innerHTML=open?`✅ Show Correct Answers (${btn.dataset.n||''}) ▸`:`✅ Hide Correct Answers ▾`;
+}
+
+// ═══════════════════════════════════════════════════
+// RESULTS SCREEN
+// ═══════════════════════════════════════════════════
+function showResults(){
+  showScreen('s3');
+  const {total,scaledScore,unitScores}=testResults;
+
+  // Hero score
+  const scoreEl=document.getElementById('rhScore');
+  scoreEl.textContent=scaledScore;
+  scoreEl.className='rh-score '+(scaledScore>=65?'pass':scaledScore>=50?'close':'fail');
+  document.getElementById('rhLabel2').textContent=scaledScore>=65?'✅ Passing Score (65+ required)':scaledScore>=50?'⚠️ Almost there — review weak units':'📚 Focus time — your AI tutor is ready';
+
+  const mins=Math.floor(testResults.timeSeconds/60);
+  document.getElementById('rhPills').innerHTML=`
+    <span class="rh-pill">${total}/30 correct</span>
+    <span class="rh-pill">${mins} min taken</span>
+    <span class="rh-pill">${testResults.wrongQs.length} to review</span>`;
+
+  // Unit cards
+  const grid=document.getElementById('unitCards');
+  grid.innerHTML=Object.entries(unitScores).map(([u,data])=>{
+    const pct=Math.round((data.correct/data.total)*100);
+    const verdict=pct>=80?'strong':pct>=60?'review':'focus';
+    const vLabel=pct>=80?'Strong ✅':pct>=60?'Review ⚠️':'Needs Focus 🔴';
+    return `<div class="unit-card">
+      <div class="uc-head">
+        <span class="uc-dot" style="background:${unitColor(parseInt(u))}"></span>
+        <span class="uc-name">${data.name}</span>
+        <span class="uc-score" style="color:${unitColor(parseInt(u))}">${data.correct}/5</span>
+      </div>
+      <div class="uc-bar"><div class="uc-fill" style="width:${pct}%;background:${unitColor(parseInt(u))}"></div></div>
+      <span class="uc-verdict ${verdict}">${vLabel}</span>
+    </div>`;
+  }).join('');
+
+  // Review section
+  buildReview();
+
+  // Predictions
+  document.getElementById('predictRows').innerHTML=PREDICTIONS.map(p=>`
+    <div class="predict-row">
+      <span class="predict-prob ${p.prob==='Very High'?'very-high':p.prob==='High'?'high':'medium'}">${p.prob}</span>
+      <div>
+        <div class="predict-topic">${p.topic} <span style="font-size:11px;color:var(--gray);font-weight:500;">— ${p.unit}</span></div>
+        <div class="predict-reason">${p.reason}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// SUPABASE SAVE
+// ═══════════════════════════════════════════════════
+async function saveToSupabase(){
+  if(!db || !USER) return;
+  try{
+    const {unitScores,total,scaledScore,wrongQs,timeSeconds}=testResults;
+    const unit_scores={};
+    Object.entries(unitScores).forEach(([u,d])=>{ unit_scores[u]={name:d.name,correct:d.correct,total:d.total,pct:Math.round(d.correct/d.total*100)}; });
+    await db.from('mock_attempts').insert({
+      user_id:USER.id, subject:'ela',
+      score:scaledScore, correct:total, total_questions:30,
+      unit_scores, time_seconds:timeSeconds,
+      question_results:answers.map((a,i)=>({q:i+1,correct:a===QUESTIONS[i].correct,chosen:a}))
+    });
+    toast('Results saved to your dashboard ✓','success');
+  } catch(e){ console.log('Save skipped (table may not exist yet)'); }
+}
+
+// ═══════════════════════════════════════════════════
+// AI TUTOR SCREEN
+// ═══════════════════════════════════════════════════
+function goTutor(){
+  showScreen('s4');
+  buildTutorSidebar();
+  chatHistory=[];
+  document.getElementById('chatMsgs').innerHTML='';
+  sendInitialMessage();
+}
+
+function buildTutorSidebar(){
+  const {unitScores}=testResults;
+  let html='';
+  Object.entries(unitScores).forEach(([u,data])=>{
+    const pct=Math.round(data.correct/data.total*100);
+    const cls=pct>=80?'strong':pct>=60?'ok':'weak';
+    html+=`<div class="ts2-unit ${cls}" onclick="askAboutUnit('${data.name}')">
+      <span class="ts2-unit-name"><span style="width:8px;height:8px;border-radius:50%;background:${unitColor(parseInt(u))};display:inline-block"></span>${data.name}</span>
+      <span class="ts2-unit-score">${data.correct}/5</span>
+    </div>`;
+  });
+  document.getElementById('tutorUnits').innerHTML=html;
+
+  // Quick questions based on weak areas
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const quickQs=[
+    weakUnits.length?`Why did I struggle with ${weakUnits[0]}?`:'What should I study first?',
+    'Which topics are most likely on the June 2026 exam?',
+    'Give me a 2-week study plan based on my scores',
+    'Explain the 10% energy rule with an example',
+    weakUnits.length>1?`Compare my weakest units: ${weakUnits.slice(0,2).join(' vs ')}`: 'What concepts connect these units?',
+  ];
+  document.getElementById('quickBtns').innerHTML=quickQs.map(q=>`<button class="quick-btn" onclick="sendQuick('${q.replace(/'/g,"\\'")}')">💬 ${q}</button>`).join('');
+}
+
+function sendQuick(msg){
+  document.getElementById('chatInput').value=msg;
+  sendMsg();
+}
+
+function askAboutUnit(unitName){
+  sendQuick(`Explain what I need to know about ${unitName} for the Regents`);
+}
+
+function buildSystemPrompt(){
+  const {total,scaledScore,unitScores,wrongQs,timeSeconds}=testResults;
+  const mins=Math.floor(timeSeconds/60);
+  const unitSummary=Object.entries(unitScores).map(([u,d])=>`- ${d.name}: ${d.correct}/5 (${Math.round(d.correct/d.total*100)}%)`).join('\n');
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const wrongSummary=wrongQs.slice(0,8).map(q=>`Q: "${q.text}"\nCorrect: ${q.choices[q.correct]}\nStudent chose: ${q.yourIdx!==null?q.choices[q.yourIdx]:'(unanswered)'}`).join('\n\n');
+
+  return `You are a warm, encouraging, expert ELA (English Language Arts) Regents tutor for NYC high school students. You know this student's exact test results and use them to give hyper-personalized help.
+
+STUDENT TEST RESULTS:
+- Score: ${scaledScore}/100 (${total}/30 correct) — taken in ${mins} minutes
+- Passing score is 65
+
+UNIT BREAKDOWN:
+${unitSummary}
+
+WEAK UNITS (scored below 60%): ${weakUnits.length?weakUnits.join(', '):'None — great job!'}
+
+QUESTIONS THIS STUDENT MISSED (first 8):
+${wrongSummary}
+
+HIGH-PROBABILITY JUNE 2026 TOPICS:
+- Cell membrane / osmosis (appears EVERY exam)
+- DNA replication & protein synthesis (appears EVERY exam)  
+- Natural selection scenario (appears EVERY exam)
+- Energy pyramid / 10% rule (appears 5/6 recent exams)
+- Negative feedback / homeostasis (appears EVERY exam)
+- Vaccine / immune response (4/6 recent exams, trending post-COVID)
+- Photosynthesis equation & factors (appears EVERY exam)
+
+YOUR ROLE:
+1. Explain WHY wrong answers were wrong — not just what's right
+2. Use real-world examples NYC students relate to (food, subway, sports, NYC nature)
+3. Give specific study priorities based on their unit scores
+4. When asked about study plans, give concrete weekly schedules
+5. Flag the highest-probability topics for June 2026 when relevant
+6. Keep explanations clear for a 9th-11th grader — no jargon without explanation
+7. Be encouraging — this student is putting in the work
+
+Keep responses focused and practical. Use bullet points when listing concepts. Be conversational, not textbook-like.`;
+}
+
+function sendInitialMessage(){
+  const {scaledScore,unitScores,wrongQs}=testResults;
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const strongUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total>=0.8).map(([u,d])=>d.name);
+
+  const intro=`Hi! I've reviewed your test results. Here's what I see:\n\n**Score: ${testResults.total}/30 (${scaledScore}/100)** ${scaledScore>=65?'✅ Passing!':scaledScore>=50?'⚠️ Getting close':'📚 Room to grow'}\n\n${weakUnits.length?`**Needs the most work:** ${weakUnits.join(', ')}\n\n`:''}${strongUnits.length?`**Your strengths:** ${strongUnits.join(', ')}\n\n`:''}I know exactly which questions you missed and why. Ask me anything — I can explain wrong answers, give you a study plan, or tell you what's most likely on the June 2026 exam. What do you want to tackle first?`;
+
+  addMsg('ai', intro);
+}
+
+function addMsg(role, text){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');
+  div.className=`chat-msg ${role}`;
+  if(role==='ai'){
+    div.innerHTML=`<div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg></div>
+    <div class="msg-bubble">${formatMsg(text)}</div>`;
+  } else {
+    div.innerHTML=`<div class="msg-bubble">${text}</div>`;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  chatHistory.push({role,content:text});
+}
+
+function formatMsg(text){
+  return text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>')
+    .replace(/\n/g,'<br>');
+}
+
+function showTyping(){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');
+  div.className='chat-msg ai'; div.id='typing-indicator';
+  div.innerHTML=`<div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg></div>
+  <div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function hideTyping(){ document.getElementById('typing-indicator')?.remove(); }
+
+async function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const msg=input.value.trim();
+  if(!msg) return;
+  input.value=''; input.style.height='auto';
+  document.getElementById('sendBtn').disabled=true;
+
+  addMsg('user',msg);
+  showTyping();
+
+  // Build messages for Claude API
+  const history=chatHistory.filter(m=>m.role!=='ai'||m.content.length<500).slice(-8);
+  const messages=history.map(m=>({role:m.role==='ai'?'assistant':'user',content:m.content}));
+  if(messages.length===0||messages[messages.length-1].role==='assistant'){
+    messages.push({role:'user',content:msg});
+  } else {
+    messages[messages.length-1]={role:'user',content:msg};
+  }
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:buildSystemPrompt(),
+        messages:[...history.filter(m=>m.role!=='ai').slice(-6).map(m=>({role:'user',content:m.content})),{role:'user',content:msg}]
+      })
+    });
+    const data=await res.json();
+    hideTyping();
+    const reply=data.content?.[0]?.text||"I'm having trouble responding right now — please try again.";
+    addMsg('ai',reply);
+  } catch(e){
+    hideTyping();
+    addMsg('ai','Connection issue — please try again in a moment.');
+  }
+  document.getElementById('sendBtn').disabled=false;
+}
+
+function retake(){
+  showScreen('s1');
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.onload=async()=>{
+  if(typeof supabase!=='undefined'){
+    try{
+      db=supabase.createClient(SB_URL,SB_KEY);
+      const{data}=await db.auth.getSession();
+      if(data?.session?.user) USER=data.session.user;
+    }catch(e){}
+  }
+};
+</script>
+</body>
+</html>

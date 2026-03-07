@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — Mock US History Regents</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --teal:#0ea87a; --teal-dark:#0b8f68; --teal-pale:#e8f7f2;
+  --ink:#0d1a12; --white:#fff; --cream:#f6f9f7;
+  --gray:#64748b; --border:#e0ebe5; --gray-light:#f1f5f2;
+  --red:#ef4444; --red-bg:#fff1f2;
+  --yellow:#f59e0b; --yellow-bg:#fffbeb;
+  --green:#10b981; --green-bg:#f0fdf4;
+  --unit1:#6366f1; --unit2:#ec4899; --unit3:#f59e0b;
+  --unit4:#10b981; --unit5:#3b82f6; --unit6:#8b5cf6;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+
+/* ── NAV ── */
+.nav{height:54px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:200;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:700;font-size:16px;}
+.nav-logo-ico{width:26px;height:26px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.nav-logo em{color:var(--teal);font-style:normal;}
+.nav-back{font-size:13px;color:var(--gray);text-decoration:none;display:flex;align-items:center;gap:5px;font-weight:500;}
+.nav-back:hover{color:var(--ink);}
+.nav-pill{margin-left:auto;background:var(--teal-pale);color:var(--teal);font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;letter-spacing:.3px;}
+
+/* ── SCREENS ── */
+.screen{display:none;animation:fadeUp .35s ease;}
+.screen.active{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════
+   SCREEN 1 — INTRO
+══════════════════════════════ */
+.intro-wrap{max-width:680px;margin:0 auto;padding:52px 24px;}
+.intro-badge{display:inline-flex;align-items:center;gap:7px;background:white;border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--gray);margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.intro-badge span{width:7px;height:7px;background:var(--teal);border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.intro-h{font-family:'DM Serif Display',Georgia,serif;font-size:48px;line-height:1.08;letter-spacing:-.5px;margin-bottom:16px;color:var(--ink);}
+.intro-h em{font-style:italic;color:var(--teal);}
+.intro-sub{font-size:16px;color:var(--gray);line-height:1.7;margin-bottom:36px;}
+.intro-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:36px;}
+.intro-card{background:white;border:1px solid var(--border);border-radius:14px;padding:18px 16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.ic-icon{font-size:22px;margin-bottom:8px;}
+.ic-label{font-size:13px;font-weight:700;margin-bottom:3px;}
+.ic-sub{font-size:12px;color:var(--gray);line-height:1.4;}
+.unit-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:36px;}
+.unit-tag{display:flex;align-items:center;gap:8px;background:white;border:1px solid var(--border);border-radius:10px;padding:10px 13px;font-size:13px;font-weight:600;}
+.unit-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.btn-start{width:100%;padding:16px;background:var(--ink);color:white;border:none;border-radius:12px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;letter-spacing:-.2px;}
+.btn-start:hover{background:#1a2e20;transform:translateY(-1px);box-shadow:0 6px 20px rgba(13,26,18,.2);}
+.intro-note{text-align:center;font-size:12px;color:var(--gray);margin-top:12px;}
+
+/* ══════════════════════════════
+   SCREEN 2 — TEST
+══════════════════════════════ */
+.test-layout{display:grid;grid-template-columns:220px 1fr;min-height:calc(100vh - 54px);}
+.test-sidebar{background:white;border-right:1px solid var(--border);padding:20px 14px;position:sticky;top:54px;height:calc(100vh - 54px);overflow-y:auto;}
+.ts-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);padding:0 6px;margin-bottom:10px;}
+.ts-unit{margin-bottom:16px;}
+.ts-unit-name{font-size:11px;font-weight:700;margin-bottom:6px;padding:0 6px;color:var(--ink);}
+.ts-dots{display:flex;flex-wrap:wrap;gap:5px;padding:0 6px;}
+.ts-dot{width:28px;height:28px;border-radius:7px;border:2px solid var(--border);background:white;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;color:var(--gray);}
+.ts-dot.current{border-color:var(--teal);background:var(--teal);color:white;}
+.ts-dot.answered{border-color:var(--border);background:var(--ink);color:white;}
+.ts-dot.flagged{border-color:var(--yellow);background:var(--yellow-bg);}
+.ts-timer{background:var(--cream);border-radius:10px;padding:12px;margin-top:16px;text-align:center;}
+.ts-timer-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:4px;}
+.ts-timer-val{font-size:24px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink);}
+.ts-timer-val.warning{color:var(--red);}
+.ts-progress{margin-top:14px;}
+.ts-progress-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
+.ts-progress-fill{height:100%;background:var(--teal);border-radius:3px;transition:width .3s;}
+
+.test-main{padding:32px;}
+.q-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;}
+.q-unit-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;}
+.q-meta{display:flex;align-items:center;gap:12px;}
+.q-num{font-size:13px;color:var(--gray);font-weight:600;}
+.q-freq{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;}
+.q-freq.high{background:#fef3c7;color:#92400e;}
+.q-freq.medium{background:#f0fdf4;color:#166534;}
+.q-source-badge{font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:#eff6ff;color:#1e40af;}
+
+.q-card{background:white;border:1px solid var(--border);border-radius:18px;padding:32px;box-shadow:0 2px 8px rgba(0,0,0,.05);margin-bottom:20px;}
+.q-text{font-size:17px;line-height:1.65;font-weight:500;margin-bottom:28px;color:var(--ink);}
+.choices{display:flex;flex-direction:column;gap:10px;}
+.choice{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all .15s;background:white;}
+.choice:hover{border-color:var(--teal);background:var(--teal-pale);}
+.choice.selected{border-color:var(--teal);background:var(--teal-pale);}
+.choice.correct{border-color:var(--green);background:var(--green-bg);pointer-events:none;}
+.choice.wrong{border-color:var(--red);background:var(--red-bg);pointer-events:none;}
+.choice.reveal-correct{border-color:var(--green);background:var(--green-bg);pointer-events:none;}
+.choice-letter{width:28px;height:28px;border-radius:8px;background:var(--gray-light);color:var(--gray);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;}
+.choice.selected .choice-letter{background:var(--teal);color:white;}
+.choice.correct .choice-letter{background:var(--green);color:white;}
+.choice.wrong .choice-letter{background:var(--red);color:white;}
+.choice.reveal-correct .choice-letter{background:var(--green);color:white;}
+.choice-text{font-size:14px;line-height:1.5;font-weight:500;padding-top:3px;}
+
+.feedback-box{border-radius:12px;padding:16px 18px;margin-top:4px;animation:fadeUp .3s ease;}
+.feedback-box.correct{background:var(--green-bg);border:1px solid #bbf7d0;}
+.feedback-box.wrong{background:var(--red-bg);border:1px solid #fecdd3;}
+.feedback-title{font-size:13px;font-weight:800;margin-bottom:5px;}
+.feedback-box.correct .feedback-title{color:#166534;}
+.feedback-box.wrong .feedback-title{color:#991b1b;}
+.feedback-text{font-size:13px;line-height:1.6;color:#374151;}
+.feedback-wrong-exp{margin-top:8px;padding-top:8px;border-top:1px solid rgba(0,0,0,.06);font-size:12px;color:var(--gray);line-height:1.6;}
+
+.q-nav{display:flex;gap:10px;align-items:center;}
+.btn-nav{padding:10px 22px;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;border:none;}
+.btn-prev{background:var(--gray-light);color:var(--ink);}
+.btn-prev:hover{background:var(--border);}
+.btn-next{background:var(--ink);color:white;}
+.btn-next:hover{background:#1a2e20;}
+.btn-next:disabled{opacity:.4;cursor:not-allowed;}
+.btn-flag{padding:10px 14px;background:var(--yellow-bg);color:#92400e;border:1px solid #fde68a;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;}
+.btn-submit{padding:12px 28px;background:var(--teal);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;margin-left:auto;}
+.btn-submit:hover{background:var(--teal-dark);}
+
+/* ══════════════════════════════
+   SCREEN 3 — RESULTS
+══════════════════════════════ */
+.results-wrap{max-width:820px;margin:0 auto;padding:40px 24px;}
+.results-hero{background:var(--ink);border-radius:24px;padding:40px;color:white;text-align:center;margin-bottom:28px;position:relative;overflow:hidden;}
+.results-hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0%,rgba(14,168,122,.25),transparent 60%);pointer-events:none;}
+.rh-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:rgba(255,255,255,.4);margin-bottom:12px;}
+.rh-score{font-family:'DM Serif Display',Georgia,serif;font-size:88px;line-height:1;font-weight:400;margin-bottom:4px;}
+.rh-score.pass{color:#4ade80;}
+.rh-score.close{color:#fbbf24;}
+.rh-score.fail{color:#f87171;}
+.rh-label2{font-size:15px;color:rgba(255,255,255,.6);margin-bottom:24px;}
+.rh-pills{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;}
+.rh-pill{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);padding:6px 14px;border-radius:20px;font-size:13px;font-weight:600;}
+
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;}
+.unit-card{background:white;border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.uc-head{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.uc-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.uc-name{font-size:14px;font-weight:700;}
+.uc-score{margin-left:auto;font-size:14px;font-weight:800;}
+.uc-bar{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:10px;}
+.uc-fill{height:100%;border-radius:4px;transition:width 1s ease;}
+.uc-verdict{font-size:12px;font-weight:600;padding:3px 9px;border-radius:20px;display:inline-block;}
+.uc-verdict.strong{background:var(--green-bg);color:#166534;}
+.uc-verdict.review{background:var(--yellow-bg);color:#92400e;}
+.uc-verdict.focus{background:var(--red-bg);color:#991b1b;}
+
+.predict-card{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.predict-head{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:8px;}
+.predict-sub{font-size:13px;color:var(--gray);margin-bottom:18px;}
+.predict-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.predict-row:last-child{border-bottom:none;}
+.predict-prob{font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;min-width:46px;text-align:center;flex-shrink:0;}
+.predict-prob.very-high{background:#dcfce7;color:#166534;}
+.predict-prob.high{background:#fef3c7;color:#92400e;}
+.predict-prob.medium{background:#eff6ff;color:#1e40af;}
+.predict-topic{font-size:13px;font-weight:600;flex:1;}
+.predict-reason{font-size:11px;color:var(--gray);}
+
+.btn-ai{width:100%;padding:16px;background:linear-gradient(135deg,#0ea87a,#076b4f);color:white;border:none;border-radius:14px;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;cursor:pointer;transition:all .2s;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:-.2px;}
+.btn-ai:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(14,168,122,.3);}
+.btn-retake{width:100%;padding:13px;background:white;color:var(--ink);border:2px solid var(--border);border-radius:14px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .2s;}
+.btn-retake:hover{border-color:var(--ink);}
+
+/* ══════════════════════════════
+   SCREEN 4 — AI TUTOR
+══════════════════════════════ */
+.tutor-layout{display:grid;grid-template-columns:280px 1fr;height:calc(100vh - 54px);}
+.tutor-sidebar{background:white;border-right:1px solid var(--border);padding:20px;overflow-y:auto;}
+.ts2-title{font-size:15px;font-weight:800;margin-bottom:4px;}
+.ts2-sub{font-size:12px;color:var(--gray);margin-bottom:20px;line-height:1.5;}
+.ts2-section{margin-bottom:20px;}
+.ts2-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--gray);margin-bottom:8px;}
+.ts2-unit{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border-radius:9px;margin-bottom:5px;cursor:pointer;transition:all .15s;}
+.ts2-unit:hover{background:var(--gray-light);}
+.ts2-unit-name{font-size:12px;font-weight:600;display:flex;align-items:center;gap:7px;}
+.ts2-unit-score{font-size:12px;font-weight:800;}
+.ts2-unit.weak{background:var(--red-bg);}
+.ts2-unit.weak .ts2-unit-score{color:var(--red);}
+.ts2-unit.ok{background:var(--yellow-bg);}
+.ts2-unit.ok .ts2-unit-score{color:#92400e;}
+.ts2-unit.strong{background:var(--green-bg);}
+.ts2-unit.strong .ts2-unit-score{color:#166534;}
+.quick-btns{display:flex;flex-direction:column;gap:6px;}
+.quick-btn{background:var(--cream);border:1px solid var(--border);border-radius:8px;padding:9px 11px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left;transition:all .15s;line-height:1.4;}
+.quick-btn:hover{background:var(--teal-pale);border-color:var(--teal);color:var(--teal);}
+
+.chat-area{display:flex;flex-direction:column;height:100%;}
+.chat-msgs{flex:1;overflow-y:auto;padding:24px;}
+.chat-msg{margin-bottom:20px;animation:fadeUp .25s ease;}
+.chat-msg.user{display:flex;justify-content:flex-end;}
+.chat-msg.ai{display:flex;justify-content:flex-start;gap:10px;}
+.ai-avatar{width:32px;height:32px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+.msg-bubble{max-width:70%;padding:13px 16px;border-radius:14px;font-size:14px;line-height:1.6;}
+.chat-msg.user .msg-bubble{background:var(--ink);color:white;border-radius:14px 14px 4px 14px;}
+.chat-msg.ai .msg-bubble{background:white;border:1px solid var(--border);color:var(--ink);border-radius:4px 14px 14px 14px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.msg-bubble strong{font-weight:700;}
+.msg-bubble ul{margin:8px 0 0 16px;}
+.msg-bubble li{margin-bottom:4px;}
+.typing-indicator{display:flex;gap:4px;padding:12px 14px;}
+.typing-dot{width:7px;height:7px;background:var(--teal);border-radius:50%;animation:bounce .9s ease infinite;}
+.typing-dot:nth-child(2){animation-delay:.15s;}
+.typing-dot:nth-child(3){animation-delay:.3s;}
+@keyframes bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-8px)}}
+
+.chat-input-wrap{border-top:1px solid var(--border);padding:16px 24px;background:white;display:flex;gap:10px;align-items:flex-end;}
+.chat-input{flex:1;border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;font-family:'DM Sans',sans-serif;font-size:14px;resize:none;outline:none;max-height:120px;transition:border-color .15s;line-height:1.5;}
+.chat-input:focus{border-color:var(--teal);}
+.chat-send{padding:12px 20px;background:var(--teal);color:white;border:none;border-radius:10px;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;}
+.chat-send:hover{background:var(--teal-dark);}
+.chat-send:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── MISC ── */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--ink);color:white;padding:11px 18px;border-radius:10px;font-size:13px;font-weight:600;z-index:9999;transform:translateY(10px);opacity:0;transition:all .3s;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+@media(max-width:768px){
+  .test-layout{grid-template-columns:1fr;}
+  .test-sidebar{display:none;}
+  .results-grid{grid-template-columns:1fr;}
+  .tutor-layout{grid-template-columns:1fr;}
+  .tutor-sidebar{display:none;}
+  .intro-cards{grid-template-columns:1fr;}
+  .intro-h{font-size:36px;}
+}
+/* ── REVIEW SECTION ── */
+.review-card{background:white;border:1px solid var(--border);border-radius:16px;padding:24px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.review-head{font-size:16px;font-weight:800;margin-bottom:4px;}
+.review-sub{font-size:13px;color:var(--gray);margin-bottom:20px;}
+.rq-item{border:1px solid var(--border);border-radius:12px;padding:16px;margin-bottom:10px;}
+.rq-item.rq-correct{border-color:#bbf7d0;background:#f0fdf4;}
+.rq-item.rq-wrong{border-color:#fecdd3;background:#fff1f2;}
+.rq-meta{display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;}
+.rq-num{font-size:11px;font-weight:700;color:var(--gray);}
+.rq-unit{font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;background:var(--gray-light);color:var(--gray);}
+.rq-status{font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;}
+.rq-correct .rq-status{background:#dcfce7;color:#166534;}
+.rq-wrong .rq-status{background:#fee2e2;color:#991b1b;}
+.rq-text{font-size:14px;font-weight:600;margin-bottom:10px;line-height:1.5;}
+.rq-choices{display:flex;flex-direction:column;gap:5px;margin-bottom:10px;}
+.rq-choice{font-size:13px;padding:6px 10px;border-radius:8px;border:1px solid var(--border);display:flex;gap:8px;}
+.rq-choice.rq-ch-correct{background:#dcfce7;border-color:#86efac;font-weight:700;}
+.rq-choice.rq-ch-yours{background:#fee2e2;border-color:#fca5a5;text-decoration:line-through;color:#991b1b;}
+.rq-choice .rq-ltr{font-weight:800;min-width:16px;color:var(--gray);}
+.rq-choice.rq-ch-correct .rq-ltr{color:#166534;}
+.rq-choice.rq-ch-yours .rq-ltr{color:#991b1b;}
+.rq-explain{font-size:12px;line-height:1.6;padding:8px 10px;background:rgba(0,0,0,.03);border-radius:8px;margin-top:4px;}
+.rq-wrong-exp{font-size:12px;color:var(--gray);margin-top:6px;padding:6px 10px;border-left:3px solid var(--red);background:var(--red-bg);border-radius:0 6px 6px 0;line-height:1.6;}
+.review-toggle{background:white;border:1.5px solid var(--border);border-radius:10px;padding:10px 16px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;color:var(--ink);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+.review-toggle:hover{background:var(--gray-light);}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-ico">
+      <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    Zen<em>Ed</em>
+  </a>
+  <a href="mockregents.html" class="nav-back">← All Mock Tests</a>
+  <span class="nav-pill">🗽 US History Mock Regents</span>
+</nav>
+
+<div id="toast" class="toast"></div>
+
+<!-- ══ SCREEN 1: INTRO ══ -->
+<div id="s1" class="screen active">
+  <div class="intro-wrap">
+    <div class="intro-badge"><span></span> 2025 Style + 2026 Predicted Questions</div>
+    <h1 class="intro-h">Mock Living<br>Environment <em>Regents</em></h1>
+    <p class="intro-sub">30 questions across all 6 units. Get scored instantly, see exactly what you missed, and unlock your personal AI tutor who knows your weak spots.</p>
+
+    <div class="intro-cards">
+      <div class="intro-card">
+        <div class="ic-icon">⏱️</div>
+        <div class="ic-label">30 Questions</div>
+        <div class="ic-sub">~45 min · timed or untimed</div>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">📊</div>
+        <div class="ic-label">Unit Breakdown</div>
+        <div class="ic-sub">Score per unit, not just total</div>
+      </div>
+      <div class="intro-card">
+        <div class="ic-icon">🤖</div>
+        <div class="ic-label">AI Tutor</div>
+        <div class="ic-sub">Explains every wrong answer</div>
+      </div>
+    </div>
+
+    <div class="unit-grid">
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit1)"></span> Unit 1 — Cells & Cell Processes</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit2)"></span> Unit 2 — Genetics & Heredity</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit3)"></span> Unit 3 — Evolution</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit4)"></span> Unit 4 — Ecology</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit5)"></span> Unit 5 — Human Biology</div>
+      <div class="unit-tag"><span class="unit-dot" style="background:var(--unit6)"></span> Unit 6 — Plants & Photosynthesis</div>
+    </div>
+
+    <button class="btn-start" onclick="startTest()">Start Mock Regents →</button>
+    <p class="intro-note">No login required · Results saved if you're signed in</p>
+  </div>
+</div>
+
+<!-- ══ SCREEN 2: TEST ══ -->
+<div id="s2" class="screen">
+  <div class="test-layout">
+    <div class="test-sidebar">
+      <div class="ts-label">Questions</div>
+      <div id="sidebarDots"></div>
+      <div class="ts-timer" id="timerBox">
+        <div class="ts-timer-lbl">Time Elapsed</div>
+        <div class="ts-timer-val" id="timerVal">00:00</div>
+      </div>
+      <div class="ts-progress" style="margin-top:14px;">
+        <div style="display:flex;justify-content:space-between;font-size:11px;font-weight:600;color:var(--gray);margin-bottom:5px;">
+          <span>Progress</span><span id="progressLabel">0 / 30</span>
+        </div>
+        <div class="ts-progress-bar"><div class="ts-progress-fill" id="progressFill" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="test-main">
+      <div class="q-header">
+        <div class="q-unit-badge" id="qUnitBadge"></div>
+        <div class="q-meta">
+          <span class="q-num" id="qNum"></span>
+          <span class="q-freq" id="qFreq"></span>
+
+        </div>
+      </div>
+
+      <div class="q-card">
+        <div class="q-text" id="qText"></div>
+        <div class="choices" id="choicesWrap"></div>
+        <div id="feedbackBox" style="display:none"></div>
+      </div>
+
+      <div class="q-nav">
+        <button class="btn-nav btn-prev" id="btnPrev" onclick="goQ(-1)">← Prev</button>
+        <button class="btn-flag" onclick="toggleFlag()">🚩 Flag</button>
+        <button class="btn-nav btn-next" id="btnNext" onclick="goQ(1)">Next →</button>
+        <button class="btn-submit" id="btnSubmit" onclick="submitTest()" style="display:none">Submit Test →</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCREEN 3: RESULTS ══ -->
+<div id="s3" class="screen">
+  <div class="results-wrap">
+    <div class="results-hero">
+      <div class="rh-label">Your Score</div>
+      <div class="rh-score" id="rhScore"></div>
+      <div class="rh-label2" id="rhLabel2"></div>
+      <div class="rh-pills" id="rhPills"></div>
+    </div>
+
+    <div class="results-grid" id="unitCards"></div>
+
+    <div class="review-card" id="reviewCard" style="margin-bottom:24px;"></div>
+
+    <div class="predict-card">
+      <div class="predict-head">🎯 High-Probability Topics for June 2026 Regents</div>
+      <div class="predict-sub">Based on topic frequency from the last 6 US History Regents exams (2022–2025)</div>
+      <div id="predictRows"></div>
+    </div>
+
+    <button class="btn-ai" onclick="goTutor()">
+      <svg viewBox="0 0 24 24" fill="none" width="20" height="20"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg>
+      Talk to Your AI Tutor — Personalized to Your Results
+    </button>
+    <button class="btn-retake" onclick="retake()">↩ Retake Test</button>
+  </div>
+</div>
+
+<!-- ══ SCREEN 4: AI TUTOR ══ -->
+<div id="s4" class="screen">
+  <div class="tutor-layout">
+    <div class="tutor-sidebar">
+      <div class="ts2-title">Your Study Plan</div>
+      <div class="ts2-sub">Click a unit to ask about it specifically</div>
+
+      <div class="ts2-section">
+        <div class="ts2-lbl">Unit Scores</div>
+        <div id="tutorUnits"></div>
+      </div>
+
+      <div class="ts2-section">
+        <div class="ts2-lbl">Quick Questions</div>
+        <div class="quick-btns" id="quickBtns"></div>
+      </div>
+    </div>
+
+    <div class="chat-area">
+      <div class="chat-msgs" id="chatMsgs"></div>
+      <div class="chat-input-wrap">
+        <textarea class="chat-input" id="chatInput" placeholder="Ask about any topic you got wrong..." rows="1"
+          onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+          oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+        <button class="chat-send" id="sendBtn" onclick="sendMsg()">Send</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════
+const SB_URL = 'https://spkqmhrogykcbrvujgub.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNwa3FtaHJvZ3lrY2JydnVqZ3ViIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE3OTU0OTEsImV4cCI6MjA4NzM3MTQ5MX0.00fS4NTvcC4f-mD8gRSqD1huWIdHo8Xe6UMZn8UJeb0';
+const UNIT_COLORS = ['#ef4444','#3b82f6','#f59e0b','#10b981','#8b5cf6','#ec4899'];
+let db, USER;
+
+// ═══════════════════════════════════════════════════
+// QUESTION BANK — 30 Questions, 6 Units × 5
+// ═══════════════════════════════════════════════════
+const QUESTIONS = [
+  // UNIT 1: CONSTITUTIONAL FOUNDATIONS
+  {id:1,unit:1,unit_name:"Constitutional Foundations",topic:"Checks and balances",difficulty:1,frequency:"high",source:"2025-style",
+   text:"The system of checks and balances in the US Constitution was designed primarily to:",
+   choices:["Prevent any one branch of government from becoming too powerful","Ensure all three branches have equal numbers of members","Allow the President to override Supreme Court decisions","Make the legislative branch the most powerful"],
+   correct:0,explanation:"Checks and balances distributes power among the three branches (executive, legislative, judicial) so each can limit the others — preventing tyranny or abuse of power.",
+   wrong:["","The branches have different sizes and structures — checks and balances is about power distribution, not equal membership.","The Supreme Court can actually review and overturn executive actions — the President cannot override it.","The founders deliberately divided power equally — no single branch was intended to be most powerful."]},
+
+  {id:2,unit:1,unit_name:"Constitutional Foundations",topic:"Bill of Rights",difficulty:1,frequency:"high",source:"2025-style",
+   text:"The Bill of Rights was added to the Constitution primarily to:",
+   choices:["Protect individual freedoms from government overreach","Give Congress more legislative powers","Define the President's war powers","Establish the Supreme Court's authority"],
+   correct:0,explanation:"Anti-Federalists feared the Constitution gave the federal government too much power. The Bill of Rights — the first 10 amendments — explicitly protects individual rights like free speech, religion, and fair trials.",
+   wrong:["","Congress's powers are defined in Article I — the Bill of Rights protects individuals FROM government, not expand government powers.","War powers are addressed in Article II and later amendments — the Bill of Rights focuses on individual liberties.","The Supreme Court is established in Article III — the Bill of Rights protects individual rights."]},
+
+  {id:3,unit:1,unit_name:"Constitutional Foundations",topic:"Federalism",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"The 10th Amendment states that powers not given to the federal government are 'reserved to the states or to the people.' This reflects the principle of:",
+   choices:["Federalism — dividing power between national and state governments","Judicial review — courts checking government actions","Popular sovereignty — the people hold ultimate authority","Separation of powers — dividing power among three branches"],
+   correct:0,explanation:"Federalism is the constitutional division of power between the national government and state governments. The 10th Amendment protects state authority by reserving unenumerated powers to states.",
+   wrong:["","Judicial review is the power of courts to strike down unconstitutional laws — established through Marbury v. Madison, not the 10th Amendment.","Popular sovereignty means the government's power comes from the people — related but the 10th specifically addresses state vs. federal power division.","Separation of powers divides power among the three FEDERAL branches — federalism divides power between federal and state governments."]},
+
+  {id:4,unit:1,unit_name:"Constitutional Foundations",topic:"Judicial review",difficulty:2,frequency:"high",source:"2025-style",
+   text:"The landmark Supreme Court case Marbury v. Madison (1803) established the principle that:",
+   choices:["The Supreme Court has the power to declare laws unconstitutional","Congress can override any presidential veto","The President appoints all federal judges without Senate approval","States can nullify federal laws they disagree with"],
+   correct:0,explanation:"Chief Justice John Marshall's ruling in Marbury v. Madison established judicial review — the Supreme Court's power to strike down laws that violate the Constitution. This dramatically expanded judicial power.",
+   wrong:["","Congress can override vetoes with a 2/3 majority — this was already in the Constitution, not established by Marbury.","The Senate must confirm presidential judicial appointments — the 'advice and consent' clause was always in Article II.","Nullification was argued by Southern states (notably Calhoun) but rejected — states cannot override federal law."]},
+
+  {id:5,unit:1,unit_name:"Constitutional Foundations",topic:"Constitutional amendments process",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"Which of the following best explains WHY the Founders made the constitutional amendment process difficult?",
+   choices:["To prevent temporary passions from permanently changing fundamental law","To make the Constitution impossible to change","To give states more power than the federal government","To ensure only lawyers could propose amendments"],
+   correct:0,explanation:"Requiring 2/3 of Congress AND 3/4 of states to ratify amendments ensures changes reflect broad consensus, not temporary majorities or political passions — protecting stable governance.",
+   wrong:["","The Constitution HAS been amended 27 times — it's difficult, not impossible. The difficulty ensures thoughtful deliberation.","The amendment process applies to federal law — it doesn't inherently favor states over the federal government.","Anyone can advocate for amendments — the process involves elected representatives, not professional requirements."]},
+
+  // UNIT 2: EXPANSION & REFORM
+  {id:6,unit:2,unit_name:"Expansion & Reform (1800s)",topic:"Manifest Destiny",difficulty:1,frequency:"high",source:"2025-style",
+   text:"The concept of Manifest Destiny in the 1800s was used to justify:",
+   choices:["US westward expansion across North America to the Pacific Ocean","The abolition of slavery in Southern states","Economic trade agreements with European nations","The construction of the transcontinental railroad"],
+   correct:0,explanation:"Manifest Destiny was the 19th-century belief that the United States was divinely destined to expand from coast to coast — used to justify westward expansion, often at the expense of Native American peoples.",
+   wrong:["","Manifest Destiny supported expansion into western territories — it was used by pro-slavery advocates to extend slavery westward, not abolish it.","Manifest Destiny was about territorial expansion, not European trade policy.","The railroad was built as part of westward expansion, but Manifest Destiny was the ideological justification for expansion itself."]},
+
+  {id:7,unit:2,unit_name:"Expansion & Reform (1800s)",topic:"Civil War causes",difficulty:2,frequency:"high",source:"2025-style",
+   text:"Which was the MOST significant long-term cause of the Civil War?",
+   choices:["The unresolved conflict over slavery and its expansion into new territories","The inability of the federal government to collect taxes in Southern states","Economic competition between Northern and Southern merchants","The personal political rivalry between Lincoln and Confederate leaders"],
+   correct:0,explanation:"While the Civil War had economic and political dimensions, slavery — especially whether it would expand into new western territories — was the fundamental, irreconcilable conflict that drove secession.",
+   wrong:["","Tax collection (nullification) was an issue in the 1830s — it was not the primary cause of the 1861 Civil War.","Economic differences existed, but they centered on slavery (plantation vs. industrial economy) — slavery was the root cause.","Lincoln was elected in November 1860 — secession began before he even took office. Personal rivalry was not a root cause."]},
+
+  {id:8,unit:2,unit_name:"Expansion & Reform (1800s)",topic:"Reconstruction",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"The Reconstruction Amendments (13th, 14th, 15th) passed after the Civil War were intended to:",
+   choices:["Abolish slavery and establish legal equality for formerly enslaved people","Punish Southern states by taking away their voting rights permanently","Give freed slaves 40 acres and a mule as compensation","Rebuild Southern cities destroyed during the war"],
+   correct:0,explanation:"The 13th abolished slavery, the 14th granted citizenship and equal protection, and the 15th protected voting rights regardless of race — together establishing legal equality, though enforcement remained a challenge.",
+   wrong:["","Southern states were eventually readmitted — Reconstruction aimed to rebuild and integrate, not permanently disenfranchise.","'40 acres and a mule' was a failed promise — it was not part of the constitutional amendments.","Physical Reconstruction (rebuilding) was separate from the constitutional/legal Reconstruction focused on civil rights."]},
+
+  {id:9,unit:2,unit_name:"Expansion & Reform (1800s)",topic:"Women's suffrage",difficulty:1,frequency:"medium",source:"2025-style",
+   text:"The Seneca Falls Convention of 1848 was significant because it:",
+   choices:["Launched the organized women's rights movement and demanded voting rights","Abolished slavery in New York State","Established the first women's college in America","Granted women the right to own property in all states"],
+   correct:0,explanation:"The Seneca Falls Convention, organized by Elizabeth Cady Stanton and Lucretia Mott, issued the Declaration of Sentiments — launching organized feminism and demanding women's suffrage (achieved in 1920 with the 19th Amendment).",
+   wrong:["","New York and other Northern states gradually abolished slavery through state legislation — Seneca Falls addressed women's rights, not slavery.","Women's colleges existed separately — the convention was a political gathering demanding rights, not an educational institution.","Property rights for women varied by state and changed through different legislation — not established at Seneca Falls."]},
+
+  {id:10,unit:2,unit_name:"Expansion & Reform (1800s)",topic:"Industrial Revolution impact",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"Which development during the Industrial Revolution most directly contributed to the growth of CITIES in the Northeast?",
+   choices:["Factories concentrated jobs in urban areas, drawing workers from rural regions","The invention of the automobile made commuting easy","Southern planters moved North to invest in manufacturing","Western gold rush wealth was reinvested in Northern cities"],
+   correct:0,explanation:"Factories required large workforces in one location. Rural workers (and later immigrants) moved to factory cities like New York, Boston, and Philadelphia for jobs — creating rapid urbanization.",
+   wrong:["","The automobile was invented in the late 1800s and became common in the early 1900s — after the main urban growth of the early Industrial Revolution.","Southern planters generally stayed in the South — the factory workforce came from rural immigrants and European arrivals.","Gold rush wealth (1849) did contribute some capital, but the primary driver of Northern urban growth was factory employment."]},
+
+  // UNIT 3: INDUSTRIALIZATION & IMMIGRATION
+  {id:11,unit:3,unit_name:"Industrialization & Immigration",topic:"Gilded Age inequality",difficulty:2,frequency:"high",source:"2025-style",
+   text:"The term 'Gilded Age' (coined by Mark Twain) referred to the late 1800s as a period that was:",
+   choices:["Outwardly prosperous but hiding extreme poverty and corruption beneath the surface","Genuinely prosperous for all Americans regardless of class","A golden era of equal opportunity and social mobility","Characterized by high immigration but low economic growth"],
+   correct:0,explanation:"'Gilded' means covered in a thin layer of gold — shiny on the outside but not solid. Twain criticized the era's visible wealth (railroads, mansions) that masked massive poverty, labor exploitation, and political corruption.",
+   wrong:["","Extreme inequality characterized the Gilded Age — industrial workers faced brutal conditions, low wages, and child labor while robber barons amassed fortunes.","The era was marked by LIMITED social mobility — monopolies and wealth concentration blocked opportunity for most.","Immigration was high AND so was economic growth — but the growth was wildly unequal, not broadly shared."]},
+
+  {id:12,unit:3,unit_name:"Industrialization & Immigration",topic:"Labor movement",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"The growth of labor unions in the late 1800s was primarily a response to:",
+   choices:["Dangerous working conditions, 12-16 hour workdays, and wages that kept workers in poverty","The desire of skilled workers to prevent immigrants from getting jobs","Government programs that were reducing workers' wages","Corporate policies that gave workers too much say in management decisions"],
+   correct:0,explanation:"Industrial workers faced 12-16 hour days, dangerous conditions (no safety regulations), child labor, and poverty wages. Unions like the AFL organized workers to collectively demand better conditions.",
+   wrong:["","While some unions did discriminate, the PRIMARY reason was exploitative working conditions and wages — not protecting jobs from immigrants.","The government had few labor protections in this era — it generally sided with corporations, not reducing wages through programs.","Workers had almost NO say in management — the opposite is true. Unions formed because workers were powerless."]},
+
+  {id:13,unit:3,unit_name:"Industrialization & Immigration",topic:"Progressive Era reforms",difficulty:2,frequency:"high",source:"2025-style",
+   text:"Progressive Era reformers of the early 1900s focused primarily on:",
+   choices:["Using government power to regulate big business and improve living conditions","Reducing the size of the federal government and cutting taxes","Expanding American territory overseas through imperialism","Returning to an agricultural economy and reducing industrialization"],
+   correct:0,explanation:"Progressives believed government should actively regulate corporations (antitrust laws), protect workers (child labor laws), ensure food safety (Pure Food and Drug Act), and give citizens more political power (direct election of senators).",
+   wrong:["","Progressives believed in MORE government intervention, not less. Reducing government was the position of laissez-faire conservatives.","Imperialism was a separate movement — some Progressives actually opposed overseas expansion.","Progressives accepted industrialization but wanted to reform its excesses — they didn't seek to return to a farm economy."]},
+
+  {id:14,unit:3,unit_name:"Industrialization & Immigration",topic:"Immigration patterns",difficulty:1,frequency:"medium",source:"2025-style",
+   text:"The 'New Immigration' of 1880–1920 differed from earlier immigration primarily because:",
+   choices:["Most immigrants came from Southern and Eastern Europe rather than Northern and Western Europe","Immigrants faced no discrimination upon arrival","The federal government actively recruited these immigrants","All new immigrants immediately received citizenship"],
+   correct:0,explanation:"Earlier immigrants came mainly from Ireland, Germany, and Scandinavia (Northern/Western Europe). 'New immigrants' came from Italy, Poland, Russia, and the Austro-Hungarian Empire — facing discrimination and nativist opposition.",
+   wrong:["","New immigrants faced intense discrimination — nativist movements, the Ku Klux Klan's revival, and laws like the Chinese Exclusion Act.","The government placed quotas and restrictions on immigration — not active recruitment. The Immigration Act of 1924 severely limited immigration.","Naturalization required years of residency and a legal process — not automatic upon arrival."]},
+
+  {id:15,unit:3,unit_name:"Industrialization & Immigration",topic:"Muckrakers",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"Upton Sinclair's book 'The Jungle' (1906) exposed unsanitary conditions in Chicago meatpacking plants. The most significant POLITICAL RESULT was:",
+   choices:["Congress passed the Pure Food and Drug Act and the Meat Inspection Act","Meatpacking companies voluntarily improved their practices","The Supreme Court ruled meatpacking was unconstitutional","Workers in meatpacking plants received immediate wage increases"],
+   correct:0,explanation:"Public outrage over 'The Jungle' (including reports that even President Roosevelt was disgusted) directly led to Congress passing federal food safety legislation in 1906 — landmark Progressive Era regulation.",
+   wrong:["","Companies rarely improved voluntarily — it took federal law and inspection. That's why the legislation was needed.","Meatpacking itself was legal — the issue was lack of safety regulations. Courts weren't involved.","Sinclair actually wrote the book to expose labor exploitation — he later said 'I aimed at the public's heart, and by accident I hit it in the stomach.' Wage increases didn't follow immediately."]},
+
+  // UNIT 4: WWI, WWII & COLD WAR
+  {id:16,unit:4,unit_name:"WWI, WWII & Cold War",topic:"WWI causes",difficulty:2,frequency:"high",source:"2025-style",
+   text:"Which factor most directly triggered US entry into World War I in 1917?",
+   choices:["Germany's unrestricted submarine warfare sinking American ships and the Zimmermann Telegram","The assassination of Archduke Franz Ferdinand in Sarajevo","Germany's invasion of neutral Belgium in 1914","The sinking of the British ship Lusitania in 1915"],
+   correct:0,explanation:"Germany's resumption of unrestricted submarine warfare (sinking American ships) combined with the Zimmermann Telegram (Germany asking Mexico to attack the US) pushed Wilson to ask Congress for a declaration of war.",
+   wrong:["","The assassination of Franz Ferdinand triggered WWI itself in 1914 — the US stayed neutral for years after. It wasn't the direct cause of US entry.","Belgium's invasion drew European powers in but the US remained neutral — it wasn't the cause of US entry two years later.","The Lusitania sinking (1915) angered Americans but the US still stayed neutral for two more years until 1917."]},
+
+  {id:17,unit:4,unit_name:"WWI, WWII & Cold War",topic:"WWII and the Holocaust",difficulty:1,frequency:"high",source:"2025-style",
+   text:"The Holocaust during World War II resulted in:",
+   choices:["The systematic murder of approximately 6 million Jews and millions of others by Nazi Germany","The forced relocation of Japanese Americans to internment camps","The atomic bombing of Hiroshima and Nagasaki","The Soviet Union's occupation of Eastern Europe"],
+   correct:0,explanation:"The Holocaust was Nazi Germany's systematic, state-sponsored genocide targeting Jews (6 million killed), as well as Roma, disabled people, LGBTQ+ people, political opponents, and others — totaling approximately 11 million victims.",
+   wrong:["","Japanese American internment was a separate event — a US government policy affecting approximately 120,000 people. It was wrong but was not the Holocaust.","The atomic bombings ended the Pacific War — they were a separate event from the Holocaust, which occurred in Europe.","Soviet occupation of Eastern Europe was a post-WWII Cold War development, separate from the Holocaust."]},
+
+  {id:18,unit:4,unit_name:"WWI, WWII & Cold War",topic:"Cold War containment",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"The Truman Doctrine (1947) established that the United States would:",
+   choices:["Provide military and economic aid to countries threatened by communist takeover","Withdraw from European affairs after WWII","Share nuclear technology with Western allies","Occupy former Axis nations permanently to prevent future wars"],
+   correct:0,explanation:"Truman's doctrine committed the US to containing Soviet communism by supporting free peoples resisting subjugation — first applied in Greece and Turkey. This became the foundation of Cold War foreign policy.",
+   wrong:["","The Truman Doctrine was the OPPOSITE — it committed the US to deep engagement in European and global affairs to stop communist expansion.","The US kept nuclear secrets — the Marshall Plan provided economic aid, not nuclear technology.","The US maintained some military presence in Germany and Japan, but the doctrine was about preventing new communist governments, not permanent occupation."]},
+
+  {id:19,unit:4,unit_name:"WWI, WWII & Cold War",topic:"Korean and Vietnam Wars",difficulty:2,frequency:"medium",source:"2025-style",
+   text:"The Vietnam War was controversial in America primarily because:",
+   choices:["Many Americans questioned why the US should fight a land war in Asia with no clear path to victory","The Soviet Union directly attacked American forces","Congress never authorized the war, making it entirely illegal","North Vietnam had attacked the US mainland"],
+   correct:0,explanation:"Vietnam divided Americans — massive casualties, no clear objective or exit strategy, and the draft falling disproportionately on poor and minority youth sparked massive protests. The draft, body counts, and televised footage turned public opinion.",
+   wrong:["","The Soviet Union supplied North Vietnam but never directly engaged US forces — direct superpower conflict was avoided throughout the Cold War.","Congress passed the Gulf of Tonkin Resolution (1964) authorizing force — later challenged but technically providing legal authorization.","North Vietnam never attacked the American mainland. The Gulf of Tonkin incident involved naval vessels, not US territory."]},
+
+  {id:20,unit:4,unit_name:"WWI, WWII & Cold War",topic:"Cold War arms race",difficulty:1,frequency:"medium",source:"2026-predicted",
+   text:"The Cuban Missile Crisis of 1962 was significant because it:",
+   choices:["Brought the US and Soviet Union to the brink of nuclear war before a diplomatic resolution","Resulted in a US military invasion that removed Castro from power","Led the Soviet Union to collapse the following year","Caused Cuba to join NATO as a defensive measure"],
+   correct:0,explanation:"When the US discovered Soviet nuclear missiles in Cuba, 13 days of intense standoff followed. Kennedy imposed a naval blockade; Khrushchev agreed to remove missiles in exchange for a US pledge not to invade Cuba — the closest the Cold War came to nuclear war.",
+   wrong:["","The US Bay of Pigs invasion (1961) failed catastrophically — Castro remained in power throughout the Cold War and beyond.","The Soviet Union collapsed in 1991 — nearly 30 years after the crisis. The crisis actually led to a hotline between Washington and Moscow.","Cuba was communist and allied with the Soviet Union — it absolutely did not join NATO, the Western alliance."]},
+
+  // UNIT 5: CIVIL RIGHTS ERA
+  {id:21,unit:5,unit_name:"Civil Rights Era",topic:"Brown v. Board of Education",difficulty:1,frequency:"high",source:"2025-style",
+   text:"The Supreme Court's decision in Brown v. Board of Education (1954) was significant because it:",
+   choices:["Declared racial segregation in public schools unconstitutional, overturning Plessy v. Ferguson","Gave African Americans the right to vote in federal elections","Prohibited discrimination in hiring practices by private businesses","Integrated the US military"],
+   correct:0,explanation:"Brown overturned Plessy v. Ferguson (1896)'s 'separate but equal' doctrine, ruling that racially segregated schools were inherently unequal and violated the Equal Protection Clause of the 14th Amendment.",
+   wrong:["","Voting rights were addressed by the 15th Amendment (1870) and enforced by the Voting Rights Act (1965) — not Brown.","Employment discrimination was addressed by the Civil Rights Act of 1964 — not Brown, which focused on public schools.","President Truman desegregated the military by executive order in 1948, six years before Brown."]},
+
+  {id:22,unit:5,unit_name:"Civil Rights Era",topic:"Civil rights strategies",difficulty:2,frequency:"high",source:"2025-style",
+   text:"The tactic of nonviolent civil disobedience used by civil rights activists was most directly inspired by:",
+   choices:["Mahatma Gandhi's independence movement in India","The US military's strategy in World War II","Marcus Garvey's Black Nationalism movement","The women's suffrage movement of the 1910s"],
+   correct:0,explanation:"Martin Luther King Jr. was directly inspired by Gandhi's satyagraha (truth-force) — peaceful resistance to unjust laws through sit-ins, marches, and refusing to comply, accepting arrest without violence.",
+   wrong:["","WWII military strategy involved armed combat — the opposite of nonviolent resistance.","Marcus Garvey advocated Black self-sufficiency and return to Africa — a different strategy from King's nonviolent integration approach.","Suffragists influenced civil rights broadly, but the specific nonviolent civil disobedience tactic was most directly inspired by Gandhi."]},
+
+  {id:23,unit:5,unit_name:"Civil Rights Era",topic:"Civil Rights Act 1964",difficulty:1,frequency:"high",source:"2026-predicted",
+   text:"The Civil Rights Act of 1964 was significant primarily because it:",
+   choices:["Prohibited discrimination based on race, color, religion, sex, and national origin in employment and public places","Gave African Americans the right to vote for the first time","Integrated the US armed forces","Ended segregation only in federal government buildings"],
+   correct:0,explanation:"The Civil Rights Act of 1964 was landmark legislation prohibiting discrimination in public accommodations (restaurants, hotels) and employment — covering race, color, religion, sex, and national origin.",
+   wrong:["","African American men received voting rights through the 15th Amendment (1870). The Voting Rights Act (1965) enforced and expanded voting rights.","Truman integrated the military by executive order in 1948 — 16 years before the Civil Rights Act.","The Act applied to private businesses serving the public, not just federal buildings — that's what made it transformative."]},
+
+  {id:24,unit:5,unit_name:"Civil Rights Era",topic:"Great Society",difficulty:2,frequency:"medium",source:"2025-style",
+   text:"President Lyndon B. Johnson's 'Great Society' programs were primarily designed to:",
+   choices:["Reduce poverty and racial inequality through federal programs including Medicare and education funding","Expand US military presence in Southeast Asia","Reduce the size of the federal government and cut spending","Protect business interests from labor unions"],
+   correct:0,explanation:"The Great Society was LBJ's sweeping domestic program: Medicare/Medicaid (health insurance for elderly/poor), the Civil Rights Act, Voting Rights Act, federal education funding, and antipoverty programs — the largest expansion of federal programs since FDR's New Deal.",
+   wrong:["","Vietnam War escalation was a foreign policy decision separate from the Great Society domestic agenda — and ultimately undermined it by diverting resources.","The Great Society massively EXPANDED government programs — the opposite of reducing them.","The Great Society included labor protections — LBJ was a Democrat allied with unions, not protecting businesses from them."]},
+
+  {id:25,unit:5,unit_name:"Civil Rights Era",topic:"Women's liberation movement",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"The women's liberation movement of the 1960s-70s achieved all of the following EXCEPT:",
+   choices:["Ratification of the Equal Rights Amendment to the Constitution","Passage of the Equal Pay Act (1963)","Title IX prohibiting sex discrimination in education (1972)","Roe v. Wade establishing abortion rights (1973)"],
+   correct:0,explanation:"The Equal Rights Amendment (ERA) was passed by Congress in 1972 and sent to states — but it was NOT ratified. It fell three states short of the required 38. The other three achievements did become law.",
+   wrong:["","The Equal Pay Act of 1963 was signed into law — a genuine achievement of the women's movement.","Title IX (1972) prohibited sex discrimination in federally funded education, transforming women's sports and opportunities — this was achieved.","Roe v. Wade (1973) was a Supreme Court ruling establishing constitutional abortion rights — it was achieved (later overturned in 2022 by Dobbs)."]},
+
+  // UNIT 6: MODERN AMERICA
+  {id:26,unit:6,unit_name:"Modern America",topic:"Reagan Revolution",difficulty:2,frequency:"high",source:"2025-style",
+   text:"Ronald Reagan's economic policy ('Reaganomics') was based primarily on the belief that:",
+   choices:["Cutting taxes for businesses and the wealthy would stimulate economic growth that would benefit all Americans","Increasing government spending on social programs would reduce poverty","Raising taxes on corporations would increase government revenue for infrastructure","Federal regulation of business was necessary to prevent another Depression"],
+   correct:0,explanation:"'Supply-side' or 'trickle-down' economics held that tax cuts for the wealthy would spur investment, create jobs, and ultimately benefit all. Reagan also cut social programs and deregulated industries.",
+   wrong:["","Reagan cut social programs — his philosophy was that government spending CAUSED economic problems, not solved them.","Reagan cut corporate taxes — he believed high taxes reduced investment. His policy was the opposite.","Reagan aggressively deregulated — his philosophy was that federal regulation HURT economic growth."]},
+
+  {id:27,unit:6,unit_name:"Modern America",topic:"End of Cold War",difficulty:1,frequency:"high",source:"2025-style",
+   text:"The fall of the Berlin Wall in 1989 and the dissolution of the Soviet Union in 1991 signified:",
+   choices:["The end of the Cold War and US victory in the decades-long struggle against Soviet communism","The beginning of a new military conflict between the US and Russia","The establishment of the United Nations as the world's governing authority","The US withdrawal from all European military alliances"],
+   correct:0,explanation:"The Berlin Wall's fall symbolized the collapse of communist governments in Eastern Europe. The Soviet Union itself dissolved in 1991 — marking the end of the Cold War that had defined global politics since 1945.",
+   wrong:["","US-Russia relations became more complex after the Cold War, but no new military conflict immediately followed — this came later with tensions over Ukraine and other issues.","The UN was founded in 1945 — decades before the Cold War ended. The Soviet collapse didn't change the UN's structure or authority.","The US maintained and expanded NATO after the Cold War — membership actually grew as former Soviet bloc countries joined."]},
+
+  {id:28,unit:6,unit_name:"Modern America",topic:"September 11 and consequences",difficulty:2,frequency:"high",source:"2026-predicted",
+   text:"The September 11, 2001 terrorist attacks most directly resulted in:",
+   choices:["US military intervention in Afghanistan and Iraq, and the creation of the Department of Homeland Security","A declaration of war against all Muslim-majority countries","The United Nations authorizing a global military force","The US withdrawal from NATO and international alliances"],
+   correct:0,explanation:"9/11 triggered the War on Terror — the invasion of Afghanistan (2001, against Al-Qaeda and the Taliban) and Iraq (2003), plus the Patriot Act, TSA, and the new Department of Homeland Security restructuring US intelligence.",
+   wrong:["","The US declared war on terrorist organizations and their state sponsors — not entire countries based on religious demographics.","The UN authorized the Afghanistan intervention but didn't create a global military force — US-led coalitions conducted the wars.","9/11 deepened international alliances — NATO invoked Article 5 (collective defense) for the first time in history in response to 9/11."]},
+
+  {id:29,unit:6,unit_name:"Modern America",topic:"Technology and society",difficulty:1,frequency:"medium",source:"2025-style",
+   text:"The rise of the internet and social media in the late 20th and early 21st centuries most significantly impacted American society by:",
+   choices:["Transforming how information spreads, enabling both greater connectivity and the rapid spread of misinformation","Eliminating economic inequality by giving everyone access to the same opportunities","Reducing political polarization by exposing Americans to diverse viewpoints","Replacing traditional media entirely within 10 years"],
+   correct:0,explanation:"The internet democratized information access and enabled global connection, but also created echo chambers, accelerated misinformation, and disrupted traditional journalism — both transforming society positively and creating new challenges.",
+   wrong:["","Economic inequality actually increased during the tech era — those without digital access or skills fell further behind.","Social media has arguably INCREASED polarization by creating echo chambers where people only see confirming viewpoints.","Traditional media (TV news, newspapers) still exists — though transformed. It hasn't been entirely replaced."]},
+
+  {id:30,unit:6,unit_name:"Modern America",topic:"Immigration debate",difficulty:2,frequency:"medium",source:"2026-predicted",
+   text:"Throughout US history, debates about immigration have centered on which recurring tension?",
+   choices:["Balancing America's identity as a 'nation of immigrants' with concerns about economic, cultural, and security impacts","Whether immigrants should be required to speak English or preserve their native languages","The geographic distribution of immigrants across the 50 states","Whether immigration should be managed by states or the federal government"],
+   correct:0,explanation:"Since the 1800s, the US has struggled between its founding identity as a refuge for immigrants and concerns about labor competition, cultural change, and security — this tension drives every era of immigration debate.",
+   wrong:["","Language debates are part of the immigration discussion but not the central tension — the core conflict involves national identity vs. economic/cultural concerns.","Geographic distribution is a policy detail, not the fundamental tension driving immigration debates throughout history.","Federal vs. state authority is a federalism question — while relevant, it's not the primary recurring tension in immigration debates."]},
+]
+const PREDICTIONS = [
+  {topic:"Constitutional principles (checks/balances, federalism)",unit:"Unit 1",prob:"Very High",reason:"Appears on every US History Regents"},
+  {topic:"Civil War causes and Reconstruction",unit:"Unit 2",prob:"Very High",reason:"Appeared 6/6 recent exams"},
+  {topic:"Progressive Era reforms",unit:"Unit 3",prob:"Very High",reason:"Appeared 6/6 recent exams"},
+  {topic:"WWI and WWII US involvement",unit:"Unit 4",prob:"Very High",reason:"Major topics appearing every exam"},
+  {topic:"Civil Rights movement strategies and legislation",unit:"Unit 5",prob:"Very High",reason:"Appears every exam — multiple questions"},
+  {topic:"Cold War containment policy",unit:"Unit 4",prob:"High",reason:"Appeared 5/6 recent exams"},
+  {topic:"Great Migration and immigration patterns",unit:"Unit 3",prob:"High",reason:"Appeared 5/6 recent exams"},
+  {topic:"Brown v. Board and Supreme Court cases",unit:"Unit 5",prob:"High",reason:"Appeared 5/6 recent exams"},
+  {topic:"Reagan Era and end of Cold War",unit:"Unit 6",prob:"High",reason:"Appeared 4/6 recent exams — trending"},
+  {topic:"Gilded Age inequality and labor movement",unit:"Unit 3",prob:"Medium",reason:"Rotates — appeared 3/6 recent exams"},
+]
+
+// ═══════════════════════════════════════════════════
+// SHUFFLE — randomize answer positions per session
+// ═══════════════════════════════════════════════════
+let shuffledQuestions = [];
+
+function shuffleQuestions(){
+  shuffledQuestions = QUESTIONS.map(q => {
+    // Create index map [0,1,2,3] and shuffle it
+    const idxs = [0,1,2,3];
+    for(let i=idxs.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [idxs[i],idxs[j]]=[idxs[j],idxs[i]];
+    }
+    // Reorder choices and wrong explanations using shuffled indexes
+    const newChoices = idxs.map(i=>q.choices[i]);
+    const newWrong = idxs.map(i=>q.wrong[i]);
+    const newCorrect = idxs.indexOf(q.correct);
+    return {...q, choices:newChoices, wrong:newWrong, correct:newCorrect, _origCorrect:q.correct};
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let current = 0;
+let answers = new Array(30).fill(null);
+let flagged = new Array(30).fill(false);
+let timerInterval, seconds = 0;
+let testResults = null;
+let chatHistory = [];
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+function toast(msg,type='info'){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.className='toast show';
+  setTimeout(()=>el.className='toast',3000);
+}
+function unitColor(u){ return UNIT_COLORS[u-1]; }
+
+// ═══════════════════════════════════════════════════
+// SCREEN 1 → START
+// ═══════════════════════════════════════════════════
+function startTest(){
+  answers = new Array(30).fill(null);
+  flagged = new Array(30).fill(false);
+  current = 0; seconds = 0;
+  shuffleQuestions();
+  showScreen('s2');
+  buildSidebar();
+  renderQ(0);
+  timerInterval = setInterval(()=>{
+    seconds++;
+    const m=String(Math.floor(seconds/60)).padStart(2,'0');
+    const s2=String(seconds%60).padStart(2,'0');
+    document.getElementById('timerVal').textContent=`${m}:${s2}`;
+  },1000);
+}
+
+// ═══════════════════════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════════════════════
+function buildSidebar(){
+  const wrap = document.getElementById('sidebarDots');
+  const byUnit = {};
+  shuffledQuestions.forEach((q,i)=>{
+    if(!byUnit[q.unit]) byUnit[q.unit]=[];
+    byUnit[q.unit].push(i);
+  });
+  let html='';
+  Object.entries(byUnit).forEach(([unit,idxs])=>{
+    html+=`<div class="ts-unit">
+      <div class="ts-unit-name" style="color:${unitColor(parseInt(unit))}">Unit ${unit}</div>
+      <div class="ts-dots" id="dots-u${unit}">`;
+    idxs.forEach(i=>{
+      html+=`<div class="ts-dot ${i===0?'current':''}" id="dot-${i}" onclick="jumpTo(${i})">${i+1}</div>`;
+    });
+    html+=`</div></div>`;
+  });
+  wrap.innerHTML=html;
+}
+
+function updateSidebar(){
+  QUESTIONS.forEach((q,i)=>{
+    const el=document.getElementById(`dot-${i}`);
+    if(!el) return;
+    el.className='ts-dot'+(i===current?' current':answers[i]!==null?' answered':flagged[i]?' flagged':'');
+  });
+  const answered=answers.filter(a=>a!==null).length;
+  document.getElementById('progressLabel').textContent=`${answered} / 30`;
+  document.getElementById('progressFill').style.width=`${(answered/30)*100}%`;
+}
+
+function jumpTo(i){ current=i; renderQ(i); }
+
+// ═══════════════════════════════════════════════════
+// RENDER QUESTION
+// ═══════════════════════════════════════════════════
+function renderQ(i){
+  const q=shuffledQuestions[i];
+  // Unit badge
+  const badge=document.getElementById('qUnitBadge');
+  badge.textContent=`${q.unit_name}`;
+  badge.style.background=unitColor(q.unit)+'18';
+  badge.style.color=unitColor(q.unit);
+  badge.style.border=`1px solid ${unitColor(q.unit)}44`;
+  // Meta
+  document.getElementById('qNum').textContent=`Question ${i+1} of 30`;
+  const freq=document.getElementById('qFreq');
+  freq.textContent=q.frequency==='high'?'🔥 High Frequency':'📋 Medium Frequency';
+  freq.className='q-freq '+(q.frequency==='high'?'high':'medium');
+
+  // Question text
+  document.getElementById('qText').textContent=q.text;
+  // Choices — no correct/wrong reveal during test, only selected state
+  const chosen=answers[i];
+  const letters=['A','B','C','D'];
+  let html='';
+  q.choices.forEach((c,ci)=>{
+    const sel=ci===chosen;
+    html+=`<div class="choice${sel?' selected':''}" onclick="selectAnswer(${ci})">
+      <div class="choice-letter">${letters[ci]}</div>
+      <div class="choice-text">${c}</div>
+    </div>`;
+  });
+  document.getElementById('choicesWrap').innerHTML=html;
+  // No feedback during test — hide always
+  document.getElementById('feedbackBox').style.display='none';
+  // Nav buttons
+  document.getElementById('btnPrev').style.display=i===0?'none':'';
+  const isLast=i===29;
+  document.getElementById('btnNext').style.display=isLast?'none':'';
+  document.getElementById('btnSubmit').style.display=isLast?'':'none';
+  updateSidebar();
+}
+
+function selectAnswer(ci){
+  answers[current]=ci;
+  renderQ(current);
+
+}
+
+function goQ(dir){
+  current=Math.max(0,Math.min(29,current+dir));
+  renderQ(current);
+}
+
+function toggleFlag(){
+  flagged[current]=!flagged[current];
+  updateSidebar();
+  toast(flagged[current]?'Question flagged 🚩':'Flag removed');
+}
+
+// ═══════════════════════════════════════════════════
+// SUBMIT
+// ═══════════════════════════════════════════════════
+function submitTest(){
+  const unanswered=answers.filter(a=>a===null).length;
+  if(unanswered>0 && !confirm(`You have ${unanswered} unanswered question${unanswered>1?'s':''}. Submit anyway?`)) return;
+  clearInterval(timerInterval);
+
+  // Calculate results
+  let total=0;
+  const unitScores={};
+  const wrongQs=[];
+
+  shuffledQuestions.forEach((q,i)=>{
+    if(!unitScores[q.unit]) unitScores[q.unit]={name:q.unit_name,correct:0,total:0,wrong:[]};
+    unitScores[q.unit].total++;
+    const correct=answers[i]===q.correct;
+    if(correct){ total++; unitScores[q.unit].correct++; }
+    else {
+      unitScores[q.unit].wrong.push({qid:i,question:q.text,yourAnswer:answers[i]!==null?q.choices[answers[i]]:'(unanswered)',correctAnswer:q.choices[q.correct],explanation:q.explanation,wrongExplanation:answers[i]!==null?q.wrong[answers[i]]:''});
+      wrongQs.push({unit:q.unit,unit_name:q.unit_name,...q,yourIdx:answers[i]});
+    }
+  });
+
+  const scaledScore=Math.round((total/30)*100);
+  testResults={total,scaledScore,unitScores,wrongQs,timeSeconds:seconds};
+  showResults();
+  saveToSupabase();
+}
+
+// ═══════════════════════════════════════════════════
+// REVIEW BUILDER
+// ═══════════════════════════════════════════════════
+function buildReview(){
+  const letters=['A','B','C','D'];
+  const wrap=document.getElementById('reviewCard');
+
+  let wrongCount=0,rightCount=0;
+  const wrongItems=[],rightItems=[];
+
+  shuffledQuestions.forEach((q,i)=>{
+    const chosen=answers[i];
+    const correct=chosen===q.correct;
+    if(correct) rightCount++;
+    else wrongCount++;
+
+    const choicesHtml=q.choices.map((c,ci)=>{
+      let cls='rq-choice';
+      if(ci===q.correct) cls+=' rq-ch-correct';
+      else if(ci===chosen && ci!==q.correct) cls+=' rq-ch-yours';
+      return `<div class="${cls}"><span class="rq-ltr">${letters[ci]}</span>${c}</div>`;
+    }).join('');
+
+    const wrongExpHtml=(chosen!==null && !correct && q.wrong[chosen])?
+      `<div class="rq-wrong-exp">Why your answer was wrong: ${q.wrong[chosen]}</div>`:'';
+
+    const item=`<div class="rq-item ${correct?'rq-correct':'rq-wrong'}">
+      <div class="rq-meta">
+        <span class="rq-num">Q${i+1}</span>
+        <span class="rq-unit">${q.unit_name}</span>
+        <span class="rq-status">${correct?'✅ Correct':'❌ Incorrect'}</span>
+        ${chosen===null?'<span class="rq-unit" style="background:#fef3c7;color:#92400e;">Skipped</span>':''}
+      </div>
+      <div class="rq-text">${q.text}</div>
+      <div class="rq-choices">${choicesHtml}</div>
+      <div class="rq-explain">${q.explanation}</div>
+      ${wrongExpHtml}
+    </div>`;
+
+    if(correct) rightItems.push(item);
+    else wrongItems.push(item);
+  });
+
+  wrap.innerHTML=`
+    <div class="review-head">📋 Full Question Review</div>
+    <div class="review-sub">${wrongCount} incorrect · ${rightCount} correct — review every question below</div>
+    ${wrongCount>0?`<div style="margin-bottom:12px;font-size:13px;font-weight:700;color:var(--red);">❌ Questions You Missed (${wrongCount})</div>${wrongItems.join('')}`:''}
+    ${rightCount>0?`<button class="review-toggle" onclick="toggleRight(this)">✅ Show Correct Answers (${rightCount}) ▸</button><div id="rightAnswers" style="display:none">${rightItems.join('')}</div>`:''}
+  `;
+}
+
+function toggleRight(btn){
+  const el=document.getElementById('rightAnswers');
+  const open=el.style.display==='block';
+  el.style.display=open?'none':'block';
+  btn.innerHTML=open?`✅ Show Correct Answers (${btn.dataset.n||''}) ▸`:`✅ Hide Correct Answers ▾`;
+}
+
+// ═══════════════════════════════════════════════════
+// RESULTS SCREEN
+// ═══════════════════════════════════════════════════
+function showResults(){
+  showScreen('s3');
+  const {total,scaledScore,unitScores}=testResults;
+
+  // Hero score
+  const scoreEl=document.getElementById('rhScore');
+  scoreEl.textContent=scaledScore;
+  scoreEl.className='rh-score '+(scaledScore>=65?'pass':scaledScore>=50?'close':'fail');
+  document.getElementById('rhLabel2').textContent=scaledScore>=65?'✅ Passing Score (65+ required)':scaledScore>=50?'⚠️ Almost there — review weak units':'📚 Focus time — your AI tutor is ready';
+
+  const mins=Math.floor(testResults.timeSeconds/60);
+  document.getElementById('rhPills').innerHTML=`
+    <span class="rh-pill">${total}/30 correct</span>
+    <span class="rh-pill">${mins} min taken</span>
+    <span class="rh-pill">${testResults.wrongQs.length} to review</span>`;
+
+  // Unit cards
+  const grid=document.getElementById('unitCards');
+  grid.innerHTML=Object.entries(unitScores).map(([u,data])=>{
+    const pct=Math.round((data.correct/data.total)*100);
+    const verdict=pct>=80?'strong':pct>=60?'review':'focus';
+    const vLabel=pct>=80?'Strong ✅':pct>=60?'Review ⚠️':'Needs Focus 🔴';
+    return `<div class="unit-card">
+      <div class="uc-head">
+        <span class="uc-dot" style="background:${unitColor(parseInt(u))}"></span>
+        <span class="uc-name">${data.name}</span>
+        <span class="uc-score" style="color:${unitColor(parseInt(u))}">${data.correct}/5</span>
+      </div>
+      <div class="uc-bar"><div class="uc-fill" style="width:${pct}%;background:${unitColor(parseInt(u))}"></div></div>
+      <span class="uc-verdict ${verdict}">${vLabel}</span>
+    </div>`;
+  }).join('');
+
+  // Review section
+  buildReview();
+
+  // Predictions
+  document.getElementById('predictRows').innerHTML=PREDICTIONS.map(p=>`
+    <div class="predict-row">
+      <span class="predict-prob ${p.prob==='Very High'?'very-high':p.prob==='High'?'high':'medium'}">${p.prob}</span>
+      <div>
+        <div class="predict-topic">${p.topic} <span style="font-size:11px;color:var(--gray);font-weight:500;">— ${p.unit}</span></div>
+        <div class="predict-reason">${p.reason}</div>
+      </div>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════
+// SUPABASE SAVE
+// ═══════════════════════════════════════════════════
+async function saveToSupabase(){
+  if(!db || !USER) return;
+  try{
+    const {unitScores,total,scaledScore,wrongQs,timeSeconds}=testResults;
+    const unit_scores={};
+    Object.entries(unitScores).forEach(([u,d])=>{ unit_scores[u]={name:d.name,correct:d.correct,total:d.total,pct:Math.round(d.correct/d.total*100)}; });
+    await db.from('mock_attempts').insert({
+      user_id:USER.id, subject:'us_history',
+      score:scaledScore, correct:total, total_questions:30,
+      unit_scores, time_seconds:timeSeconds,
+      question_results:answers.map((a,i)=>({q:i+1,correct:a===QUESTIONS[i].correct,chosen:a}))
+    });
+    toast('Results saved to your dashboard ✓','success');
+  } catch(e){ console.log('Save skipped (table may not exist yet)'); }
+}
+
+// ═══════════════════════════════════════════════════
+// AI TUTOR SCREEN
+// ═══════════════════════════════════════════════════
+function goTutor(){
+  showScreen('s4');
+  buildTutorSidebar();
+  chatHistory=[];
+  document.getElementById('chatMsgs').innerHTML='';
+  sendInitialMessage();
+}
+
+function buildTutorSidebar(){
+  const {unitScores}=testResults;
+  let html='';
+  Object.entries(unitScores).forEach(([u,data])=>{
+    const pct=Math.round(data.correct/data.total*100);
+    const cls=pct>=80?'strong':pct>=60?'ok':'weak';
+    html+=`<div class="ts2-unit ${cls}" onclick="askAboutUnit('${data.name}')">
+      <span class="ts2-unit-name"><span style="width:8px;height:8px;border-radius:50%;background:${unitColor(parseInt(u))};display:inline-block"></span>${data.name}</span>
+      <span class="ts2-unit-score">${data.correct}/5</span>
+    </div>`;
+  });
+  document.getElementById('tutorUnits').innerHTML=html;
+
+  // Quick questions based on weak areas
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const quickQs=[
+    weakUnits.length?`Why did I struggle with ${weakUnits[0]}?`:'What should I study first?',
+    'Which topics are most likely on the June 2026 exam?',
+    'Give me a 2-week study plan based on my scores',
+    'Explain the 10% energy rule with an example',
+    weakUnits.length>1?`Compare my weakest units: ${weakUnits.slice(0,2).join(' vs ')}`: 'What concepts connect these units?',
+  ];
+  document.getElementById('quickBtns').innerHTML=quickQs.map(q=>`<button class="quick-btn" onclick="sendQuick('${q.replace(/'/g,"\\'")}')">💬 ${q}</button>`).join('');
+}
+
+function sendQuick(msg){
+  document.getElementById('chatInput').value=msg;
+  sendMsg();
+}
+
+function askAboutUnit(unitName){
+  sendQuick(`Explain what I need to know about ${unitName} for the Regents`);
+}
+
+function buildSystemPrompt(){
+  const {total,scaledScore,unitScores,wrongQs,timeSeconds}=testResults;
+  const mins=Math.floor(timeSeconds/60);
+  const unitSummary=Object.entries(unitScores).map(([u,d])=>`- ${d.name}: ${d.correct}/5 (${Math.round(d.correct/d.total*100)}%)`).join('\n');
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const wrongSummary=wrongQs.slice(0,8).map(q=>`Q: "${q.text}"\nCorrect: ${q.choices[q.correct]}\nStudent chose: ${q.yourIdx!==null?q.choices[q.yourIdx]:'(unanswered)'}`).join('\n\n');
+
+  return `You are a warm, encouraging, expert US History & Government Regents tutor for NYC high school students. You know this student's exact test results and use them to give hyper-personalized help.
+
+STUDENT TEST RESULTS:
+- Score: ${scaledScore}/100 (${total}/30 correct) — taken in ${mins} minutes
+- Passing score is 65
+
+UNIT BREAKDOWN:
+${unitSummary}
+
+WEAK UNITS (scored below 60%): ${weakUnits.length?weakUnits.join(', '):'None — great job!'}
+
+QUESTIONS THIS STUDENT MISSED (first 8):
+${wrongSummary}
+
+HIGH-PROBABILITY JUNE 2026 TOPICS:
+- Cell membrane / osmosis (appears EVERY exam)
+- DNA replication & protein synthesis (appears EVERY exam)  
+- Natural selection scenario (appears EVERY exam)
+- Energy pyramid / 10% rule (appears 5/6 recent exams)
+- Negative feedback / homeostasis (appears EVERY exam)
+- Vaccine / immune response (4/6 recent exams, trending post-COVID)
+- Photosynthesis equation & factors (appears EVERY exam)
+
+YOUR ROLE:
+1. Explain WHY wrong answers were wrong — not just what's right
+2. Use real-world examples NYC students relate to (food, subway, sports, NYC nature)
+3. Give specific study priorities based on their unit scores
+4. When asked about study plans, give concrete weekly schedules
+5. Flag the highest-probability topics for June 2026 when relevant
+6. Keep explanations clear for a 9th-11th grader — no jargon without explanation
+7. Be encouraging — this student is putting in the work
+
+Keep responses focused and practical. Use bullet points when listing concepts. Be conversational, not textbook-like.`;
+}
+
+function sendInitialMessage(){
+  const {scaledScore,unitScores,wrongQs}=testResults;
+  const weakUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total<0.6).map(([u,d])=>d.name);
+  const strongUnits=Object.entries(unitScores).filter(([u,d])=>d.correct/d.total>=0.8).map(([u,d])=>d.name);
+
+  const intro=`Hi! I've reviewed your test results. Here's what I see:\n\n**Score: ${testResults.total}/30 (${scaledScore}/100)** ${scaledScore>=65?'✅ Passing!':scaledScore>=50?'⚠️ Getting close':'📚 Room to grow'}\n\n${weakUnits.length?`**Needs the most work:** ${weakUnits.join(', ')}\n\n`:''}${strongUnits.length?`**Your strengths:** ${strongUnits.join(', ')}\n\n`:''}I know exactly which questions you missed and why. Ask me anything — I can explain wrong answers, give you a study plan, or tell you what's most likely on the June 2026 exam. What do you want to tackle first?`;
+
+  addMsg('ai', intro);
+}
+
+function addMsg(role, text){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');
+  div.className=`chat-msg ${role}`;
+  if(role==='ai'){
+    div.innerHTML=`<div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><path d="M8 21h8M12 17v4" stroke="white" stroke-width="1.8" stroke-linecap="round"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg></div>
+    <div class="msg-bubble">${formatMsg(text)}</div>`;
+  } else {
+    div.innerHTML=`<div class="msg-bubble">${text}</div>`;
+  }
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  chatHistory.push({role,content:text});
+}
+
+function formatMsg(text){
+  return text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/^- (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s,'<ul>$1</ul>')
+    .replace(/\n/g,'<br>');
+}
+
+function showTyping(){
+  const msgs=document.getElementById('chatMsgs');
+  const div=document.createElement('div');
+  div.className='chat-msg ai'; div.id='typing-indicator';
+  div.innerHTML=`<div class="ai-avatar"><svg viewBox="0 0 24 24" fill="none" width="14" height="14"><rect x="3" y="3" width="18" height="14" rx="3" stroke="white" stroke-width="1.8"/><circle cx="9" cy="10" r="1.5" fill="white"/><circle cx="15" cy="10" r="1.5" fill="white"/></svg></div>
+  <div class="msg-bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div></div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+}
+
+function hideTyping(){ document.getElementById('typing-indicator')?.remove(); }
+
+async function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const msg=input.value.trim();
+  if(!msg) return;
+  input.value=''; input.style.height='auto';
+  document.getElementById('sendBtn').disabled=true;
+
+  addMsg('user',msg);
+  showTyping();
+
+  // Build messages for Claude API
+  const history=chatHistory.filter(m=>m.role!=='ai'||m.content.length<500).slice(-8);
+  const messages=history.map(m=>({role:m.role==='ai'?'assistant':'user',content:m.content}));
+  if(messages.length===0||messages[messages.length-1].role==='assistant'){
+    messages.push({role:'user',content:msg});
+  } else {
+    messages[messages.length-1]={role:'user',content:msg};
+  }
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:buildSystemPrompt(),
+        messages:[...history.filter(m=>m.role!=='ai').slice(-6).map(m=>({role:'user',content:m.content})),{role:'user',content:msg}]
+      })
+    });
+    const data=await res.json();
+    hideTyping();
+    const reply=data.content?.[0]?.text||"I'm having trouble responding right now — please try again.";
+    addMsg('ai',reply);
+  } catch(e){
+    hideTyping();
+    addMsg('ai','Connection issue — please try again in a moment.');
+  }
+  document.getElementById('sendBtn').disabled=false;
+}
+
+function retake(){
+  showScreen('s1');
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+window.onload=async()=>{
+  if(typeof supabase!=='undefined'){
+    try{
+      db=supabase.createClient(SB_URL,SB_KEY);
+      const{data}=await db.auth.getSession();
+      if(data?.session?.user) USER=data.session.user;
+    }catch(e){}
+  }
+};
+</script>
+</body>
+</html>
