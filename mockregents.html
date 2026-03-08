@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZenEd — Mock Regents Tests</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--teal:#0ea87a;--ink:#0d1a12;--cream:#f6f9f7;--border:#e0ebe5;--gray:#64748b;--gray-light:#f1f5f2;--teal-pale:#e8f7f2;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;}
+.nav{height:54px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;position:sticky;top:0;z-index:200;gap:16px;}
+.nav-logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-weight:700;font-size:16px;}
+.nav-logo-ico{width:26px;height:26px;background:linear-gradient(135deg,#0ea87a,#076b4f);border-radius:7px;display:flex;align-items:center;justify-content:center;}
+.nav-logo em{color:var(--teal);font-style:normal;}
+.nav-link{font-size:13px;font-weight:600;color:var(--gray);text-decoration:none;padding:6px 10px;border-radius:8px;transition:color .15s;}
+.nav-link:hover,.nav-link.active{color:var(--ink);}
+.nav-link.active{background:var(--gray-light);}
+.wrap{max-width:800px;margin:0 auto;padding:52px 24px;}
+.badge{display:inline-flex;align-items:center;gap:7px;background:white;border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--gray);margin-bottom:24px;box-shadow:0 1px 4px rgba(0,0,0,.05);}
+.badge span{width:7px;height:7px;background:var(--teal);border-radius:50%;display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+h1{font-family:'DM Serif Display',Georgia,serif;font-size:48px;line-height:1.08;letter-spacing:-.5px;margin-bottom:12px;}
+h1 em{font-style:italic;color:var(--teal);}
+.sub{font-size:16px;color:var(--gray);line-height:1.7;margin-bottom:48px;max-width:520px;}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:48px;}
+.card{background:white;border:1px solid var(--border);border-radius:20px;padding:28px;box-shadow:0 2px 8px rgba(0,0,0,.05);text-decoration:none;color:var(--ink);transition:all .2s;display:block;}
+.card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,.1);border-color:transparent;}
+.card-emoji{font-size:32px;margin-bottom:14px;}
+.card-title{font-size:18px;font-weight:800;margin-bottom:6px;}
+.card-sub{font-size:13px;color:var(--gray);line-height:1.5;margin-bottom:16px;}
+.card-meta{display:flex;gap:8px;flex-wrap:wrap;}
+.tag{font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;background:var(--gray-light);color:var(--gray);}
+.card-cta{display:flex;align-items:center;justify-content:space-between;margin-top:18px;padding-top:16px;border-top:1px solid var(--border);}
+.card-link{font-size:13px;font-weight:700;color:var(--teal);}
+.card-arrow{font-size:16px;transition:transform .2s;}
+.card:hover .card-arrow{transform:translateX(4px);}
+.howbox{background:var(--ink);border-radius:20px;padding:36px;color:white;}
+.howbox h2{font-family:'DM Serif Display',Georgia,serif;font-size:28px;font-style:italic;margin-bottom:24px;color:rgba(255,255,255,.9);}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.step{text-align:center;}
+.step-num{width:36px;height:36px;background:var(--teal);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;margin:0 auto 10px;}
+.step-txt{font-size:12px;line-height:1.5;color:rgba(255,255,255,.7);}
+@media(max-width:640px){.grid{grid-template-columns:1fr;}.steps{grid-template-columns:repeat(2,1fr);}.nav-link{display:none;}h1{font-size:36px;}}
+</style>
+</head>
+<body>
+<nav class="nav">
+  <a href="index.html" class="nav-logo">
+    <div class="nav-logo-ico">
+      <svg viewBox="0 0 24 24" fill="none" width="13" height="13"><path d="M12 3L4 8V16L12 21L20 16V8L12 3Z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/><path d="M8 11L12 15L16 11" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 7V15" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </div>
+    Zen<em>Ed</em>
+  </a>
+  <a href="index.html" class="nav-link">Home</a>
+  <a href="mockregents.html" class="nav-link active">Mock Tests</a>
+  <a href="practice.html" class="nav-link">Practice</a>
+  <a href="resources.html" class="nav-link">Resources</a>
+  <a href="dashboard.html" class="nav-link">Dashboard</a>
+  <a href="tutor_landing.html" class="nav-link">Tutors</a>
+</nav>
+
+<div class="wrap">
+  <div class="badge"><span></span> 2025 Style + 2026 Predicted Questions</div>
+  <h1>Mock <em>Regents</em><br>Tests</h1>
+  <p class="sub">30 questions per subject. Get scored by unit, see exactly what you missed, then unlock your AI tutor who knows your weak spots.</p>
+
+  <div class="grid">
+    <a href="mockregents_livingenv.html" class="card">
+      <div class="card-emoji">🧬</div>
+      <div class="card-title">Living Environment</div>
+      <div class="card-sub">Cells, genetics, evolution, ecology, human biology, and photosynthesis — all six units tested.</div>
+      <div class="card-meta">
+        <span class="tag">30 Questions</span>
+        <span class="tag">6 Units</span>
+        <span class="tag">AI Tutor</span>
+      </div>
+      <div class="card-cta"><span class="card-link">Start Test</span><span class="card-arrow">→</span></div>
+    </a>
+
+    <a href="mockregents_algebra1.html" class="card">
+      <div class="card-emoji">📐</div>
+      <div class="card-title">Algebra I</div>
+      <div class="card-sub">Linear equations, functions, systems, polynomials, quadratics, and statistics — all six units tested.</div>
+      <div class="card-meta">
+        <span class="tag">30 Questions</span>
+        <span class="tag">6 Units</span>
+        <span class="tag">AI Tutor</span>
+      </div>
+      <div class="card-cta"><span class="card-link">Start Test</span><span class="card-arrow">→</span></div>
+    </a>
+
+    <a href="mockregents_ela.html" class="card">
+      <div class="card-emoji">📖</div>
+      <div class="card-title">ELA</div>
+      <div class="card-sub">Reading comprehension, textual evidence, argument, literary elements, vocabulary, and grammar — all six units tested.</div>
+      <div class="card-meta">
+        <span class="tag">30 Questions</span>
+        <span class="tag">6 Units</span>
+        <span class="tag">AI Tutor</span>
+      </div>
+      <div class="card-cta"><span class="card-link">Start Test</span><span class="card-arrow">→</span></div>
+    </a>
+
+    <a href="mockregents_ushistory.html" class="card">
+      <div class="card-emoji">🗽</div>
+      <div class="card-title">US History</div>
+      <div class="card-sub">Constitutional foundations, 1800s reform, industrialization, world wars, civil rights, and modern America — all six units tested.</div>
+      <div class="card-meta">
+        <span class="tag">30 Questions</span>
+        <span class="tag">6 Units</span>
+        <span class="tag">AI Tutor</span>
+      </div>
+      <div class="card-cta"><span class="card-link">Start Test</span><span class="card-arrow">→</span></div>
+    </a>
+  </div>
+
+  <div class="cer-banner" onclick="window.location='cer_trainer.html'" style="cursor:pointer;background:linear-gradient(135deg,#1e1b4b,#4c1d95);border-radius:16px;padding:28px 32px;margin-bottom:24px;display:flex;align-items:center;gap:24px;">
+    <div style="font-size:48px;flex-shrink:0">✍️</div>
+    <div style="flex:1">
+      <div style="color:#c4b5fd;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px">New Feature</div>
+      <div style="color:white;font-size:22px;font-weight:800;margin-bottom:6px">CER Writing Trainer</div>
+      <div style="color:rgba(255,255,255,.7);font-size:13px;line-height:1.6">16 of 45 questions on the Living Environment Regents require written responses — and most students lose points here. Practice all 8 CER question types with AI that grades your response, quotes your words, and tells you exactly what to fix.</div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <span style="background:rgba(255,255,255,.12);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">8 Jan 2026 Questions</span>
+        <span style="background:rgba(255,255,255,.12);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">AI Grades Every Response</span>
+        <span style="background:rgba(255,255,255,.12);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">Live Chat Tutor</span>
+        <span style="background:rgba(255,255,255,.12);color:white;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px">Model Answers Included</span>
+      </div>
+    </div>
+    <div style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:white;font-size:13px;font-weight:700;padding:12px 20px;border-radius:10px;flex-shrink:0;white-space:nowrap">Start CER Practice →</div>
+  </div>
+
+  <div class="howbox">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-txt">Take 30 questions in exam format — timed or untimed</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-txt">Get scored by unit instantly — see exactly where you're strong or weak</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-txt">See why each wrong answer was wrong with full explanations</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-txt">AI tutor activates — personalized to your exact results, answers any question</div></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
