@@ -2,6 +2,23 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta http-equiv="refresh" content="0; url=index.html">
+<title>ZenEd</title>
+</head>
+<body>
+<p>Redirecting to <a href="index.html">ZenEd home</a>&hellip;</p>
+<!-- PARKED — restore by uncommenting.
+To restore this page: delete everything from the top of the file through this line,
+remove the closing comment marker at the very end of the file, then revert the
+escaped comment markers in the content below: replace every "<!~~" with "<!"
+followed by two hyphens (comment opener), and every "~~>" with two hyphens
+followed by ">" (comment closer). They were escaped so the parked content can
+live inside this single HTML comment.
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tutor Dashboard | ZenEd</title>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -163,7 +180,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
 
 <div class="page">
 
-  <!-- PENDING STATE (shown while application under review) -->
+  <!~~ PENDING STATE (shown while application under review) ~~>
   <div id="pendingView" style="display:none">
     <div class="section">
       <div class="pending-state">
@@ -174,7 +191,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
     </div>
   </div>
 
-  <!-- ACTIVE DASHBOARD -->
+  <!~~ ACTIVE DASHBOARD ~~>
   <div id="activeView">
 
     <div class="page-header">
@@ -185,7 +202,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
       <div class="status-pill status-active"><div class="status-dot dot-active"></div>Active Tutor</div>
     </div>
 
-    <!-- CONFLICT REMINDER -->
+    <!~~ CONFLICT REMINDER ~~>
     <div class="conflict-bar">
       <div class="cb-ico">⚠️</div>
       <div>
@@ -193,7 +210,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
       </div>
     </div>
 
-    <!-- AVAILABILITY TOGGLE -->
+    <!~~ AVAILABILITY TOGGLE ~~>
     <div class="avail-banner">
       <div class="ab-left">
         <div class="ab-ico">🟢</div>
@@ -208,7 +225,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
       </div>
     </div>
 
-    <!-- STATS -->
+    <!~~ STATS ~~>
     <div class="stats-grid">
       <div class="stat-card">
         <div class="sc-label">This month</div>
@@ -232,14 +249,14 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
       </div>
     </div>
 
-    <!-- BOOKING REQUESTS -->
+    <!~~ BOOKING REQUESTS ~~>
     <div class="section">
       <div class="section-head">
         <span class="sh-title">Booking Requests</span>
         <span class="sh-count" id="reqCount">2 new</span>
       </div>
       <div id="requestsList">
-        <!-- Demo requests -->
+        <!~~ Demo requests ~~>
         <div class="booking-item" id="req1">
           <div class="bi-avatar">A</div>
           <div class="bi-info">
@@ -270,7 +287,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
       <div id="noRequests" class="empty-state" style="display:none">No new booking requests right now.</div>
     </div>
 
-    <!-- UPCOMING SESSIONS -->
+    <!~~ UPCOMING SESSIONS ~~>
     <div class="section">
       <div class="section-head">
         <span class="sh-title">Upcoming Sessions</span>
@@ -281,7 +298,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
       </div>
     </div>
 
-    <!-- EARNINGS -->
+    <!~~ EARNINGS ~~>
     <div class="section">
       <div class="section-head">
         <span class="sh-title">Earnings</span>
@@ -294,7 +311,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
       </div>
     </div>
 
-    <!-- PROFILE PANEL -->
+    <!~~ PROFILE PANEL ~~>
     <div class="section">
       <div class="section-head">
         <span class="sh-title">Your Public Profile</span>
@@ -312,7 +329,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);}
       </div>
     </div>
 
-  </div><!-- /activeView -->
+  </div><!~~ /activeView ~~>
 </div>
 
 <script>
@@ -414,5 +431,9 @@ function toast(msg) {
 
 init();
 </script>
+</body>
+</html>
+
+-->
 </body>
 </html>
